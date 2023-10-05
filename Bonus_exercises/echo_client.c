@@ -9,6 +9,13 @@
 
 #define MAX_BUFFER_SIZE 255
 
+/**
+ * Program for connecting server, sending string, receive string and compare these two strings
+ *
+ * @author Lukas Runt
+ * @date 05-10-2023
+ * @return 0 - Program ends success, -1 Error
+ */
 int main(void){
 
     int client_socket;

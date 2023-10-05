@@ -17,7 +17,8 @@
 #define MAX_BUFFER_SIZE 255
 
 void reverseString(char* string){
-    int length = strlen(string);
+    //length -1 because of \n as last char
+    int length = strlen(string) - 1;
 
     for(int i = 0; i < length /2; i++){
         char temp = string[i];

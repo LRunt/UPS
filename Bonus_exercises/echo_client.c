@@ -39,7 +39,7 @@ int main(void){
     send(client_socket, user_input, strlen(user_input), 0);
     printf("Sended: %s", user_input);
 
-    bytes_received = recv(client_socket, buffer, MAX_BUFFER_SIZE - 1, 0);
+    int bytes_received = recv(client_socket, buffer, MAX_BUFFER_SIZE - 1, 0);
     if(bytes_received == -1){
         printf("Error in receiving data\n");
         return -1;

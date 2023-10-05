@@ -1,0 +1,4 @@
+//For building echo_client
+gcc -o echo_client echo_client.c
+//For run
+./echo_client

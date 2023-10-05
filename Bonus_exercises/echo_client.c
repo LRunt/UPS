@@ -44,7 +44,7 @@ int main(void){
     fgets(user_input, sizeof(user_input), stdin);
 
     send(client_socket, user_input, strlen(user_input), 0);
-    printf("Sended: %s", user_input);
+    printf("Sent: %s", user_input);
 
     int bytes_received = recv(client_socket, buffer, MAX_BUFFER_SIZE - 1, 0);
     if(bytes_received == -1){

@@ -56,6 +56,8 @@ int main(void){
         printf("Error in receiving data\n");
         return -1;
     }
+
+    buffer[bytes_received] = '\0';
     printf("Received from server: %s", buffer);
 
     //reversing received string
@@ -70,6 +72,8 @@ int main(void){
         printf("Error in receiving data\n");
         return -1;
     }
+
+    buffer[bytes_received] = '\0';
     printf("Received from server: %s", buffer);
 
     close(client_socket);

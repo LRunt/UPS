@@ -22,7 +22,7 @@ int main(void){
     memset(&my_addr, 0, sizeof(struct sockaddr_in));
 
     my_addr.sin_family = AF_INET;
-    my_addr.sin_port = htons(2000);
+    my_addr.sin_port = htons(2001);
     my_addr.sin_addr.s_addr = inet_addr("147.228.67.67");
 
     return_value = connect(client_socket, (struct sockaddr *)&my_addr,sizeof(struct sockaddr_in));
@@ -45,14 +45,14 @@ int main(void){
         return -1;
     }
     buffer[bytes_received] = '\0';
-    printf("Received from server: %s\n", buffer);
+    printf("Received from server: %s", buffer);
 
     int result = strcmp(user_input, buffer);
 
     if(result == 0){
-        printf("The string are equal!");
+        printf("The string are equal!\n");
     } else{
-        printf("The strings are not equal!");
+        printf("The strings are not equal!\n");
     }
 
     return 0;

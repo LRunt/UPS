@@ -19,7 +19,7 @@ typedef int bool;
 
 #define true 1
 #define false 0
-#define MAX_BUFFER_SIZE 100
+#define MAX_BUFFER_SIZE 128
 #define plus "plus"
 #define minus "minus"
 #define division "division"
@@ -29,8 +29,8 @@ bool validate_input_operation(char* user_input){
     if (strcmp(plus, user_input) == 0 || strcmp(minus, user_input) == 0 || strcmp(multiply, user_input) == 0 || strcmp(division, user_input) == 0){
         return true;
     }else{
-        fprintf(stderr, "Error! Invalid operation!\n");
-        printf("Valid operation are: plus|minus|multiply|division\n");
+        fprintf(stderr, "Error: Invalid operation!\n");
+        printf("Valid operation are: [plus|minus|multiply|division]\n");
         return false;
     }
 }
@@ -40,8 +40,7 @@ bool validate_input_operator(char* user_input){
 
     for (int i = 0; i < length; i++) {
         if (!isdigit(user_input[i])) {
-            fprintf(stderr, "Error! Invalid operator!\n");
-            printf("Only numbers are valid!\n");
+            fprintf(stderr, "Error: Only numbers are valid!\n");
             return false;
         }
     }
@@ -118,7 +117,7 @@ int main(void){
     }
 
     buffer[bytes_received] = '\0';  // Null-terminate the received data to make it a valid string
-    printf("%s\n", buffer);
+    printf("%s", buffer);
 
     int isValid = false;
     while(!isValid){
@@ -135,9 +134,6 @@ int main(void){
     char result[size_of_result];
     create_command(result, operation, operator1, operator2, '|');
 
-
-    printf("%s", result);
-
     send(client_socket, result, strlen(result), 0);
     printf("Sent: %s", result);
 
@@ -149,7 +145,7 @@ int main(void){
     }
 
     buffer[bytes_received] = '\0';  // Null-terminate the received data to make it a valid string
-    printf("%s\n", buffer);
+    printf("%s", buffer);
 
     close(client_socket);
 

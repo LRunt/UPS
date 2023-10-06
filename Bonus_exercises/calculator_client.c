@@ -1,3 +1,10 @@
+/**
+ * Client for sending data to calculator server and validating its result
+ *
+ * @author Lukas Runt
+ * @date 06-10-2023
+ */
+
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
@@ -35,7 +42,7 @@ bool validate_input_operator(char* user_input){
     return true;
 }
 
-void removeNewline(char *str) {
+void remove_newline(char *str) {
     int length = strlen(str);
 
     if (length > 0 && str[length - 1] == '\n') {
@@ -43,8 +50,21 @@ void removeNewline(char *str) {
     }
 }
 
+void input_and_valid_digit(char* operator, int number){
+    bool isValid = false;
+    while(!isValid){
+        printf("Enter %d. operator: ", number);
+        fgets(operator, sizeof(operator), stdin);
+        remove_newline(operator);
+        isValid = validate_input_operator(operator);
+    }
+}
+
+/**
+ * Method message in format for server (format: Operation|Operator|Operator)
+ */
 void create_command(char* result, char* operation, char* operator1, char* operator2, char delimiter){
-    sprintf(result, "%s%c%s%c%s", operation, delimiter, operator1, delimiter, operator2);
+    sprintf(result, "%s%c%s%c%s\n", operation, delimiter, operator1, delimiter, operator2);
 }
 
 int main(void){
@@ -55,37 +75,20 @@ int main(void){
 
     int isValid = false;
     while(!isValid){
-        printf("Enter operation:\n");
+        printf("Enter operation: ");
         fgets(operation, sizeof(operation), stdin);
-        printf("Entered: %s", operation);
-        removeNewline(operation);
+        remove_newline(operation);
         isValid = validate_input_operation(operation);
     }
 
+    input_and_valid_digit(operator1, 1);
+    input_and_valid_digit(operator2, 2);
 
-    isValid = false;
-    while(!isValid){
-        printf("Enter first operator:\n");
-        fgets(operator1, sizeof(operator1), stdin);
-        printf("Entered: %s", operator1);
-        removeNewline(operator1);
-        isValid = validate_input_operator(operator1);
-    }
-
-    isValid = false;
-    while(!isValid){
-        printf("Enter second operation:\n");
-        fgets(operator2, sizeof(operator2), stdin);
-        printf("Entered: %s", operator2);
-        removeNewline(operator2);
-        isValid = validate_input_operator(operator2);
-    }
-
-    int size_of_result = strlen(operation) + strlen(operator1) + strlen(operator2) + 2; //2 delimiters
+    int size_of_result = strlen(operation) + strlen(operator1) + strlen(operator2) + 3; //2 delimiters and \n
     char result[size_of_result];
     create_command(result, operation, operator1, operator2, '|');
 
-    printf("%s\n", result);
+    printf("%s", result);
 
     return 0;
 }

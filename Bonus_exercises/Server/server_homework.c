@@ -93,7 +93,21 @@ int main(void){
                 if (fd = server_socket){
                     client_socket = accept(server_socket, (struct sockaddr *) &peer_addr, &len_addr);
                     FD_SET( client_socket, &client_socks );
-                    printf("Pripojen novy klient a pridan do sady socketu\n");
+                    printf("New client!\n");
+                    int bytes_received = recv(fd, buffer, MAX_BUFFER_SIZE - 1, 0);
+                    if(bytes_received == -1){
+                        printf("ERROR");
+                        close(fd); //uzaviram spojeni s clientem
+                        FD_CLR(fd, &client_socks);
+                    }
+                    remove_newline(buffer);
+                    printf("Recieved: %s", buffer);
+
+                    if(!strcmp(input, START_CONNECTION)){
+                        printf("String %s a %s jsou stejne.\n", input, START_CONNECTION);
+                    }else{
+                        printf("String %s a %s jsou rozdilne.\n", input, START_CONNECTION);
+                    }
                 }
                     // je to klientsky socket ? prijmem data
                 else {

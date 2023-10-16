@@ -61,8 +61,20 @@ int main(void) {
             if (FD_ISSET(fd, &tests)) {
                 if (fd == server_socket) {
                     client_socket = accept(server_socket, (struct sockaddr *) &peer_addr, &len_addr);
-                    FD_SET(client_socket, &client_socks);
-                    printf("New client connected and added to the socket set\n");
+
+                    int bytes_received = recv(fd, buffer, MAX_BUFFER_SIZE, 0);
+                    if(bytes_received > 0){
+                        buffer[bytes_received] = '\0';
+
+                        if (strcmp(buffer, "HELLO") != 0){
+                            close(fd);
+                            printf("Client sent invalid first message: %s. Connection closed.\n", buffer);
+                        }else{
+                            FD_SET(client_socket, &client_socks);
+                            printf("New client connected and added to the socket set.\n")
+                        }
+                    }
+
                 } else {
                     ioctl(fd, FIONREAD, &a2read);
                     if (a2read > 0) {
@@ -85,5 +97,6 @@ int main(void) {
         }
     }
 
+    close(server_socket);
     return 0;
 }

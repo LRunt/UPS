@@ -76,8 +76,8 @@ int main(void) {
                     client_socket = accept(server_socket, (struct sockaddr *) &peer_addr, &len_addr);
                     FD_SET(client_socket, &client_socks);
                     //printf("New client %d connected.", fd);
-                    printf("New connection , socket fd is %d , ip is : %s , port : %d\n" , client_socket , inet_ntoa(address.sin_addr) , ntohs(address.sin_port));
-                    Client newClient = {client_socket, STATE_NEW_USER};
+                    printf("New connection , socket fd is %d , ip is : %d , port : %d\n" , client_socket , inet_ntoa(peer_addr.sin_addr) , ntohs(peer_addr.sin_port));
+                    struct Client newClient = {client_socket, STATE_NEW_USER};
                     clients[number_of_clients] = newClient;
                     number_of_clients++;
 

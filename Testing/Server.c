@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/un.h>
@@ -13,11 +14,23 @@
 #define STATE_NEW_USER 0
 #define STATE_WAITING_FOR_NUMBER 1
 #define STATE_RIGHT_ANSWER 2
+#define START_COMMUNICATION "HELLO"
 
 struct Client {
     int id;
     int state;
 };
+
+int generate_random_number(){
+    srand(time(NULL));
+    return (rand() % 100) + 1;
+}
+
+void create_message(char *str, int number){
+    char random_number_string[20];
+    sprintf(random_number_string, "NUM:%d\n", number);
+    strcat(str, random_number_string);
+}
 
 int main(void) {
     int server_socket;
@@ -27,6 +40,7 @@ int main(void) {
     int len_addr;
     int a2read;
     int number_of_clients = 0;
+    char newCommand[MAX_BUFFER_SIZE];
     struct sockaddr_in my_addr, peer_addr;
     fd_set client_socks, tests;
 
@@ -78,7 +92,7 @@ int main(void) {
                     //printf("New client %d connected.", fd);
                     printf("New connection , socket fd is %d , ip is : %d , port : %d\n" , client_socket , inet_ntoa(peer_addr.sin_addr) , ntohs(peer_addr.sin_port));
                     struct Client newClient = {client_socket, STATE_NEW_USER};
-                    clients[number_of_clients] = newClient;
+                    clients[client_socket] = newClient;
                     number_of_clients++;
 
                 } else {
@@ -88,10 +102,38 @@ int main(void) {
                         int bytes_received = recv(fd, buffer, MAX_BUFFER_SIZE, 0);
                         if (bytes_received > 0) {
                             buffer[bytes_received] = '\0';  // Null-terminate the received data (assuming it's a string)
-                            printf("Received: %s\n", buffer);
+                            printf("Received form fd %d: %s\n", fd ,buffer);
 
                             // Echo the received string back to the client
                             send(fd, buffer, strlen(buffer), 0);
+                        }
+
+                        switch(clients[fd].state){
+                            //New user, expected HELLO
+                            case 0:
+                                printf("Case 0\n");
+                                if(!strcmp(buffer, START_COMMUNICATION)){
+                                    printf("Welcome %d to the server!\n", fd);
+                                    int random_number = generate_random_number();
+
+                                    create_message(newCommand, random_number);
+                                    printf("New message: %s", newCommand);
+                                    send(fd, newCommand, strlen(newCommand), 0);
+                                }else{
+                                    printf("Wrong first message!\nDisconnecting...\n");
+                                    close(fd);
+                                    FD_CLR(fd, &client_socks);
+                                }
+                                clients[fd].state++;
+                                break;
+                            case 1:
+                                printf("Case 1\n");
+                                break;
+                            case 2:
+                                printf("Case 2\n");
+                                break;
+                            default:
+                                printf("Invalid state of user!\n");
                         }
                     } else {
                         close(fd);

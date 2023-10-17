@@ -62,6 +62,7 @@ int main(void) {
                 if (fd == server_socket) {
                     client_socket = accept(server_socket, reinterpret_cast<struct sockaddr *>(&peer_addr), reinterpret_cast<socklen_t*>(&len_addr));
                     FD_SET(client_socket, &client_socks);
+                    std::cout << "New client " << fd << " connected" << std::endl;
 
                 } else {
                     ioctl(fd, FIONREAD, &a2read);

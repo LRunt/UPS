@@ -9,6 +9,15 @@
 #include <sys/ioctl.h>
 
 #define MAX_BUFFER_SIZE 1024
+#define MAX_CLIENTS 10
+#define STATE_NEW_USER 0
+#define STATE_WAITING_FOR_NUMBER 1
+#define STATE_RIGHT_ANSWER 2
+
+struct Client {
+    int id;
+    int state;
+};
 
 int main(void) {
     int server_socket;
@@ -17,8 +26,12 @@ int main(void) {
     char buffer[MAX_BUFFER_SIZE];
     int len_addr;
     int a2read;
+    int number_of_clients = 0;
     struct sockaddr_in my_addr, peer_addr;
     fd_set client_socks, tests;
+
+    //creating array for clients
+    struct Client clients[MAX_CLIENTS];
 
     server_socket = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -61,19 +74,12 @@ int main(void) {
             if (FD_ISSET(fd, &tests)) {
                 if (fd == server_socket) {
                     client_socket = accept(server_socket, (struct sockaddr *) &peer_addr, &len_addr);
-
-                    int bytes_received = recv(fd, buffer, MAX_BUFFER_SIZE, 0);
-                    if(bytes_received > 0){
-                        buffer[bytes_received] = '\0';
-
-                        if (strcmp(buffer, "HELLO") != 0){
-                            close(fd);
-                            printf("Client sent invalid first message: %s. Connection closed.\n", buffer);
-                        }else{
-                            FD_SET(client_socket, &client_socks);
-                            printf("New client connected and added to the socket set.\n")
-                        }
-                    }
+                    FD_SET(client_socket, &client_socks);
+                    //printf("New client %d connected.", fd);
+                    printf("New connection , socket fd is %d , ip is : %s , port : %d\n" , client_socket , inet_ntoa(address.sin_addr) , ntohs(address.sin_port));
+                    Client newClient = {client_socket, STATE_NEW_USER};
+                    clients[number_of_clients] = newClient;
+                    number_of_clients++;
 
                 } else {
                     ioctl(fd, FIONREAD, &a2read);

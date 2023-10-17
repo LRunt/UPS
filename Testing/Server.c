@@ -12,9 +12,9 @@
 #define MAX_BUFFER_SIZE 1024
 #define MAX_CLIENTS 10
 #define STATE_NEW_USER 0
-#define STATE_WAITING_FOR_NUMBER 1
-#define STATE_RIGHT_ANSWER 2
 #define START_COMMUNICATION "HELLO"
+#define OK "OK\n"
+#define WRONG "WRONG\n"
 
 struct Client {
     int id;
@@ -28,9 +28,7 @@ int generate_random_number(){
 }
 
 void create_message(char *str, int number){
-    char random_number_string[20];
-    sprintf(random_number_string, "NUM:%d\n", number);
-    strcat(str, random_number_string);
+    sprintf(str, "NUM:%d\n", number);
 }
 
 int main(void) {
@@ -107,7 +105,7 @@ int main(void) {
                             printf("Received form fd %d: %s\n", fd ,buffer);
 
                             // Echo the received string back to the client
-                            send(fd, buffer, strlen(buffer), 0);
+                            //send(fd, buffer + '\n', strlen(buffer + 1), 0);
                         }
 
                         switch(clients[fd].state){
@@ -119,26 +117,27 @@ int main(void) {
 
                                     create_message(newCommand, clients[fd].received_number);
                                     printf("New message: %s", newCommand);
-                                    newCommand[0] = '\0';
                                     send(fd, newCommand, strlen(newCommand), 0);
                                 }else{
                                     printf("Wrong first message!\nDisconnecting...\n");
+				    send(fd, WRONG, strlen(WRONG), 0);
                                     close(fd);
                                     FD_CLR(fd, &client_socks);
                                 }
                                 clients[fd].state++;
                                 break;
+			    //Expected two times bigger number than generated number
                             case 1:
                                 received_number_from_client = atoi(buffer);
                                 if(received_number_from_client == 2 * clients[fd].received_number){
-                                    printf("OK\n");
+                                    printf(OK);
+				    send(fd, OK, strlen(OK), 0);
                                 }else{
-                                    printf("WRONG\n");
+                                    printf(WRONG);
+				    send(fd, WRONG, strlen(WRONG), 0);
                                 }
-                                clients[fd].state++;
-                                break;
-                            case 2:
-                                printf("Case 2\n");
+                                close(fd);
+				FD_CLR(fd, &client_socks);
                                 break;
                             default:
                                 printf("Invalid state of user!\n");

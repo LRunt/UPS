@@ -12,7 +12,7 @@
 #define MAX_BUFFER_SIZE 1024
 #define MAX_CLIENTS 10
 #define STATE_NEW_USER 0
-#define START_COMMUNICATION "HELLO"
+#define START_COMMUNICATION "HELLO\n"
 #define OK "OK\n"
 #define WRONG "WRONG\n"
 

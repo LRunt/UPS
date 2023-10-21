@@ -15,7 +15,7 @@ int main(void){
     int client_socket, fd;
     int return_value;
     char buffer[MAX_BUFFER_SIZE];
-    int len_addr;
+    socklen_t len_addr;
     int a2read;
     struct sockaddr_in my_addr, peer_addr;
     fd_set client_socks, tests;
@@ -70,7 +70,7 @@ int main(void){
                         int bytes_received = recv(fd, buffer, MAX_BUFFER_SIZE, 0);
                         if (bytes_received > 0) {
                             buffer[bytes_received] = '\0';  // Null-terminate the received data (assuming it's a string)
-                            std::cout <<"Received: %s", buffer << std::endl;
+                            std::cout <<"Received: " <<  buffer << std::endl;
 
                             // Echo the received string back to the client
                             send(fd, buffer, strlen(buffer), 0);

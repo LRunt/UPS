@@ -4,11 +4,29 @@
 #include <sys/un.h>
 #include <unistd.h>
 #include <netinet/in.h>
-#include <stdlib.h>
+#include <cstdlib>
 #include <sys/ioctl.h>
+#include <vector>
+#include <sstream>
+
+#include "User.h"
 
 
 #define MAX_BUFFER_SIZE 1024
+#define NUMBER_OF_STREAMS 3 //(stdin,stdout, stderr)
+#define DELIMITER '|'
+
+std::vector<std::string> splitString(const std::string& text){
+    std::vector<std::string> splitString;
+    std::istringstream iss(text);
+    std::string token;
+    while(std::getline(iss, token, DELIMITER)){
+        if (!token.empty())
+            splitString.push_back(token);
+    }
+
+    return splitString;
+}
 
 int main(void){
     int server_socket;
@@ -19,6 +37,7 @@ int main(void){
     int a2read;
     struct sockaddr_in my_addr, peer_addr;
     fd_set client_socks, tests;
+    std::vector<User> connectedUsers;
 
     server_socket = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -33,7 +52,7 @@ int main(void){
     if (return_value == 0)
         std::cout << "Bind - OK" << std::endl;
     else {
-        std::cout << "Bind - ERR" << std::endl;
+        std::cerr << "Bind - ERR" << std::endl;
         return -1;
     }
 
@@ -41,7 +60,8 @@ int main(void){
     if (return_value == 0){
         std::cout << "Listen - OK"<< std::endl;
     } else {
-        std::cout << "Listen - ERR" << std::endl;
+        std::cerr << "Listen - ERR" << std::endl;
+        return -1;
     }
 
     FD_ZERO(&client_socks);
@@ -53,15 +73,17 @@ int main(void){
         return_value = select(FD_SETSIZE, &tests, (fd_set *) 0, (fd_set *) 0, (struct timeval *) 0);
 
         if (return_value < 0) {
-            std::cout << "Select - ERR" << std::endl;
+            std::cerr << "Select - ERR" << std::endl;
             return -1;
         }
 
-        for (fd = 3; fd < FD_SETSIZE; fd++) {
+        for (fd = NUMBER_OF_STREAMS; fd < FD_SETSIZE; fd++) {
             if (FD_ISSET(fd, &tests)) {
                 if (fd == server_socket) {
                     client_socket = accept(server_socket, (struct sockaddr *) &peer_addr, &len_addr);
                     FD_SET(client_socket, &client_socks);
+                    User newUser;
+                    connectedUsers.insert(connectedUsers.begin() + (fd - NUMBER_OF_STREAMS), newUser);
                     std::cout << "New client connected and added to the socket set" << std::endl;
                 } else {
                     ioctl(fd, FIONREAD, &a2read);
@@ -74,11 +96,28 @@ int main(void){
 
                             // Echo the received string back to the client
                             send(fd, buffer, strlen(buffer), 0);
+
+                            if(connectedUsers.at(fd - NUMBER_OF_STREAMS).state == 0){
+                                std::string message(buffer);
+                                std::vector<std::string> commands = splitString(message);
+                                if(commands.size() > 0){
+                                    if(commands.at(1) == "LOGIN"){
+                                        std::cout << "OK" << std::endl;
+                                    }
+                                    else{
+                                        std::cout << "WRONG" << std::endl;
+                                    }
+                                }else{
+                                    std::cout << "WRONG" << std::endl;
+                                }
+                            }else{
+                                std::cout << "New state" << std::endl;
+                            }
                         }
                     } else {
                         close(fd);
                         FD_CLR(fd, &client_socks);
-                        std::cout << "Client disconnected and removed from the socket set" << std::endl;
+                        std::cout << "User disconnected and removed from the socket set" << std::endl;
                     }
                 }
             }

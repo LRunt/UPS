@@ -9,19 +9,17 @@
 
 class User {
     public:
-        int state;
+        int mState;
+        std::string mUsername;
+        /** Number of wrong messages in row, after 3 wrong messages -> kick out */
+        int mStrikes;
 
         explicit User() {
             std::cout << "New User created" << std::endl;
             mStrikes = 0;
             mUsername = nullptr;
-            state = 0;
+            mState = 0;
         }
-
-    private:
-        std::string mUsername;
-        /** Number of wrong messages in row, after 3 wrong messages -> kick out */
-        int mStrikes;
 
 };
 

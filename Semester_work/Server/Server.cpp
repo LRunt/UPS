@@ -37,7 +37,7 @@ int main(void){
     int a2read;
     struct sockaddr_in my_addr, peer_addr;
     fd_set client_socks, tests;
-    std::vector<User> connectedUsers;
+    std::vector<User*> connectedUsers;
 
     server_socket = socket(AF_INET, SOCK_STREAM, 0);
 
@@ -83,7 +83,7 @@ int main(void){
                     client_socket = accept(server_socket, (struct sockaddr *) &peer_addr, &len_addr);
                     FD_SET(client_socket, &client_socks);
                     User newUser;
-                    connectedUsers.insert(connectedUsers.begin() + (fd - NUMBER_OF_STREAMS), newUser);
+                    connectedUsers.insert(connectedUsers.begin() + (fd - NUMBER_OF_STREAMS), &newUser);
                     std::cout << "New client connected and added to the socket set" << std::endl;
                 } else {
                     ioctl(fd, FIONREAD, &a2read);
@@ -97,7 +97,7 @@ int main(void){
                             // Echo the received string back to the client
                             send(fd, buffer, strlen(buffer), 0);
 
-                            if(connectedUsers.at(fd - NUMBER_OF_STREAMS).state == 0){
+                            if(connectedUsers.at(fd - NUMBER_OF_STREAMS)->mState == 0){
                                 std::string message(buffer);
                                 std::vector<std::string> commands = splitString(message);
                                 if(commands.size() > 0){

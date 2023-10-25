@@ -1,3 +1,11 @@
+/**
+ * Server for game TIC-TAC-TOE
+ *
+ * @author Lukas Runt
+ * @date 25-10-2023
+ * @version 0.0.1
+ */
+
 #include <iostream>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -28,7 +36,7 @@ std::vector<std::string> splitString(const std::string& text){
     return splitString;
 }
 
-int main(void){
+int main(int argc, char *argv[]){
     int server_socket;
     int client_socket, fd;
     int return_value;

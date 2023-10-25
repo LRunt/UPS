@@ -55,6 +55,7 @@ int main(int argc, char *argv[]){
     if(argc > 3){
         std::cerr << "Invalid number of parameters: " << argc << std::endl;
         std::cerr << "Parameters are:\n-c<number> = maximal number of connected users\n-p<number> = port" << std::endl;
+        return EXIT_FAILURE;
     }
 
     for(int i = 1; i < argc; i++){
@@ -65,8 +66,17 @@ int main(int argc, char *argv[]){
             char number_string[strlen(arg) - 2];
 
             strncpy(number_string, arg + 2, strlen(arg) - 2);
-            int number = std::stoi(number_string);
-            std::cout << "Number: " << number << std::endl;
+            int number;
+            try{
+                number = std::stoi(number_string);
+                std::cout << "Number: " << number << std::endl;
+            } catch (const std::invalid_argument& e) {
+                std::cerr << "Invalid argument: " << e.what() << std::endl;
+                return EXIT_FAILURE;
+            } catch (const std::out_of_range& e) {
+                std::cerr << "Out of range: " << e.what() << std::endl;
+                return EXIT_FAILURE;
+            }
 
             switch (flag){
                 case 'c':
@@ -77,10 +87,12 @@ int main(int argc, char *argv[]){
                     break;
                 default:
                     std::cerr << "Wrong flag!" << std::endl;
+                    return EXIT_FAILURE;
             }
 
         }else{
             std::cerr << "Invalid argument format: " << arg << std::endl;
+            return EXIT_FAILURE;
         }
     }
 

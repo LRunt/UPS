@@ -39,13 +39,14 @@ std::vector<std::string> splitString(const std::string& text){
 }
 
 int main(int argc, char *argv[]){
+    int port = DEFAULT_PORT;
+    int max_number_of_connected_users = DEFAULT_MAX_USERS;
     int server_socket;
     int client_socket, fd;
     int return_value;
     char buffer[MAX_BUFFER_SIZE];
     socklen_t len_addr;
     int a2read;
-    int port = DEFAULT_PORT;
     struct sockaddr_in my_addr, peer_addr;
     fd_set client_socks, tests;
     User* connected_users[DEFAULT_MAX_USERS];
@@ -61,10 +62,22 @@ int main(int argc, char *argv[]){
 
         if(strlen(arg) >= 3 && arg[0] == '-'){
             char flag = arg[1]; //c or p
-            char number[strlen(arg) - 2];
+            char number_string[strlen(arg) - 2];
 
-            strncpy(number, arg + 2, strlen(arg) - 2);
-            std::cout << "Number: " << number;
+            strncpy(number_string, arg + 2, strlen(arg) - 2);
+            int number = std::stoi(number_string);
+            std::cout << "Number: " << number << std::endl;
+
+            switch (flag){
+                case 'c':
+                    max_number_of_connected_users = number;
+                    break;
+                case 'p':
+                    port = number;
+                    break;
+                default:
+                    std::cerr << "Wrong flag!" << std::endl;
+            }
 
         }else{
             std::cerr << "Invalid argument format: " << arg << std::endl;

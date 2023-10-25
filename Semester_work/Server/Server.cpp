@@ -21,6 +21,8 @@
 
 
 #define MAX_BUFFER_SIZE 1024
+#define DEFAULT_PORT 10000
+#define DEFAULT_MAX_USERS 10
 #define NUMBER_OF_STREAMS 3 //(stdin,stdout, stderr)
 #define DELIMITER '|'
 
@@ -43,16 +45,39 @@ int main(int argc, char *argv[]){
     char buffer[MAX_BUFFER_SIZE];
     socklen_t len_addr;
     int a2read;
+    int port = DEFAULT_PORT;
     struct sockaddr_in my_addr, peer_addr;
     fd_set client_socks, tests;
-    std::vector<User*> connectedUsers;
+    User* connected_users[DEFAULT_MAX_USERS];
 
+    //reading and parse arguments
+    if(argc > 3){
+        std::cerr << "Invalid number of parameters: " << argc << std::endl;
+        std::cerr << "Parameters are:\n-c<number> = maximal number of connected users\n-p<number> = port" << std::endl;
+    }
+
+    for(int i = 1; i < argc; i++){
+        const char *arg = argv[i];
+
+        if(strlen(arg) >= 3 && arg[0] == '-'){
+            char flag = arg[1]; //c or p
+            char number[strlen(arg) - 2];
+
+            strncpy(number, arg + 2, strlen(arg) - 2);
+            std::cout << "Number: " << number;
+
+        }else{
+            std::cerr << "Invalid argument format: " << arg << std::endl;
+        }
+    }
+
+    //defining server socket
     server_socket = socket(AF_INET, SOCK_STREAM, 0);
 
     memset(&my_addr, 0, sizeof(struct sockaddr_in));
 
     my_addr.sin_family = AF_INET;
-    my_addr.sin_port = htons(10000);
+    my_addr.sin_port = htons(port);
     my_addr.sin_addr.s_addr = INADDR_ANY;
 
     return_value = bind(server_socket, (struct sockaddr *) &my_addr, sizeof(struct sockaddr_in));
@@ -91,7 +116,7 @@ int main(int argc, char *argv[]){
                     client_socket = accept(server_socket, (struct sockaddr *) &peer_addr, &len_addr);
                     FD_SET(client_socket, &client_socks);
                     User newUser;
-                    connectedUsers.insert(connectedUsers.begin() + (fd - NUMBER_OF_STREAMS), &newUser);
+                    connected_users[fd] = &newUser;
                     std::cout << "New client connected and added to the socket set" << std::endl;
                 } else {
                     ioctl(fd, FIONREAD, &a2read);
@@ -105,7 +130,7 @@ int main(int argc, char *argv[]){
                             // Echo the received string back to the client
                             send(fd, buffer, strlen(buffer), 0);
 
-                            if(connectedUsers.at(fd - NUMBER_OF_STREAMS)->mState == 0){
+                            if(connected_users[fd]->mState == 0){
                                 std::string message(buffer);
                                 std::vector<std::string> commands = splitString(message);
                                 if(commands.size() > 0){

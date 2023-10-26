@@ -14,8 +14,6 @@
 #include <netinet/in.h>
 #include <cstdlib>
 #include <sys/ioctl.h>
-#include <vector>
-#include <sstream>
 
 #include "User.h"
 
@@ -24,19 +22,6 @@
 #define DEFAULT_PORT 10000
 #define DEFAULT_MAX_USERS 10
 #define NUMBER_OF_STREAMS 3 //(stdin,stdout, stderr)
-#define DELIMITER '|'
-
-std::vector<std::string> splitString(const std::string& text){
-    std::vector<std::string> splitString;
-    std::istringstream iss(text);
-    std::string token;
-    while(std::getline(iss, token, DELIMITER)){
-        if (!token.empty())
-            splitString.push_back(token);
-    }
-
-    return splitString;
-}
 
 int main(int argc, char *argv[]){
     int port = DEFAULT_PORT;
@@ -159,7 +144,7 @@ int main(int argc, char *argv[]){
 
                             std::string message(buffer);
 
-                            connected_users[fd - NUMBER_OF_STREAMS]->parse_message(message);
+                            connected_users[fd - NUMBER_OF_STREAMS]->execute_message(message);
                            /* if(connected_users[fd]->mState == 0){
                                 std::string message(buffer);
                                 std::vector<std::string> commands = splitString(message);

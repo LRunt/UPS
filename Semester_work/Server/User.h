@@ -10,22 +10,25 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
+#include <sstream>
+
+using namespace std;
 
 class User {
     public:
         int mState;
-        std::string mUsername;
+        string mUsername;
         /** Number of wrong messages in row, after 3 wrong messages -> kick out */
         int mStrikes;
 
         User() {
-            std::cout << "New User created" << std::endl;
+            cout << "New User created" << endl;
             mStrikes = 0;
             mUsername = "";
             mState = 0;
         }
 
-        int parse_message(std::string message);
-
+        int execute_message(string message);
 };
 

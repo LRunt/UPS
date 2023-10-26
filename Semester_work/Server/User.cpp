@@ -55,6 +55,8 @@ int User::execute_message(string message) {
                 cout << "User wants to login." << endl;
             }else if(parsedMessage[0] == MESSAGE_DISCONNECT){
                 cout << "User wants to disconnect." << endl;
+            }else{
+                cout << "Bad message" << endl;
             }
             break;
         case LOGGED:

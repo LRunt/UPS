@@ -1,6 +1,10 @@
-//
-// Created by Lenovo on 22.10.2023.
-//
+/**
+ * Class user represents player
+ *
+ * @author Lukas Runt
+ * @date 26-10-2023
+ * @version 0.0.1
+ */
 
 #pragma once
 
@@ -20,6 +24,8 @@ class User {
             mUsername = "";
             mState = 0;
         }
+
+        int parse_message(std::string message);
 
 };
 

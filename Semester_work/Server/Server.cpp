@@ -49,7 +49,7 @@ int main(int argc, char *argv[]){
     int a2read;
     struct sockaddr_in my_addr, peer_addr;
     fd_set client_socks, tests;
-    //User* connected_users[DEFAULT_MAX_USERS];
+    User* connected_users[DEFAULT_MAX_USERS];
 
     //reading and parse arguments
     if(argc > 3){
@@ -143,7 +143,7 @@ int main(int argc, char *argv[]){
                     client_socket = accept(server_socket, (struct sockaddr *) &peer_addr, &len_addr);
                     FD_SET(client_socket, &client_socks);
                     User newUser = User();
-                    // connected_users[fd] = &newUser;
+                    connected_users[fd - NUMBER_OF_STREAMS] = &newUser;
                     std::cout << "New client connected and added to the socket set" << std::endl;
                 } else {
                     ioctl(fd, FIONREAD, &a2read);
@@ -152,11 +152,14 @@ int main(int argc, char *argv[]){
                         int bytes_received = recv(fd, buffer, MAX_BUFFER_SIZE, 0);
                         if (bytes_received > 0) {
                             buffer[bytes_received] = '\0';  // Null-terminate the received data (assuming it's a string)
-                            std::cout <<"Received: " <<  buffer << std::endl;
+                            //std::cout <<"Received: " <<  buffer << std::endl;
 
                             // Echo the received string back to the client
                             send(fd, buffer, strlen(buffer), 0);
 
+                            std::string message(buffer);
+
+                            connected_users[fd - NUMBER_OF_STREAMS]->parse_message(message);
                            /* if(connected_users[fd]->mState == 0){
                                 std::string message(buffer);
                                 std::vector<std::string> commands = splitString(message);

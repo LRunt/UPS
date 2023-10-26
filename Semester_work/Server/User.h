@@ -14,10 +14,10 @@ class User {
         /** Number of wrong messages in row, after 3 wrong messages -> kick out */
         int mStrikes;
 
-        explicit User() {
+        User() {
             std::cout << "New User created" << std::endl;
             mStrikes = 0;
-            mUsername = nullptr;
+            mUsername = "";
             mState = 0;
         }
 

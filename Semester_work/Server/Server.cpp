@@ -49,7 +49,7 @@ int main(int argc, char *argv[]){
     int a2read;
     struct sockaddr_in my_addr, peer_addr;
     fd_set client_socks, tests;
-    User* connected_users[DEFAULT_MAX_USERS];
+    //User* connected_users[DEFAULT_MAX_USERS];
 
     //reading and parse arguments
     if(argc > 3){
@@ -142,8 +142,8 @@ int main(int argc, char *argv[]){
                 if (fd == server_socket) {
                     client_socket = accept(server_socket, (struct sockaddr *) &peer_addr, &len_addr);
                     FD_SET(client_socket, &client_socks);
-                    User newUser;
-                    connected_users[fd] = &newUser;
+                    User newUser = User();
+                    // connected_users[fd] = &newUser;
                     std::cout << "New client connected and added to the socket set" << std::endl;
                 } else {
                     ioctl(fd, FIONREAD, &a2read);
@@ -157,7 +157,7 @@ int main(int argc, char *argv[]){
                             // Echo the received string back to the client
                             send(fd, buffer, strlen(buffer), 0);
 
-                            if(connected_users[fd]->mState == 0){
+                           /* if(connected_users[fd]->mState == 0){
                                 std::string message(buffer);
                                 std::vector<std::string> commands = splitString(message);
                                 if(commands.size() > 0){
@@ -172,7 +172,7 @@ int main(int argc, char *argv[]){
                                 }
                             }else{
                                 std::cout << "New state" << std::endl;
-                            }
+                            }*/
                         }
                     } else {
                         close(fd);

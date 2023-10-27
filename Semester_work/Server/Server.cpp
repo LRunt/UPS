@@ -146,22 +146,6 @@ int main(int argc, char *argv[]){
                             std::string message(buffer);
 			                std::cout << "File descriptor: " << fd << std::endl;
                             connected_users[fd - NUMBER_OF_STREAMS]->execute_message(message);
-                           /* if(connected_users[fd]->mState == 0){
-                                std::string message(buffer);
-                                std::vector<std::string> commands = splitString(message);
-                                if(commands.size() > 0){
-                                    if(commands.at(1) == "LOGIN"){
-                                        std::cout << "OK" << std::endl;
-                                    }
-                                    else{
-                                        std::cout << "WRONG" << std::endl;
-                                    }
-                                }else{
-                                    std::cout << "WRONG" << std::endl;
-                                }
-                            }else{
-                                std::cout << "New state" << std::endl;
-                            }*/
                         }
                     } else {
                         close(fd);

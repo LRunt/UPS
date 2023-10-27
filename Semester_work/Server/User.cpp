@@ -67,6 +67,7 @@ int User::execute_message(string message) {
         case CONNECTED:
             if(parsedMessage[0] == MESSAGE_LOGIN){
                 cout << "User wants to login." << endl;
+                this -> login(parsedMessage);
             }else if(parsedMessage[0] == MESSAGE_DISCONNECT){
                 cout << "User wants to disconnect." << endl;
             }else{

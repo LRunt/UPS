@@ -2,8 +2,8 @@
  * Server for game TIC-TAC-TOE
  *
  * @author Lukas Runt
- * @date 25-10-2023
- * @version 0.0.1
+ * @date 27-10-2023
+ * @version 0.0.2
  */
 
 #include <iostream>

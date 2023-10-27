@@ -2,8 +2,8 @@
  * Methods of user class
  *
  * @author Lukas Runt
- * @date 26-10-2023
- * @version 0.0.1
+ * @date 27-10-2023
+ * @version 0.0.2
  */
 
 #include "User.h"
@@ -108,9 +108,29 @@ int User::login(vector<string> parsedMessage) {
         }else{
             mUsername = parsedMessage[1] + '\0';
             mState++;
+            //adding to the list of users
+            users.push_back(std::make_unique<User>(*this));
             cout << "User logged with username: " << mUsername << endl;
+            cout << "LIst of all Users: " << endl;
+            print_existing_users();
             return NEW_USER;
         }
     }
-    return INVALID_MESSAGE;
+}
+
+/**
+ * Method printing all existing users to the command line
+ */
+void User::print_existing_users() {
+    for (const auto& user : users){
+        cout << user -> mUsername << endl;
+    }
+}
+
+/**
+ * String representation of User
+ * @return string representation of user
+ */
+string User::toString() {
+    return std::string();
 }

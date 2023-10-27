@@ -7,6 +7,8 @@
  */
 
 #include "User.h"
+#include "../Semester_work/Server/User.h"
+
 
 #define DELIMITER '|'
 

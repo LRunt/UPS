@@ -12,11 +12,14 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include <memory>
 
 using namespace std;
 
 class User {
     public:
+        static vector<std::unique_ptr<User>> users;
+
         int mState;
         string mUsername;
         /** Number of wrong messages in row, after 3 wrong messages -> kick out */
@@ -33,5 +36,9 @@ class User {
 
     private:
         int login(vector<string> parsedMessage);
+
+        void print_existing_users();
+
+        string toString();
 };
 

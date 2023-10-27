@@ -14,6 +14,7 @@
 #include <netinet/in.h>
 #include <cstdlib>
 #include <sys/ioctl.h>
+#include <memory>
 
 #include "User.h"
 
@@ -34,7 +35,7 @@ int main(int argc, char *argv[]){
     int a2read;
     struct sockaddr_in my_addr, peer_addr;
     fd_set client_socks, tests;
-    User* connected_users[DEFAULT_MAX_USERS];
+    std::unique_ptr<User> connected_users[DEFAULT_MAX_USERS];
 
     //reading and parse arguments
     if(argc > 3){
@@ -127,10 +128,9 @@ int main(int argc, char *argv[]){
                 if (fd == server_socket) {
                     client_socket = accept(server_socket, (struct sockaddr *) &peer_addr, &len_addr);
                     FD_SET(client_socket, &client_socks);
-		    User newUser;
-		    std::cout << "File descriptor fd: " << client_socket << std::endl;
-                    connected_users[client_socket - NUMBER_OF_STREAMS] = &newUser;
-		    std::cout << "New user address: " << connected_users[client_socket - NUMBER_OF_STREAMS] << std::endl;
+		            std::cout << "File descriptor fd: " << client_socket << std::endl;
+                    connected_users[client_socket - NUMBER_OF_STREAMS] = std::make_unique<User>();
+		            //std::cout << "New user address: " << connected_users[client_socket - NUMBER_OF_STREAMS] << std::endl;
                     std::cout << "New client connected and added to the socket set" << std::endl;
                 } else {
                     ioctl(fd, FIONREAD, &a2read);
@@ -145,8 +145,8 @@ int main(int argc, char *argv[]){
                             send(fd, buffer, strlen(buffer), 0);
 
                             std::string message(buffer);
-			    std::cout << "Addres of usser: " << connected_users[fd - NUMBER_OF_STREAMS] << std::endl;
-			    std::cout << "File descriptor: " << fd << std::endl;
+			                //std::cout << "Addres of usser: " << connected_users[fd - NUMBER_OF_STREAMS] << std::endl;
+			                std::cout << "File descriptor: " << fd << std::endl;
                             connected_users[fd - NUMBER_OF_STREAMS]->execute_message(message);
                            /* if(connected_users[fd]->mState == 0){
                                 std::string message(buffer);

@@ -25,7 +25,7 @@ class User {
         User() {
             mStrikes = 0;
             mUsername = "";
-	    mState = 0;
+	        mState = 0;
             cout << "New user created! State = " << mState << endl;
         }
 

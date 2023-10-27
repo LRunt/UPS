@@ -46,7 +46,7 @@
 #define MESSAGE_DISCONNECT "DISCONNECT"
 #define MESSAGE_START_GAME "START"
 
-/** Initializing vector of users */
+ /** Initializing vector of users */
 vector<unique_ptr<User>> User::users;
 
  /**
@@ -123,26 +123,24 @@ int User::login(vector<string> parsedMessage) {
         }else if(parsedMessage[1].size() > MAX_USERNAME_LENGTH){
             cerr << "Username is too long" << endl;
             return LONG_USERNAME;
-        }else{
-            int exist = exist_user(parsedMessage[1]);
-            if(exist == -1){
-                mUsername = parsedMessage[1] + '\0';
-                mState++;
-                //adding to the list of users
-                users.push_back(std::make_unique<User>(*this));
-                cout << "User logged with username: " << mUsername << endl;
-                cout << "List of all Users: " << endl;
-                print_existing_users();
-                return NEW_USER;
-            }else if(exist == 0){
+        }else if(exist_user(parsedMessage[1])){
+            if(user_connected(parsedMessage[1])){
+                cout << "Error: exist user with same username!" << endl;
+                return EXIST_ONLINE_USER;
+            }else{
                 cout << "welcome back!" << endl;
                 //TODO: implement loading user state
                 return EXIST_OFFLINE_USER;
-            }else{
-                // state is > 0
-                cout << "Error: exist user with same username!" << endl;
-                return EXIST_ONLINE_USER;
             }
+        }else{
+            mUsername = parsedMessage[1] + '\0';
+            mState++;
+            //adding to the list of users
+            users.push_back(std::make_unique<User>(*this));
+            cout << "User logged with username: " << mUsername << endl;
+            cout << "List of all Users: " << endl;
+            print_existing_users();
+            return NEW_USER;
         }
     }
 }
@@ -152,22 +150,36 @@ int User::login(vector<string> parsedMessage) {
  */
 void User::print_existing_users() {
     for(const auto& user : User::users){
-        cout << user -> mUsername << endl;
+        cout << user -> toString() << endl;
     }
 }
 
 /**
  * Return if the user exists or not
  * @param username nickname what we are looking for
- * @return 0 - do not exist, -1 - disconnected, 0 < n - user is online
+ * @return true - exist, false - do not exist
  */
-int User::exist_user(string username) {
+bool User::exist_user(string username) {
     for(const auto& user : User::users){
         if(username == user->mUsername){
-            return user->isConnected;
+            return true;
         }
     }
-    return -1;
+    return false;
+}
+
+/**
+ * Return if the user is online
+ * @param username nickname what we are looking for
+ * @return true - online, false - offline
+ */
+bool User::user_connected(string username) {
+    for(const auto& user : User::users){
+        if(username == user->mUsername){
+            return user -> isConnected;
+        }
+    }
+    return false;
 }
 
 /**

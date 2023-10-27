@@ -43,7 +43,9 @@ class User {
 
         void print_existing_users();
 
-        int exist_user(string username);
+        bool exist_user(string username);
+
+        bool user_connected(string username);
 
         User get_user(string username);
 

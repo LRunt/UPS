@@ -46,6 +46,9 @@
 #define MESSAGE_DISCONNECT "DISCONNECT"
 #define MESSAGE_START_GAME "START"
 
+/** Initializing vector of users */
+vector<unique_ptr<User>> User::users;
+
  /**
   * Method split message by delimiter and returns parsed vector
   * @param text message to be parsed
@@ -148,7 +151,7 @@ int User::login(vector<string> parsedMessage) {
  * Method printing all existing users to the command line
  */
 void User::print_existing_users() {
-    for(const auto& user : users){
+    for(const auto& user : User::users){
         cout << user -> mUsername << endl;
     }
 }
@@ -159,7 +162,7 @@ void User::print_existing_users() {
  * @return 0 - do not exist, -1 - disconnected, 0 < n - user is online
  */
 int User::exist_user(string username) {
-    for(const auto& user : users){
+    for(const auto& user : User::users){
         if(username == user->mUsername){
             return user->isConnected;
         }

@@ -39,6 +39,8 @@ class User {
 
         void print_existing_users();
 
+        bool exist_user(string username);
+
         string toString();
 };
 

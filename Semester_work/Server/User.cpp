@@ -105,6 +105,8 @@ int User::login(vector<string> parsedMessage) {
         }else if(parsedMessage[1].size() > MAX_USERNAME_LENGTH){
             cerr << "Username is too long" << endl;
             return LONG_USERNAME;
+        }else if(exist_user(parsedMessage[1])) {
+            cout << "User exist!" << endl;
         }else{
             mUsername = parsedMessage[1] + '\0';
             mState++;
@@ -122,9 +124,23 @@ int User::login(vector<string> parsedMessage) {
  * Method printing all existing users to the command line
  */
 void User::print_existing_users() {
-    for (const auto& user : users){
+    for(const auto& user : users){
         cout << user -> mUsername << endl;
     }
+}
+
+/**
+ * Return if the user exists or not
+ * @param username nickname what we are looking for
+ * @return true - user with username exist, false - user with username do not exist
+ */
+bool User::exist_user(std::string username) {
+    for(const auto& user : users){
+        if(username == user->mUsername){
+            return true;
+        }
+    }
+    return false;
 }
 
 /**
@@ -132,5 +148,5 @@ void User::print_existing_users() {
  * @return string representation of user
  */
 string User::toString() {
-    return std::string();
+    return "User: " + mUsername + ", state: " + to_string(mState);
 }

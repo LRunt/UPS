@@ -8,6 +8,7 @@
 
 #include "User.h"
 
+/** delimiter in incoming messages */
 #define DELIMITER '|'
 
 /**
@@ -22,6 +23,9 @@
      RESULT_SCREEN = 4
  };
 
+ /**
+  * Enumerate of returning codes
+  */
  enum login_code{
      INVALID_MESSAGE = -1,
      NEW_USER = 0,
@@ -42,6 +46,11 @@
 #define MESSAGE_DISCONNECT "DISCONNECT"
 #define MESSAGE_START_GAME "START"
 
+ /**
+  * Method split message by delimiter and returns parsed vector
+  * @param text message to be parsed
+  * @return vector of message and parameters
+  */
 vector<string> splitString(const string& text){
     vector<string> splitString;
     istringstream iss(text);
@@ -50,7 +59,6 @@ vector<string> splitString(const string& text){
         if (!token.empty())
             splitString.push_back(token);
     }
-
     return splitString;
 }
 
@@ -83,6 +91,13 @@ int User::execute_message(string message) {
 }
 
 /**
+ * Sets user as disconnected
+ */
+void User::disconnect_user() {
+    isConnected = false;
+}
+
+/**
  * Method try to login the user
  * @param parsedMessage message form client
  * @return Code if the action was successful
@@ -105,17 +120,26 @@ int User::login(vector<string> parsedMessage) {
         }else if(parsedMessage[1].size() > MAX_USERNAME_LENGTH){
             cerr << "Username is too long" << endl;
             return LONG_USERNAME;
-        }else if(exist_user(parsedMessage[1])) {
-            cout << "User exist!" << endl;
         }else{
-            mUsername = parsedMessage[1] + '\0';
-            mState++;
-            //adding to the list of users
-            users.push_back(std::make_unique<User>(*this));
-            cout << "User logged with username: " << mUsername << endl;
-            cout << "LIst of all Users: " << endl;
-            print_existing_users();
-            return NEW_USER;
+            int exist = exist_user(parsedMessage[1]);
+            if(exist == -1){
+                mUsername = parsedMessage[1] + '\0';
+                mState++;
+                //adding to the list of users
+                users.push_back(std::make_unique<User>(*this));
+                cout << "User logged with username: " << mUsername << endl;
+                cout << "List of all Users: " << endl;
+                print_existing_users();
+                return NEW_USER;
+            }else if(exist == 0){
+                cout << "welcome back!" << endl;
+                //TODO: implement loading user state
+                return EXIST_OFFLINE_USER;
+            }else{
+                // state is > 0
+                cout << "Error: exist user with same username!" << endl;
+                return EXIST_ONLINE_USER;
+            }
         }
     }
 }
@@ -132,15 +156,15 @@ void User::print_existing_users() {
 /**
  * Return if the user exists or not
  * @param username nickname what we are looking for
- * @return true - user with username exist, false - user with username do not exist
+ * @return 0 - do not exist, -1 - disconnected, 0 < n - user is online
  */
-bool User::exist_user(std::string username) {
+int User::exist_user(string username) {
     for(const auto& user : users){
         if(username == user->mUsername){
-            return true;
+            return user->isConnected;
         }
     }
-    return false;
+    return -1;
 }
 
 /**
@@ -148,5 +172,5 @@ bool User::exist_user(std::string username) {
  * @return string representation of user
  */
 string User::toString() {
-    return "User: " + mUsername + ", state: " + to_string(mState);
+    return "User: " + mUsername + ", state: " + to_string(mState) + ", is connected: " + to_string(isConnected);
 }

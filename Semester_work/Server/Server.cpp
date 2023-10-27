@@ -148,6 +148,7 @@ int main(int argc, char *argv[]){
                             connected_users[fd - NUMBER_OF_STREAMS]->execute_message(message);
                         }
                     } else {
+                        connected_users[fd - NUMBER_OF_STREAMS]->disconnect_user();
                         close(fd);
                         FD_CLR(fd, &client_socks);
                         std::cout << "User disconnected and removed from the socket set" << std::endl;

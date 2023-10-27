@@ -24,22 +24,28 @@ class User {
         string mUsername;
         /** Number of wrong messages in row, after 3 wrong messages -> kick out */
         int mStrikes;
+        bool isConnected;
 
         User() {
             mStrikes = 0;
             mUsername = "";
 	        mState = 0;
+            isConnected = true;
             cout << "New user created! State = " << mState << endl;
         }
 
         int execute_message(string message);
+
+        void disconnect_user();
 
     private:
         int login(vector<string> parsedMessage);
 
         void print_existing_users();
 
-        bool exist_user(string username);
+        int exist_user(string username);
+
+        User get_user(string username);
 
         string toString();
 };

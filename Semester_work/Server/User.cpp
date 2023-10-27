@@ -47,8 +47,10 @@ vector<string> splitString(const string& text){
  * @return Code if the action was successful
  */
 int User::execute_message(string message) {
-    cout << "User received this message:" << message << endl;
+    cout << "User send this message:" << message << endl;
+   // cout << "User state is: " << mState << endl;
     vector<string> parsedMessage = splitString(message);
+    cout << mState << endl;
     switch(mState){
         case CONNECTED:
             if(parsedMessage[0] == MESSAGE_LOGIN){

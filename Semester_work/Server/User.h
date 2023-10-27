@@ -30,5 +30,8 @@ class User {
         }
 
         int execute_message(string message);
+
+    private:
+        int login(vector<string> parsedMessage);
 };
 

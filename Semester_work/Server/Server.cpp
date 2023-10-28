@@ -23,6 +23,7 @@
 #define DEFAULT_PORT 10000
 #define DEFAULT_MAX_USERS 10
 #define NUMBER_OF_STREAMS 3 //(stdin,stdout, stderr)
+#define MESSAGE_MAX_USERS ""
 
 int main(int argc, char *argv[]){
     int port = DEFAULT_PORT;
@@ -127,10 +128,15 @@ int main(int argc, char *argv[]){
             if (FD_ISSET(fd, &tests)) {
                 if (fd == server_socket) {
                     client_socket = accept(server_socket, (struct sockaddr *) &peer_addr, &len_addr);
-                    FD_SET(client_socket, &client_socks);
-		            std::cout << "File descriptor fd: " << client_socket << std::endl;
-                    connected_users[client_socket - NUMBER_OF_STREAMS] = std::make_unique<User>();
-                    std::cout << "New client connected and added to the socket set" << std::endl;
+                    //Testing maximal number of connected users
+                    if(client_socket > (max_number_of_connected_users - NUMBER_OF_STREAMS)){
+                        send(client_socket, MESSAGE_MAX_USERS, strlen(MESSAGE_MAX_USERS), 0);
+                    }else{
+                        FD_SET(client_socket, &client_socks);
+                        std::cout << "File descriptor fd: " << client_socket << std::endl;
+                        connected_users[client_socket - NUMBER_OF_STREAMS] = std::make_unique<User>();
+                        std::cout << "New client connected and added to the socket set" << std::endl;
+                    }
                 } else {
                     ioctl(fd, FIONREAD, &a2read);
                     if (a2read > 0) {

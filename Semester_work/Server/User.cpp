@@ -97,6 +97,7 @@ int User::execute_message(string message) {
  * Sets user as disconnected
  */
 void User::disconnect_user() {
+    cout << "disconnecting user" << endl;
     isConnected = false;
 }
 

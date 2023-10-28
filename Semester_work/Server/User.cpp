@@ -161,7 +161,7 @@ void User::print_existing_users() {
  */
 bool User::exist_user(string username) {
     for(const auto& user : User::users){
-        if(username == user->mUsername){
+        if(username.compare(user->mUsername) == 0){
             return true;
         }
     }
@@ -175,7 +175,7 @@ bool User::exist_user(string username) {
  */
 bool User::user_connected(string username) {
     for(const auto& user : User::users){
-        if(username == user->mUsername){
+        if(username.compare(user->mUsername) == 0){
             return user -> isConnected;
         }
     }

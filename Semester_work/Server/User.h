@@ -18,7 +18,7 @@ using namespace std;
 
 class User {
     public:
-        static vector<std::unique_ptr<User>> users;
+        static vector<std::shared_ptr<User>> users;
 
         int mState;
         string mUsername;

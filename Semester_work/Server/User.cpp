@@ -47,7 +47,7 @@
 #define MESSAGE_START_GAME "START"
 
  /** Initializing vector of users */
-vector<unique_ptr<User>> User::users;
+vector<shared_ptr<User>> User::users;
 
  /**
   * Method split message by delimiter and returns parsed vector
@@ -137,7 +137,7 @@ int User::login(vector<string> parsedMessage) {
             mUsername = parsedMessage[1] + '\0';
             mState++;
             //adding to the list of users
-            users.push_back(std::make_unique<User>(*this));
+            users.push_back(std::make_shared<User>(*this));
             cout << "User logged with username: " << mUsername << endl;
             cout << "List of all Users: " << endl;
             print_existing_users();

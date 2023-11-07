@@ -39,18 +39,16 @@ public:
 
     static std::shared_ptr<User> getUserByFd(int fd);
 
-    int execute_message(const string& message);
+    int execute_message(const string& message, int fd);
 
     void disconnect_user();
 
     [[nodiscard]] string toString() const;
 
 private:
-    int login(vector<string> parsedMessage);
+    int login(vector<string> parsedMessage, int fd);
 
-    static void print_existing_users();
-
-    bool exist_user(string username);
+    static bool exist_user(const string& username);
 
     static bool user_connected(const string& username);
 

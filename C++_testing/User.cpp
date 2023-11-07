@@ -85,7 +85,7 @@ vector<string> splitString(const string& text){
  * @param message message from client
  * @return Code if the action was successful
  */
-int User::execute_message(const string& message) {
+int User::execute_message(const string& message, int fd) {
     cout << "User send this message:" << message << endl;
     vector<string> parsedMessage = splitString(message);
     cout << mState << endl;
@@ -128,45 +128,37 @@ void User::disconnect_user() {
  *          5 - Username is too long
  *          -1 - Invalid message
  */
-int User::login(vector<string> parsedMessage) {
+int User::login(vector<string> parsedMessage, int fd) {
     if(parsedMessage.size() != 2){
         cerr << "Invalid message!" << endl;
         return INVALID_MESSAGE;
     } else{
-        if(parsedMessage[1].size() < MIN_USERNAME_LENGTH){
+        std::string username = parsedMessage[1];
+        if(username.size() < MIN_USERNAME_LENGTH){
             cerr << "Username is too short" << endl;
             return SHORT_USERNAME;
-        }else if(parsedMessage[1].size() > MAX_USERNAME_LENGTH){
+        }else if(username.size() > MAX_USERNAME_LENGTH){
             cerr << "Username is too long" << endl;
             return LONG_USERNAME;
-        }else if(exist_user(parsedMessage[1])){
-            if(user_connected(parsedMessage[1])){
-                cout << "Error: exist user with same username!" << endl;
+        }else if(exist_user(username)){
+            if(user_connected(username)){
+                cout << "Error: exist online user with same username!" << endl;
                 return EXIST_ONLINE_USER;
             }else{
                 cout << "welcome back!" << endl;
+
                 //TODO: implement loading user state
                 return EXIST_OFFLINE_USER;
             }
         }else{
-            mUsername = parsedMessage[1] + '\0';
+            mUsername = username;
             mState++;
             //adding to the list of users
             users.push_back(std::make_shared<User>(*this));
             cout << "User logged with username: " << mUsername << endl;
             cout << "List of all Users: " << endl;
-            print_existing_users();
             return NEW_USER;
         }
-    }
-}
-
-/**
- * Method printing all existing users to the command line
- */
-void User::print_existing_users() {
-    for(const auto& user : User::users){
-        cout << user -> toString() << endl;
     }
 }
 
@@ -175,9 +167,9 @@ void User::print_existing_users() {
  * @param username nickname what we are looking for
  * @return true - exist, false - do not exist
  */
-bool User::exist_user(string username) {
-    for(const auto& user : User::users){
-        if(username.compare(user->mUsername) == 0){
+bool User::exist_user(const std::string& username) {
+    for (const auto& user : User::users) {
+        if (username == user->mUsername) {
             return true;
         }
     }

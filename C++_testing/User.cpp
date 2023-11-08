@@ -86,24 +86,25 @@ vector<string> splitString(const string& text){
  * @return Code if the action was successful
  */
 int User::execute_message(const string& message, int fd) {
-    cout << "User send this message:" << message << endl;
+    cout << "Client" << fd << " send this message:" << message << endl;
     vector<string> parsedMessage = splitString(message);
-    cout << mState << endl;
-    switch(mState){
-        case CONNECTED:
-            if(parsedMessage[0] == MESSAGE_LOGIN){
-                cout << "User wants to login." << endl;
-                this -> login(parsedMessage);
-            }else if(parsedMessage[0] == MESSAGE_DISCONNECT){
-                cout << "User wants to disconnect." << endl;
-            }else{
-                cout << "Bad message" << endl;
-            }
+    if(find_user_by_fd(fd) == nullptr){
+        if(parsedMessage[0] == MESSAGE_LOGIN){
+            cout << "User wants to login." << endl;
+            this -> login(parsedMessage, fd);
+        }else if(parsedMessage[0] == MESSAGE_DISCONNECT){
+            cout << "User wants to disconnect." << endl;
+        }else{
+            cout << "Bad message" << endl;
+        }
+    }else{
+        switch(mState){
             break;
         case LOGGED:
             break;
         default:
             cout << "default" << endl;
+        }
     }
     return 0;
 }
@@ -140,13 +141,12 @@ int User::login(vector<string> parsedMessage, int fd) {
         }else if(username.size() > MAX_USERNAME_LENGTH){
             cerr << "Username is too long" << endl;
             return LONG_USERNAME;
-        }else if(exist_user(username)){
+        }else if(user_exists(username)){
             if(user_connected(username)){
                 cout << "Error: exist online user with same username!" << endl;
                 return EXIST_ONLINE_USER;
             }else{
                 cout << "welcome back!" << endl;
-
                 //TODO: implement loading user state
                 return EXIST_OFFLINE_USER;
             }
@@ -167,7 +167,7 @@ int User::login(vector<string> parsedMessage, int fd) {
  * @param username nickname what we are looking for
  * @return true - exist, false - do not exist
  */
-bool User::exist_user(const std::string& username) {
+bool User::user_exists(const std::string& username) {
     for (const auto& user : User::users) {
         if (username == user->mUsername) {
             return true;
@@ -196,4 +196,18 @@ bool User::user_connected(const string& username) {
  */
 string User::toString() const {
     return "User: " + mUsername + ", state: " + to_string(mState) + ", is connected: " + to_string(mFd);
+}
+
+/**
+ * Method find a user by file descriptor
+ * @param fd file descriptor
+ * @return User
+ */
+shared_ptr<User> User::find_user_by_fd(int fd) {
+    for (const auto& user : User::users) {
+        if (user->mFd == fd) {
+            return user;
+        }
+    }
+    return nullptr; // User not found
 }

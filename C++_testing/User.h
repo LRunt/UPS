@@ -48,12 +48,10 @@ public:
 private:
     int login(vector<string> parsedMessage, int fd);
 
-    static bool exist_user(const string& username);
+    static bool user_exists(const string& username);
 
     static bool user_connected(const string& username);
 
-    User get_user(string username);
-
-
+    static shared_ptr<User> find_user_by_fd(int fd);
 };
 

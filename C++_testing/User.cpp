@@ -16,11 +16,10 @@
  */
 enum states{
     DISCONNECTED = -1,
-    CONNECTED = 0,
-    LOGGED = 1,
-    WAITING = 2,
-    IN_GAME = 3,
-    RESULT_SCREEN = 4
+    LOGGED = 0,
+    WAITING = 1,
+    IN_GAME = 2,
+    RESULT_SCREEN = 3
 };
 
 /**
@@ -88,22 +87,25 @@ vector<string> splitString(const string& text){
 int User::execute_message(const string& message, int fd) {
     cout << "Client" << fd << " send this message:" << message << endl;
     vector<string> parsedMessage = splitString(message);
-    if(find_user_by_fd(fd) == nullptr){
+    shared_ptr<User> user = find_user_by_fd(fd);
+    if(user == nullptr){
         if(parsedMessage[0] == MESSAGE_LOGIN){
             cout << "User wants to login." << endl;
-            this -> login(parsedMessage, fd);
-        }else if(parsedMessage[0] == MESSAGE_DISCONNECT){
-            cout << "User wants to disconnect." << endl;
+            login(parsedMessage, fd);
         }else{
             cout << "Bad message" << endl;
         }
     }else{
-        switch(mState){
-            break;
-        case LOGGED:
-            break;
-        default:
-            cout << "default" << endl;
+        if(parsedMessage[0] == MESSAGE_DISCONNECT){
+            cout << "User wants to disconnect." << endl;
+            user->disconnect_user();
+        }else{
+            switch(user->mState){
+                case LOGGED:
+                    break;
+                default:
+                    cout << "default" << endl;
+            }
         }
     }
     return 0;
@@ -147,15 +149,13 @@ int User::login(vector<string> parsedMessage, int fd) {
                 return EXIST_ONLINE_USER;
             }else{
                 cout << "welcome back!" << endl;
-                //TODO: implement loading user state
+                change_user_fd(username, fd);
                 return EXIST_OFFLINE_USER;
             }
         }else{
-            mUsername = username;
-            mState++;
             //adding to the list of users
-            users.push_back(std::make_shared<User>(*this));
-            cout << "User logged with username: " << mUsername << endl;
+            users.push_back(std::make_shared<User>(username, fd));
+            cout << "User logged with username: " << username << endl;
             cout << "List of all Users: " << endl;
             return NEW_USER;
         }
@@ -184,18 +184,14 @@ bool User::user_exists(const std::string& username) {
 bool User::user_connected(const string& username) {
     for(const auto& user : User::users){
         if(username == user->mUsername){
-            return user -> mFd;
+            if(user -> mFd == -1){
+                return false;
+            }else{
+                return true;
+            }
         }
     }
     return false;
-}
-
-/**
- * String representation of User
- * @return string representation of user
- */
-string User::toString() const {
-    return "User: " + mUsername + ", state: " + to_string(mState) + ", is connected: " + to_string(mFd);
 }
 
 /**
@@ -211,3 +207,27 @@ shared_ptr<User> User::find_user_by_fd(int fd) {
     }
     return nullptr; // User not found
 }
+
+/**
+ * Method change user file descriptor
+ * @param username user username
+ * @param fd file descriptor that will be writen to the user
+ */
+void User::change_user_fd(const string &username, int fd) {
+    for (const auto& user : User::users) {
+        if(user->mUsername == username){
+            user->mFd = fd;
+            break;
+        }
+    }
+}
+
+/**
+ * String representation of User
+ * @return string representation of user
+ */
+string User::toString() const {
+    return "User: " + mUsername + ", state: " + to_string(mState) + ", fd: " + to_string(mFd);
+}
+
+

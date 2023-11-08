@@ -27,10 +27,10 @@ public:
     /** Number of wrong messages in row, after 3 wrong messages -> kick out */
     int mStrikes;
 
-    explicit User(int fd) {
+    explicit User(const string& name, int fd) {
         mFd = fd;
         mStrikes = 0;
-        mUsername = "";
+        mUsername = name;
         mState = 0;
         cout << "New user created! State = " << mState << endl;
     }
@@ -39,18 +39,21 @@ public:
 
     static std::shared_ptr<User> getUserByFd(int fd);
 
-    int execute_message(const string& message, int fd);
+    static int execute_message(const string& message, int fd);
 
     void disconnect_user();
+
+    static int login(vector<string> parsedMessage, int fd);
 
     [[nodiscard]] string toString() const;
 
 private:
-    int login(vector<string> parsedMessage, int fd);
 
     static bool user_exists(const string& username);
 
     static bool user_connected(const string& username);
+
+    static void change_user_fd(const string& username, int fd);
 
     static shared_ptr<User> find_user_by_fd(int fd);
 };

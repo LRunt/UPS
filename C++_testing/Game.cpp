@@ -25,6 +25,12 @@ enum turn_code{
     PLAYER_NOT_ON_TURN = 4
 };
 
+enum game_code{
+    RUNNING = 0,
+    WIN = 1,
+    DRAW = 2
+};
+
 /**
  * Method prints a play board
  */
@@ -48,11 +54,7 @@ int Game::make_turn(const string &player, int index) {
     if(validity == VALID){
         //making the turn
         mPlayBoard[index] = mTurn;
-        if(mTurn == 1){
-            mTurn = 2;
-        }else{
-            mTurn = 1;
-        }
+        mTurn++;
         check_game_state();
         return VALID;
     } else{
@@ -73,7 +75,7 @@ int Game::validate_turn(const string &player, int index) {
         return PLAYING_FIELD_TAKEN;
     }else if(player != mPlayer1 && player != mPlayer2){
         return INVALID_USER;
-    }else if((player == mPlayer1 && mTurn != 1) || (player == mPlayer2 && mTurn != 2)){
+    }else if((player == mPlayer2 && mTurn % 2 != 1) || (player == mPlayer1 && mTurn % 2 != 0)){
         return PLAYER_NOT_ON_TURN;
     }else{
         return VALID;
@@ -81,10 +83,33 @@ int Game::validate_turn(const string &player, int index) {
 }
 
 /**
- *
- * @return
+ * Method checks if someone win, or its a draw
+ * @return state of game
  */
 int Game::check_game_state() {
-    return 0;
+    //Check columns and rows
+    for(int i = 0; i < 3; i++){
+        //Row
+        if(mPlayBoard[i * 3] == mPlayBoard[i * 3 + 1] && mPlayBoard[i * 3] == mPlayBoard[i * 3 + 2] && mPlayBoard[i] != 0){
+            return WIN;
+        }
+        //Column
+        if(mPlayBoard[i] == mPlayBoard[i + 3] && mPlayBoard[i] == mPlayBoard[i + 6] && mPlayBoard[i] != 0){
+            return WIN;
+        }
+    }
+
+    //Check diagonals
+    if(mPlayBoard[0] == mPlayBoard[4] && mPlayBoard[4] == mPlayBoard[8] && mPlayBoard[0] != 0){
+        return WIN;
+    }
+    if(mPlayBoard[2] == mPlayBoard[4] && mPlayBoard[4] == mPlayBoard[6] && mPlayBoard[2] != 0){
+        return WIN;
+    }
+    //Testing draw
+    if(mTurn == 9){
+        return DRAW;
+    }
+    return RUNNING;
 }
 

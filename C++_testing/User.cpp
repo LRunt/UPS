@@ -48,7 +48,7 @@ enum login_code{
 /** Initializing vector of users */
 vector<shared_ptr<User>> User::users;
 
-std::shared_ptr<User> User::getUserByFd(int fd){
+std::shared_ptr<User> User::get_user_by_fd(int fd){
     for (const auto& userPtr : User::users){
         if (userPtr->mFd == fd){
             return userPtr;
@@ -57,9 +57,9 @@ std::shared_ptr<User> User::getUserByFd(int fd){
     return nullptr;
 }
 
-void User::printUsers() {
+void User::print_users() {
     for (const auto& userPtr : User::users) {
-        cout << userPtr->toString() << endl;
+        cout << userPtr->to_str() << endl;
     }
 }
 
@@ -226,8 +226,12 @@ void User::change_user_fd(const string &username, int fd) {
  * String representation of User
  * @return string representation of user
  */
-string User::toString() const {
+string User::to_str() const {
     return "User: " + mUsername + ", state: " + to_string(mState) + ", fd: " + to_string(mFd);
+}
+
+bool User::find_user_for_game() {
+    return false;
 }
 
 

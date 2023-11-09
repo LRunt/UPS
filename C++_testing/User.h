@@ -35,9 +35,9 @@ public:
         cout << "New user created! State = " << mState << endl;
     }
 
-    static void printUsers();
+    static void print_users();
 
-    static std::shared_ptr<User> getUserByFd(int fd);
+    static std::shared_ptr<User> get_user_by_fd(int fd);
 
     static int execute_message(const string& message, int fd);
 
@@ -45,7 +45,7 @@ public:
 
     static int login(vector<string> parsedMessage, int fd);
 
-    [[nodiscard]] string toString() const;
+    [[nodiscard]] string to_str() const;
 
 private:
 

@@ -37,9 +37,9 @@ public:
 
     static void print_users();
 
-    static std::shared_ptr<User> get_user_by_fd(int fd);
+    static shared_ptr<User> get_user_by_fd(int fd);
 
-    static int execute_message(const string& message, int fd);
+    static string execute_message(const string& message, int fd);
 
     void disconnect_user();
 
@@ -58,5 +58,7 @@ private:
     bool find_user_for_game();
 
     static shared_ptr<User> find_user_by_fd(int fd);
+
+    static shared_ptr<User> find_user_by_state(int state, const string& username);
 };
 

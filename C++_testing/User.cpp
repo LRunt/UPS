@@ -82,16 +82,17 @@ vector<string> splitString(const string& text){
 /**
  * Method gets message and do the think in message
  * @param message message from client
- * @return Code if the action was successful
+ * @return Response for the message
  */
-int User::execute_message(const string& message, int fd) {
+string User::execute_message(const string& message, int fd) {
+    string response;
     cout << "Client" << fd << " send this message:" << message << endl;
     vector<string> parsedMessage = splitString(message);
     shared_ptr<User> user = find_user_by_fd(fd);
     if(user == nullptr){
         if(parsedMessage[0] == MESSAGE_LOGIN){
             cout << "User wants to login." << endl;
-            login(parsedMessage, fd);
+            response = MESSAGE_LOGIN + DELIMITER + login(parsedMessage, fd);
         }else{
             cout << "Bad message" << endl;
         }
@@ -102,13 +103,23 @@ int User::execute_message(const string& message, int fd) {
         }else{
             switch(user->mState){
                 case LOGGED:
+                    cout <<"Logged" << endl;
+                    break;
+                case WAITING:
+                    cout << "Waiting" << endl;
+                    break;
+                case IN_GAME:
+                    cout << IN_GAME << endl;
+                    break;
+                case RESULT_SCREEN:
+                    cout <<"result screen" << endl;
                     break;
                 default:
                     cout << "default" << endl;
             }
         }
     }
-    return 0;
+    return response;
 }
 
 /**
@@ -162,6 +173,10 @@ int User::login(vector<string> parsedMessage, int fd) {
     }
 }
 
+bool User::find_user_for_game() {
+    return false;
+}
+
 /**
  * Return if the user exists or not
  * @param username nickname what we are looking for
@@ -209,6 +224,21 @@ shared_ptr<User> User::find_user_by_fd(int fd) {
 }
 
 /**
+ * Method finds a user by his state and it not the same with the username
+ * @param state state of the user
+ * @param username username what user can has
+ * @return User
+ */
+shared_ptr<User> User::find_user_by_state(int state, const string& username) {
+    for (const auto& user : User::users) {
+        if (user->mState == state && user->mUsername != username) {
+            return user;
+        }
+    }
+    return nullptr; // User not found
+}
+
+/**
  * Method change user file descriptor
  * @param username user username
  * @param fd file descriptor that will be writen to the user
@@ -228,10 +258,6 @@ void User::change_user_fd(const string &username, int fd) {
  */
 string User::to_str() const {
     return "User: " + mUsername + ", state: " + to_string(mState) + ", fd: " + to_string(mFd);
-}
-
-bool User::find_user_for_game() {
-    return false;
 }
 
 

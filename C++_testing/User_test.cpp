@@ -6,7 +6,7 @@
  * @version 0.0.2
  */
 
-#include "User.h"
+#include "User_test.h"
 
 /** delimiter in incoming messages */
 #define DELIMITER '|'
@@ -51,10 +51,10 @@ enum login_code{
 #define MESSAGE_REMATCH "REMATCH"
 
 /** Initializing vector of users */
-vector<shared_ptr<User>> User::users;
+vector<shared_ptr<User_test>> User_test::users;
 
-std::shared_ptr<User> User::get_user_by_fd(int fd){
-    for (const auto& userPtr : User::users){
+std::shared_ptr<User_test> User_test::get_user_by_fd(int fd){
+    for (const auto& userPtr : User_test::users){
         if (userPtr->mFd == fd){
             return userPtr;
         }
@@ -62,8 +62,8 @@ std::shared_ptr<User> User::get_user_by_fd(int fd){
     return nullptr;
 }
 
-void User::print_users() {
-    for (const auto& userPtr : User::users) {
+void User_test::print_users() {
+    for (const auto& userPtr : User_test::users) {
         cout << userPtr->to_str() << endl;
     }
 }
@@ -89,21 +89,21 @@ vector<string> splitString(const string& text){
  * @param message message from client
  * @return Response for the message
  */
-string User::execute_message(const string& message, int fd) {
+string User_test::execute_message(const string& message, int fd) {
     string response;
     cout << "Client" << fd << " send this message:" << message << endl;
     vector<string> parsedMessage = splitString(message);
-    shared_ptr<User> user = find_user_by_fd(fd);
+    shared_ptr<User_test> user = find_user_by_fd(fd);
     if(user == nullptr){
         if(parsedMessage[0] == MESSAGE_LOGIN){
-            cout << "User wants to login." << endl;
+            cout << "User_test wants to login." << endl;
             response = string(MESSAGE_LOGIN) + DELIMITER + to_string(login(parsedMessage, fd));
         }else{
             cout << "Bad message" << endl;
         }
     }else{
         if(parsedMessage[0] == MESSAGE_DISCONNECT){
-            cout << "User wants to disconnect." << endl;
+            cout << "User_test wants to disconnect." << endl;
             user->disconnect_user();
         }else{
             switch(user->mState){
@@ -158,7 +158,7 @@ string User::execute_message(const string& message, int fd) {
 /**
  * Sets user as disconnected
  */
-void User::disconnect_user() {
+void User_test::disconnect_user() {
     cout << "disconnecting user" << endl;
     mFd = DISCONNECTED;
 }
@@ -175,7 +175,7 @@ void User::disconnect_user() {
  *          5 - Username is too long
  *          -1 - Invalid message
  */
-int User::login(vector<string> parsedMessage, int fd) {
+int User_test::login(vector<string> parsedMessage, int fd) {
     if(parsedMessage.size() != 2){
         cerr << "Invalid message!" << endl;
         return INVALID_MESSAGE;
@@ -198,8 +198,8 @@ int User::login(vector<string> parsedMessage, int fd) {
             }
         }else{
             //adding to the list of users
-            users.push_back(std::make_shared<User>(username, fd));
-            cout << "User logged with username: " << username << endl;
+            users.push_back(std::make_shared<User_test>(username, fd));
+            cout << "User_test logged with username: " << username << endl;
             cout << "List of all Users: " << endl;
             return NEW_USER;
         }
@@ -210,18 +210,18 @@ int User::login(vector<string> parsedMessage, int fd) {
  * Method try to find opponent of the player
  * @return GAME message - opponent found, WAITING - opponent not found
  */
-string User::find_user_for_game() {
-    shared_ptr<User> opponent = find_user_by_state(WAITING, this->mUsername);
+string User_test::find_user_for_game() {
+    shared_ptr<User_test> opponent = find_user_by_state(WAITING, this->mUsername);
     if(opponent == nullptr){
         cout << "Opponent not found" << endl;
         return MESSAGE_WAITING;
     }else{
-        shared_ptr<Game> new_game = make_shared<Game>(this->mUsername, opponent->mUsername);
+        shared_ptr<Game_test> new_game = make_shared<Game_test>(this->mUsername, opponent->mUsername);
         this->mGame = new_game;
         this->mState = IN_GAME;
         opponent->mGame = new_game;
         opponent->mState = IN_GAME;
-        cout << "Game created! Player1: " << this->mUsername << ", Player2: " << opponent->mUsername << endl;
+        cout << "Game_test created! Player1: " << this->mUsername << ", Player2: " << opponent->mUsername << endl;
         return this->mGame->get_game_state(mUsername);
     }
 }
@@ -231,8 +231,8 @@ string User::find_user_for_game() {
  * @param username nickname what we are looking for
  * @return true - exist, false - do not exist
  */
-bool User::user_exists(const std::string& username) {
-    for (const auto& user : User::users) {
+bool User_test::user_exists(const std::string& username) {
+    for (const auto& user : User_test::users) {
         if (username == user->mUsername) {
             return true;
         }
@@ -245,8 +245,8 @@ bool User::user_exists(const std::string& username) {
  * @param username nickname what we are looking for
  * @return true - online, false - offline
  */
-bool User::user_connected(const string& username) {
-    for(const auto& user : User::users){
+bool User_test::user_connected(const string& username) {
+    for(const auto& user : User_test::users){
         if(username == user->mUsername){
             if(user -> mFd == -1){
                 return false;
@@ -261,30 +261,30 @@ bool User::user_connected(const string& username) {
 /**
  * Method find a user by file descriptor
  * @param fd file descriptor
- * @return User
+ * @return User_test
  */
-shared_ptr<User> User::find_user_by_fd(int fd) {
-    for (const auto& user : User::users) {
+shared_ptr<User_test> User_test::find_user_by_fd(int fd) {
+    for (const auto& user : User_test::users) {
         if (user->mFd == fd) {
             return user;
         }
     }
-    return nullptr; // User not found
+    return nullptr; // User_test not found
 }
 
 /**
  * Method finds a user by his state and it not the same with the username
  * @param state state of the user
  * @param username username what user can has
- * @return User
+ * @return User_test
  */
-shared_ptr<User> User::find_user_by_state(int state, const string& username) {
-    for (const auto& user : User::users) {
+shared_ptr<User_test> User_test::find_user_by_state(int state, const string& username) {
+    for (const auto& user : User_test::users) {
         if (user->mState == state && user->mUsername != username) {
             return user;
         }
     }
-    return nullptr; // User not found
+    return nullptr; // User_test not found
 }
 
 /**
@@ -292,8 +292,8 @@ shared_ptr<User> User::find_user_by_state(int state, const string& username) {
  * @param username user username
  * @param fd file descriptor that will be writen to the user
  */
-void User::change_user_fd(const string &username, int fd) {
-    for (const auto& user : User::users) {
+void User_test::change_user_fd(const string &username, int fd) {
+    for (const auto& user : User_test::users) {
         if(user->mUsername == username){
             user->mFd = fd;
             break;
@@ -304,7 +304,7 @@ void User::change_user_fd(const string &username, int fd) {
 /**
  * Method test if game is running. If not then set user state to game result screen.
  */
-void User::test_if_game_is_running() {
+void User_test::test_if_game_is_running() {
     if(this->mGame->mState != 0){
         this->mState = RESULT_SCREEN;
     }
@@ -315,7 +315,7 @@ void User::test_if_game_is_running() {
  * @param rematch rematch code -1 = Waiting, 0 = No rematch, 1 = Rematch
  * @return
  */
-string User::evaluate_rematch(int rematch) {
+string User_test::evaluate_rematch(int rematch) {
     if(rematch == 0){
         //No rematch
         this->mGame = nullptr;
@@ -331,11 +331,11 @@ string User::evaluate_rematch(int rematch) {
 }
 
 /**
- * String representation of User
+ * String representation of User_test
  * @return string representation of user
  */
-string User::to_str() const {
-    return "User: " + mUsername + ", state: " + to_string(mState) + ", fd: " + to_string(mFd);
+string User_test::to_str() const {
+    return "User_test: " + mUsername + ", state: " + to_string(mState) + ", fd: " + to_string(mFd);
 }
 
 

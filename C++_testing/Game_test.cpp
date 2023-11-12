@@ -6,7 +6,7 @@
  * @version 0.0.1
  */
 
-#include "Game.h"
+#include "Game_test.h"
 
 /**
  * Enumeration of possible field states
@@ -40,7 +40,7 @@ enum game_code{
 /**
  * Method prints a play board
  */
-void Game::print_board() {
+void Game_test::print_board() {
     for(int i = 0; i < PLAY_BOARD_SIZE; i++){
         cout << to_string(mPlayBoard[i]);
         if(i % 3 == 2){
@@ -55,7 +55,7 @@ void Game::print_board() {
  * @param player Player who is asking for game state
  * @return generated message
  */
-string Game::get_game_state(const string& player) {
+string Game_test::get_game_state(const string& player) {
     string response = string(MESSAGE_GAME_STATE) + DELIMITER;
     if(player == mPlayer1){
         response += to_string(X) + DELIMITER + mPlayer2;
@@ -76,7 +76,7 @@ string Game::get_game_state(const string& player) {
  * @param index where user making turn
  * @return 0 - Turn is valid
  */
-string Game::make_turn(const string &player, int index) {
+string Game_test::make_turn(const string &player, int index) {
     int validity = validate_turn(player, index);
     if(validity == VALID){
         //making the turn
@@ -95,7 +95,7 @@ string Game::make_turn(const string &player, int index) {
  * @param index where user making the turn
  * @return code of validity (enum turn_code)
  */
-int Game::validate_turn(const string &player, int index) {
+int Game_test::validate_turn(const string &player, int index) {
     if(index < 0 || index >= PLAY_BOARD_SIZE){
         return OUT_OF_BOUNDS;
     }else if(mPlayBoard[index] != FREE){
@@ -113,7 +113,7 @@ int Game::validate_turn(const string &player, int index) {
  * Method checks if someone win, or its a draw
  * @return state of game
  */
-int Game::check_game_state() {
+int Game_test::check_game_state() {
     //Check columns and rows
     for(int i = 0; i < 3; i++){
         //Row
@@ -144,7 +144,7 @@ int Game::check_game_state() {
  * Method return who wins
  * @return who wins
  */
-int Game::get_winner_by_turn() const {
+int Game_test::get_winner_by_turn() const {
     if(this->mTurn % 2 == 0){
         return WIN_PLAYER2;
     }else{
@@ -158,7 +158,7 @@ int Game::get_winner_by_turn() const {
  * @param rematch if the user wants rematch or not
  * @return -1 only one player respond to rematch, 0 - there will be no rematch, 1 - there will be a rematch
  */
-int Game::rematch(const string &player, bool rematch) {
+int Game_test::rematch(const string &player, bool rematch) {
     if(player == mPlayer1){
         mRematchP1 = rematch;
     }else{
@@ -171,7 +171,7 @@ int Game::rematch(const string &player, bool rematch) {
  * Method to get a state of rematch
  * @return rematch or not
  */
-int Game::get_rematch_state() const{
+int Game_test::get_rematch_state() const{
     if(mRematchP1 != -1 && mRematchP2 != -1){
         if(mRematchP1 == 1 && mRematchP2 == 1){
             return 1;
@@ -184,7 +184,7 @@ int Game::get_rematch_state() const{
 /**
  * Method to reset game
  */
-void Game::reset_game() {
+void Game_test::reset_game() {
     //Clear play board
     for(int & i : mPlayBoard){
         i = FREE;

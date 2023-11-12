@@ -1,7 +1,7 @@
 #include <iostream>
 #include <memory>
 
-#include "User.h"
+#include "User_test.h"
 
 int main(){
     std::shared_ptr<User> newUser = std::make_shared<User>(1, "Pavel");

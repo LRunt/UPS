@@ -12,7 +12,7 @@
 
 using namespace std;
 
-class Game {
+class Game_test {
 
 public:
     static const int PLAY_BOARD_SIZE = 9;
@@ -31,7 +31,7 @@ public:
 
     int mRematchP2;
 
-    Game(const string& player1, const string& player2){
+    Game_test(const string& player1, const string& player2){
         cout << "New game created!" << endl;
         print_board();
         mTurn = 1;

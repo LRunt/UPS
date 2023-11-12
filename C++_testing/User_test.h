@@ -14,22 +14,22 @@
 #include <vector>
 #include <sstream>
 #include <memory>
-#include "Game.h"
+#include "Game_test.h"
 
 using namespace std;
 
-class User {
+class User_test {
 public:
-    static vector<shared_ptr<User>> users;
+    static vector<shared_ptr<User_test>> users;
 
     int mState;
     int mFd;
     string mUsername;
     /** Number of wrong messages in row, after 3 wrong messages -> kick out */
     int mStrikes;
-    shared_ptr<Game> mGame;
+    shared_ptr<Game_test> mGame;
 
-    explicit User(const string& name, int fd) {
+    explicit User_test(const string& name, int fd) {
         mFd = fd;
         mStrikes = 0;
         mUsername = name;
@@ -40,7 +40,7 @@ public:
 
     static void print_users();
 
-    static shared_ptr<User> get_user_by_fd(int fd);
+    static shared_ptr<User_test> get_user_by_fd(int fd);
 
     static string execute_message(const string& message, int fd);
 
@@ -60,9 +60,9 @@ private:
 
     string find_user_for_game();
 
-    static shared_ptr<User> find_user_by_fd(int fd);
+    static shared_ptr<User_test> find_user_by_fd(int fd);
 
-    static shared_ptr<User> find_user_by_state(int state, const string& username);
+    static shared_ptr<User_test> find_user_by_state(int state, const string& username);
 
     string evaluate_rematch(int rematch);
 

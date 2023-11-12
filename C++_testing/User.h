@@ -14,6 +14,7 @@
 #include <vector>
 #include <sstream>
 #include <memory>
+#include "Game.h"
 
 using namespace std;
 
@@ -26,12 +27,14 @@ public:
     string mUsername;
     /** Number of wrong messages in row, after 3 wrong messages -> kick out */
     int mStrikes;
+    shared_ptr<Game> mGame;
 
     explicit User(const string& name, int fd) {
         mFd = fd;
         mStrikes = 0;
         mUsername = name;
         mState = 0;
+        mGame = nullptr;
         cout << "New user created! State = " << mState << endl;
     }
 

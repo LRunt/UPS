@@ -43,7 +43,7 @@ enum login_code{
  */
 #define MESSAGE_LOGIN "LOGIN"
 #define MESSAGE_DISCONNECT "DISCONNECT"
-#define MESSAGE_START_GAME "START"
+#define MESSAGE_START_SEARCHING_GAME "START"
 
 /** Initializing vector of users */
 vector<shared_ptr<User>> User::users;
@@ -104,12 +104,16 @@ string User::execute_message(const string& message, int fd) {
             switch(user->mState){
                 case LOGGED:
                     cout <<"Logged" << endl;
+                    if(parsedMessage[0] == MESSAGE_START_SEARCHING_GAME){
+                        user->mState++;
+                        user->find_user_for_game();
+                    }
                     break;
                 case WAITING:
                     cout << "Waiting" << endl;
                     break;
                 case IN_GAME:
-                    cout << IN_GAME << endl;
+                    cout << "in game" << endl;
                     break;
                 case RESULT_SCREEN:
                     cout <<"result screen" << endl;
@@ -173,8 +177,22 @@ int User::login(vector<string> parsedMessage, int fd) {
     }
 }
 
+/**
+ * Method try to find opponent of the player
+ * @return true - opponent founded, false - opponent not found
+ */
 bool User::find_user_for_game() {
-    return false;
+    shared_ptr<User> opponent = find_user_by_state(WAITING, this->mUsername);
+    if(opponent == nullptr){
+        return false;
+    }else{
+        shared_ptr<Game> new_game = make_shared<Game>(this->mUsername, opponent->mUsername);
+        this->mGame = new_game;
+        this->mState = IN_GAME;
+        opponent->mGame = new_game;
+        opponent->mState = IN_GAME;
+        return true;
+    }
 }
 
 /**

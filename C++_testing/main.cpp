@@ -20,7 +20,7 @@ int main(){
     int fd_jan = 4;
     std::shared_ptr<User> jan = std::make_shared<User>("Jan",fd_jan);
     User::execute_message("LOGIN|Jan", fd_jan);
-    //User::execute_message("START", fd_jan);
+    User::execute_message("START", fd_jan);
     std::shared_ptr<User> user = User::get_user_by_fd(fd_petr);
     user->disconnect_user();
     cout << "Printing" << endl;

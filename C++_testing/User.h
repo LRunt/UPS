@@ -58,7 +58,7 @@ private:
 
     static void change_user_fd(const string& username, int fd);
 
-    bool find_user_for_game();
+    string find_user_for_game();
 
     static shared_ptr<User> find_user_by_fd(int fd);
 

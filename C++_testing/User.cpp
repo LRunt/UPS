@@ -45,6 +45,7 @@ enum login_code{
 #define MESSAGE_DISCONNECT "DISCONNECT"
 #define MESSAGE_START_SEARCHING_GAME "START"
 #define MESSAGE_CANCEL_SEARCHING_GAME "STORNO"
+#define MESSAGE_WAITING "WAITING"
 #define MESSAGE_MAKE_TURN "TURN"
 
 /** Initializing vector of users */
@@ -108,16 +109,21 @@ string User::execute_message(const string& message, int fd) {
                     cout <<"Logged" << endl;
                     if(parsedMessage[0] == MESSAGE_START_SEARCHING_GAME){
                         user->mState++;
-                        user->find_user_for_game();
+                        return user->find_user_for_game();
                     }
                     break;
                 case WAITING:
-                    if(parsedMessage[0] == MESSAGE_CANCEL_SEARCHING_GAME){
+                    if(parsedMessage[0] == MESSAGE_WAITING){
+                        return MESSAGE_WAITING;
+                    } else if(parsedMessage[0] == MESSAGE_CANCEL_SEARCHING_GAME){
                         user->mState = LOGGED;
                     }
                     cout << "Waiting" << endl;
                     break;
                 case IN_GAME:
+                    if(parsedMessage[0] == MESSAGE_WAITING){
+                        return user->mGame->get_game_state(user->mUsername);
+                    }
                     if(parsedMessage[0] == MESSAGE_MAKE_TURN){
                         user->mGame->make_turn(user->mUsername, stoi(parsedMessage[1]));
                     }
@@ -187,13 +193,13 @@ int User::login(vector<string> parsedMessage, int fd) {
 
 /**
  * Method try to find opponent of the player
- * @return true - opponent founded, false - opponent not found
+ * @return GAME message - opponent found, WAITING - opponent not found
  */
-bool User::find_user_for_game() {
+string User::find_user_for_game() {
     shared_ptr<User> opponent = find_user_by_state(WAITING, this->mUsername);
     if(opponent == nullptr){
         cout << "Opponent not found" << endl;
-        return false;
+        return MESSAGE_WAITING;
     }else{
         shared_ptr<Game> new_game = make_shared<Game>(this->mUsername, opponent->mUsername);
         this->mGame = new_game;
@@ -201,7 +207,7 @@ bool User::find_user_for_game() {
         opponent->mGame = new_game;
         opponent->mState = IN_GAME;
         cout << "Game created! Player1: " << this->mUsername << ", Player2: " << opponent->mUsername << endl;
-        return true;
+        return this->mGame->get_game_state(mUsername);
     }
 }
 

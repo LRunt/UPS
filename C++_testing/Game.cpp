@@ -63,7 +63,7 @@ string Game::get_game_state(const string& player) {
         response += to_string(O) + DELIMITER + mPlayer1;
     }
     response += DELIMITER + to_string(mTurn);
-    response += DELIMITER + to_string(check_game_state());
+    response += DELIMITER + to_string(mState);
     for(int i : mPlayBoard){
         response += DELIMITER + to_string(i);
     }
@@ -81,6 +81,7 @@ string Game::make_turn(const string &player, int index) {
     if(validity == VALID){
         //making the turn
         mPlayBoard[index] = mTurn;
+        mState = check_game_state();
         mTurn++;
         return get_game_state(player);
     } else{
@@ -148,6 +149,53 @@ int Game::get_winner_by_turn() const {
         return WIN_PLAYER2;
     }else{
         return WIN_PLAYER1;
+    }
+}
+
+/**
+ * Method set if the user want to rematch or not
+ * @param player username of the player
+ * @param rematch if the user wants rematch or not
+ * @return -1 only one player respond to rematch, 0 - there will be no rematch, 1 - there will be a rematch
+ */
+int Game::rematch(const string &player, bool rematch) {
+    if(player == mPlayer1){
+        mRematchP1 = rematch;
+    }else{
+        mRematchP2 = rematch;
+    }
+    return get_rematch_state();
+}
+
+/**
+ * Method to get a state of rematch
+ * @return rematch or not
+ */
+int Game::get_rematch_state() const{
+    if(mRematchP1 != -1 && mRematchP2 != -1){
+        if(mRematchP1 == 1 && mRematchP2 == 1){
+            return 1;
+        }
+        else return 0;
+    }
+    return -1;
+}
+
+/**
+ * Method to reset game
+ */
+void Game::reset_game() {
+    //Clear play board
+    for(int & i : mPlayBoard){
+        i = FREE;
+    }
+    mTurn = 1;
+    //setting rematching
+    if(mState != 0){
+        mState = 0;
+    }else{
+        mRematchP1 = -1;
+        mRematchP2 = -1;
     }
 }
 

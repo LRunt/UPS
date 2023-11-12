@@ -48,6 +48,7 @@ enum login_code{
 #define MESSAGE_WAITING "WAITING"
 #define MESSAGE_MAKE_TURN "TURN"
 #define MESSAGE_GAME_STATUS "GAME"
+#define MESSAGE_REMATCH "REMATCH"
 
 /** Initializing vector of users */
 vector<shared_ptr<User>> User::users;
@@ -123,15 +124,27 @@ string User::execute_message(const string& message, int fd) {
                     break;
                 case IN_GAME:
                     if(parsedMessage[0] == MESSAGE_WAITING || parsedMessage[0] == MESSAGE_GAME_STATUS){
+                        user->test_if_game_is_running();
                         return user->mGame->get_game_state(user->mUsername);
                     }
                     if(parsedMessage[0] == MESSAGE_MAKE_TURN){
                         cout << "making turn" << endl;
-                        return user->mGame->make_turn(user->mUsername, stoi(parsedMessage[1]));
+                        response = user->mGame->make_turn(user->mUsername, stoi(parsedMessage[1]));
+                        //if game ended
+                        user->test_if_game_is_running();
+                        return response;
                     }
                     cout << "in game" << endl;
                     break;
                 case RESULT_SCREEN:
+                    if(parsedMessage[0] == MESSAGE_REMATCH){
+                        int rematch = user->mGame->rematch(user->mUsername, stoi(parsedMessage[1]));
+                        user->evaluate_rematch(rematch);
+                    }
+                    if(parsedMessage[0] == MESSAGE_WAITING){
+                        int rematch = user->mGame->get_rematch_state();
+                        user->evaluate_rematch(rematch);
+                    }
                     cout <<"result screen" << endl;
                     break;
                 default:
@@ -285,6 +298,35 @@ void User::change_user_fd(const string &username, int fd) {
             user->mFd = fd;
             break;
         }
+    }
+}
+
+/**
+ * Method test if game is running. If not then set user state to game result screen.
+ */
+void User::test_if_game_is_running() {
+    if(this->mGame->mState != 0){
+        this->mState = RESULT_SCREEN;
+    }
+}
+
+/**
+ * Method evaluate the rematch and do everything possible
+ * @param rematch rematch code -1 = Waiting, 0 = No rematch, 1 = Rematch
+ * @return
+ */
+string User::evaluate_rematch(int rematch) {
+    if(rematch == 0){
+        //No rematch
+        this->mGame = nullptr;
+        this->mState = LOGGED;
+        return string(MESSAGE_REMATCH) + to_string(0);
+    }else if(rematch == -1){
+        return MESSAGE_WAITING;
+    }else{
+        this->mState = IN_GAME;
+        this->mGame->reset_game();
+        return string(MESSAGE_REMATCH) + to_string(1);
     }
 }
 

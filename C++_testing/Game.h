@@ -34,7 +34,7 @@ public:
         mPlayer2 = player2;
     }
 
-    int make_turn(const string& player, int index);
+    string make_turn(const string& player, int index);
 
     string get_game_state(const string& player);
 
@@ -46,6 +46,8 @@ private:
     int validate_turn(const string& player, int index);
 
     int check_game_state();
+
+    [[nodiscard]] int get_winner_by_turn() const;
 
 };
 

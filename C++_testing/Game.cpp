@@ -27,13 +27,15 @@ enum turn_code{
 
 enum game_code{
     RUNNING = 0,
-    WIN = 1,
-    DRAW = 2
+    WIN_PLAYER1 = 1,
+    WIN_PLAYER2 = 2,
+    DRAW = 3
 };
 
 #define DELIMITER "|"
 
-#define GAME_STATE_MESSAGE "GAME"
+#define MESSAGE_GAME_STATE "GAME"
+#define MESSAGE_VALID "VALID"
 
 /**
  * Method prints a play board
@@ -49,18 +51,19 @@ void Game::print_board() {
 
 /**
  * Generating message about state of the game in format:
- * GAME|<side_of_player>|<opponent_name>|<number_of_turn>|<play_field1>|...|<play_fieldN>
+ * GAME|<side_of_player>|<opponent_name>|<number_of_turn>|<game_status>|<play_field1>|...|<play_fieldN>
  * @param player Player who is asking for game state
  * @return generated message
  */
 string Game::get_game_state(const string& player) {
-    string response = string(GAME_STATE_MESSAGE) + DELIMITER;
+    string response = string(MESSAGE_GAME_STATE) + DELIMITER;
     if(player == mPlayer1){
         response += to_string(X) + DELIMITER + mPlayer2;
     }else{
         response += to_string(O) + DELIMITER + mPlayer1;
     }
     response += DELIMITER + to_string(mTurn);
+    response += DELIMITER + to_string(check_game_state());
     for(int i : mPlayBoard){
         response += DELIMITER + to_string(i);
     }
@@ -73,16 +76,15 @@ string Game::get_game_state(const string& player) {
  * @param index where user making turn
  * @return 0 - Turn is valid
  */
-int Game::make_turn(const string &player, int index) {
+string Game::make_turn(const string &player, int index) {
     int validity = validate_turn(player, index);
     if(validity == VALID){
         //making the turn
         mPlayBoard[index] = mTurn;
         mTurn++;
-        check_game_state();
-        return VALID;
+        return get_game_state(player);
     } else{
-        return validity;
+        return string(MESSAGE_VALID) + DELIMITER + to_string(validity);
     }
 }
 
@@ -99,7 +101,7 @@ int Game::validate_turn(const string &player, int index) {
         return PLAYING_FIELD_TAKEN;
     }else if(player != mPlayer1 && player != mPlayer2){
         return INVALID_USER;
-    }else if((player == mPlayer2 && mTurn % 2 != 1) || (player == mPlayer1 && mTurn % 2 != 0)){
+    }else if((player == mPlayer2 && mTurn % 2 != 0) || (player == mPlayer1 && mTurn % 2 != 1)){
         return PLAYER_NOT_ON_TURN;
     }else{
         return VALID;
@@ -115,20 +117,20 @@ int Game::check_game_state() {
     for(int i = 0; i < 3; i++){
         //Row
         if(mPlayBoard[i * 3] == mPlayBoard[i * 3 + 1] && mPlayBoard[i * 3] == mPlayBoard[i * 3 + 2] && mPlayBoard[i] != 0){
-            return WIN;
+            return get_winner_by_turn();
         }
         //Column
         if(mPlayBoard[i] == mPlayBoard[i + 3] && mPlayBoard[i] == mPlayBoard[i + 6] && mPlayBoard[i] != 0){
-            return WIN;
+            return get_winner_by_turn();
         }
     }
 
     //Check diagonals
     if(mPlayBoard[0] == mPlayBoard[4] && mPlayBoard[4] == mPlayBoard[8] && mPlayBoard[0] != 0){
-        return WIN;
+        return get_winner_by_turn();
     }
     if(mPlayBoard[2] == mPlayBoard[4] && mPlayBoard[4] == mPlayBoard[6] && mPlayBoard[2] != 0){
-        return WIN;
+        return get_winner_by_turn();
     }
     //Testing draw
     if(mTurn == 9){
@@ -136,4 +138,18 @@ int Game::check_game_state() {
     }
     return RUNNING;
 }
+
+/**
+ * Method return who wins
+ * @return who wins
+ */
+int Game::get_winner_by_turn() const {
+    if(this->mTurn % 2 == 0){
+        return WIN_PLAYER2;
+    }else{
+        return WIN_PLAYER1;
+    }
+}
+
+
 

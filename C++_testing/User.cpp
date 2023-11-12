@@ -44,6 +44,7 @@ enum login_code{
 #define MESSAGE_LOGIN "LOGIN"
 #define MESSAGE_DISCONNECT "DISCONNECT"
 #define MESSAGE_START_SEARCHING_GAME "START"
+#define MESSAGE_CANCEL_SEARCHING_GAME "STORNO"
 
 /** Initializing vector of users */
 vector<shared_ptr<User>> User::users;
@@ -110,6 +111,9 @@ string User::execute_message(const string& message, int fd) {
                     }
                     break;
                 case WAITING:
+                    if(parsedMessage[0] == MESSAGE_CANCEL_SEARCHING_GAME){
+                        user->mState = LOGGED;
+                    }
                     cout << "Waiting" << endl;
                     break;
                 case IN_GAME:

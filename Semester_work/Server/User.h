@@ -10,45 +10,62 @@
 
 #include <iostream>
 #include <string>
+#include <utility>
 #include <vector>
 #include <sstream>
 #include <memory>
+#include "Game.h"
 
 using namespace std;
 
 class User {
-    public:
-        static vector<std::shared_ptr<User>> users;
+public:
+    static vector<shared_ptr<User>> users;
 
-        int mState;
-        string mUsername;
-        /** Number of wrong messages in row, after 3 wrong messages -> kick out */
-        int mStrikes;
-        bool isConnected;
+    int mState;
+    int mFd;
+    string mUsername;
+    /** Number of wrong messages in row, after 3 wrong messages -> kick out */
+    int mStrikes;
+    shared_ptr<Game> mGame;
 
-        User() {
-            mStrikes = 0;
-            mUsername = "";
-	        mState = 0;
-            isConnected = true;
-            cout << "New user created! State = " << mState << endl;
-        }
+    explicit User(const string& name, int fd) {
+        mFd = fd;
+        mStrikes = 0;
+        mUsername = name;
+        mState = 0;
+        mGame = nullptr;
+        cout << "New user created! State = " << mState << endl;
+    }
 
-        int execute_message(string message);
+    static void print_users();
 
-        void disconnect_user();
+    static shared_ptr<User> get_user_by_fd(int fd);
 
-    private:
-        int login(vector<string> parsedMessage);
+    static string execute_message(const string& message, int fd);
 
-        void print_existing_users();
+    void disconnect_user();
 
-        bool exist_user(string username);
+    static int login(vector<string> parsedMessage, int fd);
 
-        bool user_connected(string username);
+    [[nodiscard]] string to_str() const;
 
-        User get_user(string username);
+private:
 
-        string toString();
+    static bool user_exists(const string& username);
+
+    static bool user_connected(const string& username);
+
+    static void change_user_fd(const string& username, int fd);
+
+    string find_user_for_game();
+
+    static shared_ptr<User> find_user_by_fd(int fd);
+
+    static shared_ptr<User> find_user_by_state(int state, const string& username);
+
+    string evaluate_rematch(int rematch);
+
+    void test_if_game_is_running();
 };
 

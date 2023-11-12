@@ -14,46 +14,65 @@
 /**
  * Enumeration of possible states
  */
- enum states{
-     DISCONNECTED = -1,
-     CONNECTED = 0,
-     LOGGED = 1,
-     WAITING = 2,
-     IN_GAME = 3,
-     RESULT_SCREEN = 4
- };
+enum states{
+    DISCONNECTED = -1,
+    LOGGED = 0,
+    WAITING = 1,
+    IN_GAME = 2,
+    RESULT_SCREEN = 3
+};
 
- /**
-  * Enumerate of returning codes
-  */
- enum login_code{
-     INVALID_MESSAGE = -1,
-     NEW_USER = 0,
-     EXIST_OFFLINE_USER = 1,
-     EXIST_ONLINE_USER = 2,
-     ILLEGAL_CHARACTERS = 3,
-     SHORT_USERNAME = 4,
-     LONG_USERNAME = 5
- };
+/**
+ * Enumerate of returning codes
+ */
+enum login_code{
+    INVALID_MESSAGE = -1,
+    NEW_USER = 0,
+    EXIST_OFFLINE_USER = 1,
+    EXIST_ONLINE_USER = 2,
+    ILLEGAL_CHARACTERS = 3,
+    SHORT_USERNAME = 4,
+    LONG_USERNAME = 5
+};
 
 #define MIN_USERNAME_LENGTH 3
 #define MAX_USERNAME_LENGTH 20
 
- /**
-  * Defining expected messages
-  */
+/**
+ * Defining expected messages
+ */
 #define MESSAGE_LOGIN "LOGIN"
 #define MESSAGE_DISCONNECT "DISCONNECT"
-#define MESSAGE_START_GAME "START"
+#define MESSAGE_START_SEARCHING_GAME "START"
+#define MESSAGE_CANCEL_SEARCHING_GAME "STORNO"
+#define MESSAGE_WAITING "WAITING"
+#define MESSAGE_MAKE_TURN "TURN"
+#define MESSAGE_GAME_STATUS "GAME"
+#define MESSAGE_REMATCH "REMATCH"
 
- /** Initializing vector of users */
+/** Initializing vector of users */
 vector<shared_ptr<User>> User::users;
 
- /**
-  * Method split message by delimiter and returns parsed vector
-  * @param text message to be parsed
-  * @return vector of message and parameters
-  */
+std::shared_ptr<User> User::get_user_by_fd(int fd){
+    for (const auto& userPtr : User::users){
+        if (userPtr->mFd == fd){
+            return userPtr;
+        }
+    }
+    return nullptr;
+}
+
+void User::print_users() {
+    for (const auto& userPtr : User::users) {
+        cout << userPtr->to_str() << endl;
+    }
+}
+
+/**
+ * Method split message by delimiter and returns parsed vector
+ * @param text message to be parsed
+ * @return vector of message and parameters
+ */
 vector<string> splitString(const string& text){
     vector<string> splitString;
     istringstream iss(text);
@@ -68,29 +87,72 @@ vector<string> splitString(const string& text){
 /**
  * Method gets message and do the think in message
  * @param message message from client
- * @return Code if the action was successful
+ * @return Response for the message
  */
-int User::execute_message(string message) {
-    cout << "User send this message:" << message << endl;
+string User::execute_message(const string& message, int fd) {
+    string response;
+    cout << "Client" << fd << " send this message:" << message << endl;
     vector<string> parsedMessage = splitString(message);
-    cout << mState << endl;
-    switch(mState){
-        case CONNECTED:
-            if(parsedMessage[0] == MESSAGE_LOGIN){
-                cout << "User wants to login." << endl;
-                this -> login(parsedMessage);
-            }else if(parsedMessage[0] == MESSAGE_DISCONNECT){
-                cout << "User wants to disconnect." << endl;
-            }else{
-                cout << "Bad message" << endl;
+    shared_ptr<User> user = find_user_by_fd(fd);
+    if(user == nullptr){
+        if(parsedMessage[0] == MESSAGE_LOGIN){
+            cout << "User_test wants to login." << endl;
+            response = string(MESSAGE_LOGIN) + DELIMITER + to_string(login(parsedMessage, fd));
+        }else{
+            cout << "Bad message" << endl;
+        }
+    }else{
+        if(parsedMessage[0] == MESSAGE_DISCONNECT){
+            cout << "User_test wants to disconnect." << endl;
+            user->disconnect_user();
+        }else{
+            switch(user->mState){
+                case LOGGED:
+                    cout <<"Logged" << endl;
+                    if(parsedMessage[0] == MESSAGE_START_SEARCHING_GAME){
+                        user->mState++;
+                        return user->find_user_for_game();
+                    }
+                    break;
+                case WAITING:
+                    if(parsedMessage[0] == MESSAGE_WAITING){
+                        return MESSAGE_WAITING;
+                    } else if(parsedMessage[0] == MESSAGE_CANCEL_SEARCHING_GAME){
+                        user->mState = LOGGED;
+                    }
+                    cout << "Waiting" << endl;
+                    break;
+                case IN_GAME:
+                    if(parsedMessage[0] == MESSAGE_WAITING || parsedMessage[0] == MESSAGE_GAME_STATUS){
+                        user->test_if_game_is_running();
+                        return user->mGame->get_game_state(user->mUsername);
+                    }
+                    if(parsedMessage[0] == MESSAGE_MAKE_TURN){
+                        cout << "making turn" << endl;
+                        response = user->mGame->make_turn(user->mUsername, stoi(parsedMessage[1]));
+                        //if game ended
+                        user->test_if_game_is_running();
+                        return response;
+                    }
+                    cout << "in game" << endl;
+                    break;
+                case RESULT_SCREEN:
+                    if(parsedMessage[0] == MESSAGE_REMATCH){
+                        int rematch = user->mGame->rematch(user->mUsername, stoi(parsedMessage[1]));
+                        user->evaluate_rematch(rematch);
+                    }
+                    if(parsedMessage[0] == MESSAGE_WAITING){
+                        int rematch = user->mGame->get_rematch_state();
+                        user->evaluate_rematch(rematch);
+                    }
+                    cout <<"result screen" << endl;
+                    break;
+                default:
+                    cout << "default" << endl;
             }
-            break;
-        case LOGGED:
-            break;
-        default:
-            cout << "default" << endl;
+        }
     }
-    return 0;
+    return response;
 }
 
 /**
@@ -98,7 +160,7 @@ int User::execute_message(string message) {
  */
 void User::disconnect_user() {
     cout << "disconnecting user" << endl;
-    isConnected = false;
+    mFd = DISCONNECTED;
 }
 
 /**
@@ -113,45 +175,54 @@ void User::disconnect_user() {
  *          5 - Username is too long
  *          -1 - Invalid message
  */
-int User::login(vector<string> parsedMessage) {
+int User::login(vector<string> parsedMessage, int fd) {
     if(parsedMessage.size() != 2){
         cerr << "Invalid message!" << endl;
         return INVALID_MESSAGE;
     } else{
-        if(parsedMessage[1].size() < MIN_USERNAME_LENGTH){
+        std::string username = parsedMessage[1];
+        if(username.size() < MIN_USERNAME_LENGTH){
             cerr << "Username is too short" << endl;
             return SHORT_USERNAME;
-        }else if(parsedMessage[1].size() > MAX_USERNAME_LENGTH){
+        }else if(username.size() > MAX_USERNAME_LENGTH){
             cerr << "Username is too long" << endl;
             return LONG_USERNAME;
-        }else if(exist_user(parsedMessage[1])){
-            if(user_connected(parsedMessage[1])){
-                cout << "Error: exist user with same username!" << endl;
+        }else if(user_exists(username)){
+            if(user_connected(username)){
+                cout << "Error: exist online user with same username!" << endl;
                 return EXIST_ONLINE_USER;
             }else{
                 cout << "welcome back!" << endl;
-                //TODO: implement loading user state
+                change_user_fd(username, fd);
                 return EXIST_OFFLINE_USER;
             }
         }else{
-            mUsername = parsedMessage[1] + '\0';
-            mState++;
             //adding to the list of users
-            users.push_back(std::make_shared<User>(*this));
-            cout << "User logged with username: " << mUsername << endl;
+            users.push_back(std::make_shared<User>(username, fd));
+            cout << "User_test logged with username: " << username << endl;
             cout << "List of all Users: " << endl;
-            print_existing_users();
             return NEW_USER;
         }
     }
 }
 
 /**
- * Method printing all existing users to the command line
+ * Method try to find opponent of the player
+ * @return GAME message - opponent found, WAITING - opponent not found
  */
-void User::print_existing_users() {
-    for(const auto& user : User::users){
-        cout << user -> toString() << endl;
+string User::find_user_for_game() {
+    shared_ptr<User> opponent = find_user_by_state(WAITING, this->mUsername);
+    if(opponent == nullptr){
+        cout << "Opponent not found" << endl;
+        return MESSAGE_WAITING;
+    }else{
+        shared_ptr<Game> new_game = make_shared<Game>(this->mUsername, opponent->mUsername);
+        this->mGame = new_game;
+        this->mState = IN_GAME;
+        opponent->mGame = new_game;
+        opponent->mState = IN_GAME;
+        cout << "Game_test created! Player1: " << this->mUsername << ", Player2: " << opponent->mUsername << endl;
+        return this->mGame->get_game_state(mUsername);
     }
 }
 
@@ -160,9 +231,9 @@ void User::print_existing_users() {
  * @param username nickname what we are looking for
  * @return true - exist, false - do not exist
  */
-bool User::exist_user(string username) {
-    for(const auto& user : User::users){
-        if(username.compare(user->mUsername) == 0){
+bool User::user_exists(const std::string& username) {
+    for (const auto& user : User::users) {
+        if (username == user->mUsername) {
             return true;
         }
     }
@@ -174,19 +245,97 @@ bool User::exist_user(string username) {
  * @param username nickname what we are looking for
  * @return true - online, false - offline
  */
-bool User::user_connected(string username) {
+bool User::user_connected(const string& username) {
     for(const auto& user : User::users){
-        if(username.compare(user->mUsername) == 0){
-            return user -> isConnected;
+        if(username == user->mUsername){
+            if(user -> mFd == -1){
+                return false;
+            }else{
+                return true;
+            }
         }
     }
     return false;
 }
 
 /**
- * String representation of User
+ * Method find a user by file descriptor
+ * @param fd file descriptor
+ * @return User_test
+ */
+shared_ptr<User> User::find_user_by_fd(int fd) {
+    for (const auto& user : User::users) {
+        if (user->mFd == fd) {
+            return user;
+        }
+    }
+    return nullptr; // User_test not found
+}
+
+/**
+ * Method finds a user by his state and it not the same with the username
+ * @param state state of the user
+ * @param username username what user can has
+ * @return User_test
+ */
+shared_ptr<User> User::find_user_by_state(int state, const string& username) {
+    for (const auto& user : User::users) {
+        if (user->mState == state && user->mUsername != username) {
+            return user;
+        }
+    }
+    return nullptr; // User_test not found
+}
+
+/**
+ * Method change user file descriptor
+ * @param username user username
+ * @param fd file descriptor that will be writen to the user
+ */
+void User::change_user_fd(const string &username, int fd) {
+    for (const auto& user : User::users) {
+        if(user->mUsername == username){
+            user->mFd = fd;
+            break;
+        }
+    }
+}
+
+/**
+ * Method test if game is running. If not then set user state to game result screen.
+ */
+void User::test_if_game_is_running() {
+    if(this->mGame->mState != 0){
+        this->mState = RESULT_SCREEN;
+    }
+}
+
+/**
+ * Method evaluate the rematch and do everything possible
+ * @param rematch rematch code -1 = Waiting, 0 = No rematch, 1 = Rematch
+ * @return
+ */
+string User::evaluate_rematch(int rematch) {
+    if(rematch == 0){
+        //No rematch
+        this->mGame = nullptr;
+        this->mState = LOGGED;
+        return string(MESSAGE_REMATCH) + to_string(0);
+    }else if(rematch == -1){
+        return MESSAGE_WAITING;
+    }else{
+        this->mState = IN_GAME;
+        this->mGame->reset_game();
+        return string(MESSAGE_REMATCH) + to_string(1);
+    }
+}
+
+/**
+ * String representation of User_test
  * @return string representation of user
  */
-string User::toString() {
-    return "User: " + mUsername + ", state: " + to_string(mState) + ", is connected: " + to_string(isConnected);
+string User::to_str() const {
+    return "User: " + mUsername + ", state: " + to_string(mState) + ", fd: " + to_string(mFd);
 }
+
+

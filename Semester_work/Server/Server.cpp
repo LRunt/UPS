@@ -17,7 +17,7 @@
 #include <memory>
 
 #include "User.h"
-
+#include <array>
 
 #define MAX_BUFFER_SIZE 1024
 #define DEFAULT_PORT 10000
@@ -36,7 +36,6 @@ int main(int argc, char *argv[]){
     int a2read;
     struct sockaddr_in my_addr, peer_addr;
     fd_set client_socks, tests;
-    std::shared_ptr<User> connected_users[DEFAULT_MAX_USERS];
 
     //reading and parse arguments
     if(argc > 3){
@@ -134,8 +133,6 @@ int main(int argc, char *argv[]){
                     }else{
                         FD_SET(client_socket, &client_socks);
                         std::cout << "File descriptor fd: " << client_socket << std::endl;
-                        connected_users[client_socket - NUMBER_OF_STREAMS] = std::make_shared<User>();
-                        std::cout << "New client connected and added to the socket set" << std::endl;
                     }
                 } else {
                     ioctl(fd, FIONREAD, &a2read);
@@ -151,10 +148,12 @@ int main(int argc, char *argv[]){
 
                             std::string message(buffer);
 			                std::cout << "File descriptor: " << fd << std::endl;
-                            connected_users[fd - NUMBER_OF_STREAMS]->execute_message(message);
+                            std::string response = User::execute_message(buffer, fd);
                         }
                     } else {
-                        connected_users[fd - NUMBER_OF_STREAMS]->disconnect_user();
+                        //setting user disconnected
+                        std::shared_ptr<User> user = User::get_user_by_fd(fd);
+                        user->disconnect_user();
                         close(fd);
                         FD_CLR(fd, &client_socks);
                         std::cout << "User disconnected and removed from the socket set" << std::endl;

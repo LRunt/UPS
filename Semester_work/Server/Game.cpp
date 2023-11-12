@@ -80,7 +80,11 @@ string Game::make_turn(const string &player, int index) {
     int validity = validate_turn(player, index);
     if(validity == VALID){
         //making the turn
-        mPlayBoard[index] = mTurn;
+        if(mTurn % 2 == 0){
+	    mPlayBoard[index] = X;
+	}else{
+	    mPlayBoard[index] = O;
+	}
         mState = check_game_state();
         mTurn++;
         return get_game_state(player);

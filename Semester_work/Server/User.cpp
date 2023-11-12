@@ -98,6 +98,7 @@ string User::execute_message(const string& message, int fd) {
         if(parsedMessage[0] == MESSAGE_LOGIN){
             cout << "User_test wants to login." << endl;
             response = string(MESSAGE_LOGIN) + DELIMITER + to_string(login(parsedMessage, fd));
+	    User::print_users();
         }else{
             cout << "Bad message" << endl;
         }

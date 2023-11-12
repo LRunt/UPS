@@ -149,6 +149,7 @@ int main(int argc, char *argv[]){
                             std::string message(buffer);
 			                std::cout << "File descriptor: " << fd << std::endl;
                             std::string response = User::execute_message(buffer, fd);
+			    send(fd, response.c_str(), static_cast<int>(response.size()), 0);
                         }
                     } else {
                         //setting user disconnected

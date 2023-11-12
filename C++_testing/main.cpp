@@ -8,7 +8,7 @@
 
 int main(){
 
-    /*int fd_lukas = 1;
+    int fd_lukas = 1;
     User::execute_message("LOGIN|Lukas", fd_lukas);
     std::shared_ptr<User> newUser = std::make_shared<User>("Lukas",fd_lukas);
     int fd_petr = 2;
@@ -20,20 +20,22 @@ int main(){
     int fd_jan = 4;
     std::shared_ptr<User> jan = std::make_shared<User>("Jan",fd_jan);
     User::execute_message("LOGIN|Jan", fd_jan);
+    User::execute_message("START", fd_jan);
     std::shared_ptr<User> user = User::get_user_by_fd(fd_petr);
     user->disconnect_user();
     cout << "Printing" << endl;
-    User::print_users();*/
+    User::print_users();
 
-    Game game("Pepa", "Vojta");
+    //Game game("Pepa", "Vojta");
 
     // own user
-    /*int fd_my_user = 5;
+    int fd_my_user = 5;
     std::string user_input;
     while(true){
         std::cout << "Enter message: ";
         std::getline(std::cin, user_input);
-        User::execute_message(user_input, fd_my_user);
+        string response = User::execute_message(user_input, fd_my_user);
+        std::cout << "response: " << response << std::endl;
         User::print_users();
-    }*/
+    }
 }

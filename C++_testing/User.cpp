@@ -92,7 +92,7 @@ string User::execute_message(const string& message, int fd) {
     if(user == nullptr){
         if(parsedMessage[0] == MESSAGE_LOGIN){
             cout << "User wants to login." << endl;
-            response = MESSAGE_LOGIN + DELIMITER + login(parsedMessage, fd);
+            response = string(MESSAGE_LOGIN) + DELIMITER + to_string(login(parsedMessage, fd));
         }else{
             cout << "Bad message" << endl;
         }
@@ -184,6 +184,7 @@ int User::login(vector<string> parsedMessage, int fd) {
 bool User::find_user_for_game() {
     shared_ptr<User> opponent = find_user_by_state(WAITING, this->mUsername);
     if(opponent == nullptr){
+        cout << "Opponent not found" << endl;
         return false;
     }else{
         shared_ptr<Game> new_game = make_shared<Game>(this->mUsername, opponent->mUsername);
@@ -191,6 +192,7 @@ bool User::find_user_for_game() {
         this->mState = IN_GAME;
         opponent->mGame = new_game;
         opponent->mState = IN_GAME;
+        cout << "Game created! Player1: " << this->mUsername << ", Player2: " << opponent->mUsername << endl;
         return true;
     }
 }

@@ -36,6 +36,8 @@ public:
 
     int make_turn(const string& player, int index);
 
+    string get_game_state(const string& player);
+
 
 private:
 

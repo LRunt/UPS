@@ -31,6 +31,10 @@ enum game_code{
     DRAW = 2
 };
 
+#define DELIMITER "|"
+
+#define GAME_STATE_MESSAGE "GAME"
+
 /**
  * Method prints a play board
  */
@@ -41,6 +45,26 @@ void Game::print_board() {
             cout << endl;
         }
     }
+}
+
+/**
+ * Generating message about state of the game in format:
+ * GAME|<side_of_player>|<opponent_name>|<number_of_turn>|<play_field1>|...|<play_fieldN>
+ * @param player Player who is asking for game state
+ * @return generated message
+ */
+string Game::get_game_state(const string& player) {
+    string response = string(GAME_STATE_MESSAGE) + DELIMITER;
+    if(player == mPlayer1){
+        response += to_string(X) + DELIMITER + mPlayer2;
+    }else{
+        response += to_string(O) + DELIMITER + mPlayer1;
+    }
+    response += DELIMITER + to_string(mTurn);
+    for(int i : mPlayBoard){
+        response += DELIMITER + to_string(i);
+    }
+    return response;
 }
 
 /**

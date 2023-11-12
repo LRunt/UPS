@@ -45,6 +45,7 @@ enum login_code{
 #define MESSAGE_DISCONNECT "DISCONNECT"
 #define MESSAGE_START_SEARCHING_GAME "START"
 #define MESSAGE_CANCEL_SEARCHING_GAME "STORNO"
+#define MESSAGE_MAKE_TURN "TURN"
 
 /** Initializing vector of users */
 vector<shared_ptr<User>> User::users;
@@ -117,6 +118,9 @@ string User::execute_message(const string& message, int fd) {
                     cout << "Waiting" << endl;
                     break;
                 case IN_GAME:
+                    if(parsedMessage[0] == MESSAGE_MAKE_TURN){
+                        user->mGame->make_turn(user->mUsername, stoi(parsedMessage[1]));
+                    }
                     cout << "in game" << endl;
                     break;
                 case RESULT_SCREEN:

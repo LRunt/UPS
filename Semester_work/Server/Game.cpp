@@ -87,6 +87,7 @@ string Game::make_turn(const string &player, int index) {
 	}
         mState = check_game_state();
         mTurn++;
+        cout << this->to_str() << endl;
         return get_game_state(player);
     } else{
         return string(MESSAGE_VALID) + DELIMITER + to_string(validity);
@@ -215,6 +216,7 @@ string Game::to_str() {
             text_representation += "\n";
         }
     }
+    text_representation += "Turn: " + to_string(mTurn) + ", Game state: " + to_string(mState);
     return text_representation;
 }
 

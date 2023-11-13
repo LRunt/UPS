@@ -141,13 +141,9 @@ int main(int argc, char *argv[]){
                         int bytes_received = recv(fd, buffer, MAX_BUFFER_SIZE, 0);
                         if (bytes_received > 0) {
                             buffer[bytes_received] = '\0';  // Null-terminate the received data (assuming it's a string)
-                            //std::cout <<"Received: " <<  buffer << std::endl;
-
-                            // Echo the received string back to the client
-                            send(fd, buffer, strlen(buffer), 0);
 
                             std::string message(buffer);
-			                std::cout << "File descriptor: " << fd << std::endl;
+			    std::cout << "File descriptor: " << fd << std::endl;
                             std::string response = User::execute_message(buffer, fd);
 			    send(fd, response.c_str(), static_cast<int>(response.size()), 0);
                         }

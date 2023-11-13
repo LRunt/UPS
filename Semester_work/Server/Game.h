@@ -33,13 +33,13 @@ public:
 
     Game(const string& player1, const string& player2){
         cout << "New game created!" << endl;
-        print_board();
         mTurn = 1;
         mState = 0;
         mPlayer1 = player1;
         mPlayer2 = player2;
         mRematchP1 = -1;
         mRematchP2 = -1;
+        cout << this->to_str() << endl;
     }
 
     string make_turn(const string& player, int index);

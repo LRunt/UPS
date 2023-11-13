@@ -1,5 +1,5 @@
 /**
- * Class game represents one room of TIC-TAC-TOE
+ * Class Game_test represents one room of TIC-TAC-TOE
  *
  * @author Lukas Runt
  * @date 08-11-2023
@@ -33,13 +33,13 @@ public:
 
     Game_test(const string& player1, const string& player2){
         cout << "New game created!" << endl;
-        print_board();
         mTurn = 1;
         mState = 0;
         mPlayer1 = player1;
         mPlayer2 = player2;
         mRematchP1 = -1;
         mRematchP2 = -1;
+        cout << this->to_str() << endl;
     }
 
     string make_turn(const string& player, int index);
@@ -62,6 +62,8 @@ private:
     int check_game_state();
 
     [[nodiscard]] int get_winner_by_turn() const;
+
+    string to_str();
 
 };
 

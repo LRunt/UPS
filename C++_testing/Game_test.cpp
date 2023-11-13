@@ -1,5 +1,5 @@
 /**
- * Class game represents one room of TIC-TAC-TOE
+ * Class Game_test represents one room of TIC-TAC-TOE
  *
  * @author Lukas Runt
  * @date 08-11-2023
@@ -25,7 +25,7 @@ enum turn_code{
     PLAYER_NOT_ON_TURN = 4
 };
 
-enum game_code{
+enum Game_test_code{
     RUNNING = 0,
     WIN_PLAYER1 = 1,
     WIN_PLAYER2 = 2,
@@ -34,7 +34,7 @@ enum game_code{
 
 #define DELIMITER "|"
 
-#define MESSAGE_GAME_STATE "GAME"
+#define MESSAGE_Game_test_STATE "Game_test"
 #define MESSAGE_VALID "VALID"
 
 /**
@@ -50,13 +50,13 @@ void Game_test::print_board() {
 }
 
 /**
- * Generating message about state of the game in format:
- * GAME|<side_of_player>|<opponent_name>|<number_of_turn>|<game_status>|<play_field1>|...|<play_fieldN>
- * @param player Player who is asking for game state
+ * Generating message about state of the Game_test in format:
+ * Game_test|<side_of_player>|<opponent_name>|<number_of_turn>|<Game_test_status>|<play_field1>|...|<play_fieldN>
+ * @param player Player who is asking for Game_test state
  * @return generated message
  */
 string Game_test::get_game_state(const string& player) {
-    string response = string(MESSAGE_GAME_STATE) + DELIMITER;
+    string response = string(MESSAGE_Game_test_STATE) + DELIMITER;
     if(player == mPlayer1){
         response += to_string(X) + DELIMITER + mPlayer2;
     }else{
@@ -80,9 +80,14 @@ string Game_test::make_turn(const string &player, int index) {
     int validity = validate_turn(player, index);
     if(validity == VALID){
         //making the turn
-        mPlayBoard[index] = mTurn;
+        if(mTurn % 2 == 1){
+            mPlayBoard[index] = X;
+        }else{
+            mPlayBoard[index] = O;
+        }
         mState = check_game_state();
         mTurn++;
+        cout << this->to_str() << endl;
         return get_game_state(player);
     } else{
         return string(MESSAGE_VALID) + DELIMITER + to_string(validity);
@@ -111,13 +116,13 @@ int Game_test::validate_turn(const string &player, int index) {
 
 /**
  * Method checks if someone win, or its a draw
- * @return state of game
+ * @return state of Game_test
  */
 int Game_test::check_game_state() {
     //Check columns and rows
     for(int i = 0; i < 3; i++){
         //Row
-        if(mPlayBoard[i * 3] == mPlayBoard[i * 3 + 1] && mPlayBoard[i * 3] == mPlayBoard[i * 3 + 2] && mPlayBoard[i] != 0){
+        if(mPlayBoard[i * 3] == mPlayBoard[i * 3 + 1] && mPlayBoard[i * 3] == mPlayBoard[i * 3 + 2] && mPlayBoard[i * 3] != 0){
             return get_winner_by_turn();
         }
         //Column
@@ -182,7 +187,7 @@ int Game_test::get_rematch_state() const{
 }
 
 /**
- * Method to reset game
+ * Method to reset Game_test
  */
 void Game_test::reset_game() {
     //Clear play board
@@ -197,6 +202,22 @@ void Game_test::reset_game() {
         mRematchP1 = -1;
         mRematchP2 = -1;
     }
+}
+
+/**
+ * Text representation of the Game_test
+ * @return text representation of instance
+ */
+string Game_test::to_str() {
+    string text_representation = "Game with Player1: " + mPlayer1 + ", Player2: " + mPlayer2 + "\n";
+    for(int i = 0; i < PLAY_BOARD_SIZE; i++){
+        text_representation += to_string(mPlayBoard[i]);
+        if(i % 3 == 2){
+            text_representation += "\n";
+        }
+    }
+    text_representation += "Turn: " + to_string(mTurn) + ", Game state: " + to_string(mState);
+    return text_representation;
 }
 
 

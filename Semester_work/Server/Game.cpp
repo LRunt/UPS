@@ -122,7 +122,7 @@ int Game::check_game_state() {
     //Check columns and rows
     for(int i = 0; i < 3; i++){
         //Row
-        if(mPlayBoard[i * 3] == mPlayBoard[i * 3 + 1] && mPlayBoard[i * 3] == mPlayBoard[i * 3 + 2] && mPlayBoard[i] != 0){
+        if(mPlayBoard[i * 3] == mPlayBoard[i * 3 + 1] && mPlayBoard[i * 3] == mPlayBoard[i * 3 + 2] && mPlayBoard[i * 3] != 0){
             return get_winner_by_turn();
         }
         //Column

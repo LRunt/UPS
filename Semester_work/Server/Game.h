@@ -63,5 +63,7 @@ private:
 
     [[nodiscard]] int get_winner_by_turn() const;
 
+    string to_str();
+
 };
 

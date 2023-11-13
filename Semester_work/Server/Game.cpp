@@ -80,7 +80,7 @@ string Game::make_turn(const string &player, int index) {
     int validity = validate_turn(player, index);
     if(validity == VALID){
         //making the turn
-        if(mTurn % 2 == 0){
+        if(mTurn % 2 == 1){
 	    mPlayBoard[index] = X;
 	}else{
 	    mPlayBoard[index] = O;
@@ -201,6 +201,21 @@ void Game::reset_game() {
         mRematchP1 = -1;
         mRematchP2 = -1;
     }
+}
+
+/**
+ * Text representation of the game
+ * @return text representation of instance
+ */
+string Game::to_str() {
+    string text_representation = "Game with Player1: " + mPlayer1 + ", Player2: " + mPlayer2 + "\n";
+    for(int i = 0; i < PLAY_BOARD_SIZE; i++){
+        text_representation += to_string(mPlayBoard[i]);
+        if(i % 3 == 2){
+            text_representation += "\n";
+        }
+    }
+    return text_representation;
 }
 
 

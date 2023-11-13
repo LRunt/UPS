@@ -49,6 +49,7 @@ enum login_code{
 #define MESSAGE_MAKE_TURN "TURN"
 #define MESSAGE_GAME_STATUS "GAME"
 #define MESSAGE_REMATCH "REMATCH"
+#define MESSAGE_ERROR "ERROR"
 
 /** Initializing vector of users */
 vector<shared_ptr<User>> User::users;
@@ -96,15 +97,16 @@ string User::execute_message(const string& message, int fd) {
     shared_ptr<User> user = find_user_by_fd(fd);
     if(user == nullptr){
         if(parsedMessage[0] == MESSAGE_LOGIN){
-            cout << "User_test wants to login." << endl;
+            cout << "User wants to login." << endl;
             response = string(MESSAGE_LOGIN) + DELIMITER + to_string(login(parsedMessage, fd));
 	    User::print_users();
         }else{
-            cout << "Bad message" << endl;
+            response = string(MESSAGE_ERROR);
+            cout << "Error in message: " << message << endl;
         }
     }else{
         if(parsedMessage[0] == MESSAGE_DISCONNECT){
-            cout << "User_test wants to disconnect." << endl;
+            cout << "User wants to disconnect." << endl;
             user->disconnect_user();
         }else{
             switch(user->mState){
@@ -112,44 +114,52 @@ string User::execute_message(const string& message, int fd) {
                     cout <<"Logged" << endl;
                     if(parsedMessage[0] == MESSAGE_START_SEARCHING_GAME){
                         user->mState++;
-                        return user->find_user_for_game();
+                        response = user->find_user_for_game();
+                    }else{
+                        response = string(MESSAGE_ERROR);
                     }
                     break;
                 case WAITING:
+                    cout << "Waiting" << endl;
                     if(parsedMessage[0] == MESSAGE_WAITING){
                         return MESSAGE_WAITING;
-                    } else if(parsedMessage[0] == MESSAGE_CANCEL_SEARCHING_GAME){
+                    }else if(parsedMessage[0] == MESSAGE_CANCEL_SEARCHING_GAME){
                         user->mState = LOGGED;
+                        response = string(MESSAGE_CANCEL_SEARCHING_GAME);
+                    }else{
+                        response = string(MESSAGE_ERROR);
                     }
-                    cout << "Waiting" << endl;
                     break;
                 case IN_GAME:
+                    cout << "In game" << endl;
                     if(parsedMessage[0] == MESSAGE_WAITING || parsedMessage[0] == MESSAGE_GAME_STATUS){
                         user->test_if_game_is_running();
                         return user->mGame->get_game_state(user->mUsername);
-                    }
-                    if(parsedMessage[0] == MESSAGE_MAKE_TURN){
+                    }else if(parsedMessage[0] == MESSAGE_MAKE_TURN){
                         cout << "making turn" << endl;
                         response = user->mGame->make_turn(user->mUsername, stoi(parsedMessage[1]));
                         //if game ended
                         user->test_if_game_is_running();
-                        return response;
+                    }else{
+                        response = string(MESSAGE_ERROR);
                     }
-                    cout << "in game" << endl;
                     break;
                 case RESULT_SCREEN:
+                    cout <<"Result screen" << endl;
                     if(parsedMessage[0] == MESSAGE_REMATCH){
                         int rematch = user->mGame->rematch(user->mUsername, stoi(parsedMessage[1]));
                         user->evaluate_rematch(rematch);
-                    }
-                    if(parsedMessage[0] == MESSAGE_WAITING){
+                    }else if(parsedMessage[0] == MESSAGE_WAITING){
                         int rematch = user->mGame->get_rematch_state();
                         user->evaluate_rematch(rematch);
+                    }else{
+                        response = string(MESSAGE_ERROR);
                     }
-                    cout <<"result screen" << endl;
+
                     break;
                 default:
-                    cout << "default" << endl;
+                    response = string(MESSAGE_ERROR);
+                    cout << "User have bad state" << endl;
             }
         }
     }

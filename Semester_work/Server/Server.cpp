@@ -143,9 +143,9 @@ int main(int argc, char *argv[]){
                             buffer[bytes_received] = '\0';  // Null-terminate the received data (assuming it's a string)
 
                             std::string message(buffer);
-			    std::cout << "File descriptor: " << fd << std::endl;
+			                std::cout << "File descriptor: " << fd << std::endl;
                             std::string response = User::execute_message(buffer, fd);
-			    send(fd, response.c_str(), static_cast<int>(response.size()), 0);
+			                send(fd, response.c_str(), static_cast<int>(response.size()), 0);
                         }
                     } else {
                         //setting user disconnected

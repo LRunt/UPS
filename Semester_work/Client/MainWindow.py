@@ -10,6 +10,15 @@ scenes = {
     "Result": 4
 }
 
+
+def convert_string_to_integer(string):
+    try:
+        integer_value = int(string)
+        return integer_value
+    except ValueError:
+        return -1
+
+
 class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
@@ -49,11 +58,13 @@ class MainWindow(QWidget):
 
     def login(self):
         server_ip_address = self.login_scene.text_field_IP_address.text()
-        server_port = self.login_scene.text_field_port.text()
+        server_port = convert_string_to_integer(self.login_scene.text_field_port.text())
         username = self.login_scene.text_field_username.text()
         if server_ip_address == "" or server_port == "" or username == "":
             print("Error: Some fields are not filed!")
             #TODO message error box
+        elif server_port == -1:
+            print("Error: Port address is not number")
         else:
             print("IP address: ", end="")
             print(self.login_scene.text_field_IP_address.text())
@@ -69,7 +80,6 @@ class MainWindow(QWidget):
                 self.stacked_widget.setCurrentIndex(scenes["Lobby"])
             except Exception as e:
                 print("Error: connection failed!")
-
 
     """
     server_ip = "127.0.0.1"  # Change this to the IP address of your server

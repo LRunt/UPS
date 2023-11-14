@@ -1,4 +1,5 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QStackedWidget
+import socket
 import Scenes
 
 scenes = {
@@ -41,16 +42,51 @@ class MainWindow(QWidget):
         self.setGeometry(300, 300, 300, 200)
         self.setWindowTitle('TIC-TAC-TOE')
 
-    def login(self):
-        print("IP address: ", end="")
-        print(self.login_scene.text_field_IP_address.text())
-        print("Port: ", end="")
-        print(self.login_scene.text_field_port.text())
-        print("Username: ", end="")
-        print(self.login_scene.text_field_username.text())
-        self.stacked_widget.setCurrentIndex(scenes["Lobby"])
-
     def switch_scene(self):
         current_index = self.stacked_widget.currentIndex()
         new_index = (current_index + 1) % self.stacked_widget.count()
         self.stacked_widget.setCurrentIndex(new_index)
+
+    def login(self):
+        server_ip_address = self.login_scene.text_field_IP_address.text()
+        server_port = self.login_scene.text_field_port.text()
+        username = self.login_scene.text_field_username.text()
+        if server_ip_address == "" or server_port == "" or username == "":
+            print("Error: Some fields are not filed!")
+            #TODO message error box
+        else:
+            print("IP address: ", end="")
+            print(self.login_scene.text_field_IP_address.text())
+            print("Port: ", end="")
+            print(self.login_scene.text_field_port.text())
+            print("Username: ", end="")
+            print(self.login_scene.text_field_username.text())
+            try:
+                client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                client_socket.connect((server_ip_address, server_port))
+                message = f"LOGIN|{username}"
+                client_socket.send(message.encode())
+                self.stacked_widget.setCurrentIndex(scenes["Lobby"])
+            except Exception as e:
+                print("Error: connection failed!")
+
+
+    """
+    server_ip = "127.0.0.1"  # Change this to the IP address of your server
+    server_port = 10000  # Change this to the port your server is listening on
+
+    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    client_socket.connect((server_ip, server_port))
+
+    while True:
+        message = input("Enter a message (or 'exit' to quit): ")
+        if message == 'exit':
+            break
+
+        client_socket.send(message.encode())
+
+        response = client_socket.recv(1024)
+        print("Received: " + response.decode())
+
+    client_socket.close()
+    """

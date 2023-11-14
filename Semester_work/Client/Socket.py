@@ -11,7 +11,6 @@ class Socket:
         self.signals = SocketSignals()
         self.server_ip_address = ""
         self.server_port = 0
-        self.user_state = 0
         print("[+] Socket created")
 
     def load_data(self, server_ip_address, server_port):

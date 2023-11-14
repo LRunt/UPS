@@ -73,7 +73,21 @@ class WaitingScene(QWidget):
 class GameScene(QWidget):
     def __init__(self):
         super().__init__()
+        self.initUI()
+
+    def initUI(self):
+        game_layout = QVBoxLayout()
+
+        self.game_widget = QWidget()
+        self.game_widget.setLayout(game_layout)
 
 class ResultScene(QWidget):
     def __init__(self):
         super().__init__()
+        self.initUI()
+
+    def initUI(self):
+        result_layout = QVBoxLayout()
+
+        self.result_widget = QWidget()
+        self.result_widget.setLayout(result_layout)

@@ -1,13 +1,22 @@
 from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QVBoxLayout, QPushButton, QStackedWidget
+import LoginScene
 
+scenes = {
+    "Login": 0,
+    "Lobby": 1,
+    "Waiting": 2,
+    "Game": 3,
+    "Result": 4
+}
 
 class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
+        self.login_scene = LoginScene.LoginScene()
         self.initUI()
 
     def initUI(self):
-        login_scene = self.login_scene()
+        self.login_scene.login_button.clicked.connect(self.login)
         # Create button for the second scene
         back_button = QPushButton('Back to First Scene', self)
         back_button.clicked.connect(self.switch_scene)
@@ -22,7 +31,7 @@ class MainWindow(QWidget):
 
         # Create stacked widget to manage different scenes
         self.stacked_widget = QStackedWidget(self)
-        self.stacked_widget.addWidget(login_scene)
+        self.stacked_widget.addWidget(login_scene.get_scene())
         self.stacked_widget.addWidget(self.second_scene_widget)
 
         # Set up the main layout
@@ -30,37 +39,11 @@ class MainWindow(QWidget):
         main_layout.addWidget(self.stacked_widget)
 
         self.setGeometry(300, 300, 300, 200)
-        self.setWindowTitle('PyQt5 StackedWidget Example')
+        self.setWindowTitle('TIC-TAC-TOE')
 
-    def login_scene(self):
-        # Create labels and text fields for the first scene
-        label1 = QLabel('Text Field 1:')
-        text_field1 = QLineEdit(self)
-
-        label2 = QLabel('Text Field 2:')
-        text_field2 = QLineEdit(self)
-
-        label3 = QLabel('Text Field 3:')
-        text_field3 = QLineEdit(self)
-
-        # Create button to switch to the next scene
-        switch_button = QPushButton('Login', self)
-        switch_button.clicked.connect(self.switch_scene)
-
-        # Create layout for the first scene
-        login_layout = QVBoxLayout()
-        login_layout.addWidget(label1)
-        login_layout.addWidget(text_field1)
-        login_layout.addWidget(label2)
-        login_layout.addWidget(text_field2)
-        login_layout.addWidget(label3)
-        login_layout.addWidget(text_field3)
-        login_layout.addWidget(switch_button)
-
-        # Create widget for the first scene
-        login_widget = QWidget()
-        login_widget.setLayout(login_layout)
-        return login_widget
+    def login(self):
+        print("IP address: ")
+        self.stacked_widget.setCurrentIndex(scenes["Lobby"])
 
     def switch_scene(self):
         current_index = self.stacked_widget.currentIndex()

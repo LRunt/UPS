@@ -117,6 +117,7 @@ class MainWindow(QWidget):
         Sends message to start looking for opponents
         """
         self.socket.send(f"START")
+        self.stacked_widget.setCurrentIndex(scenes["Waiting"])
 
     def disconnect(self):
         """
@@ -141,7 +142,11 @@ class MainWindow(QWidget):
             if split_message[0] == "LOGGED":
                 self.login_result(split_message)
         if self.user.user_state == user_state["Logged"]:
-            print("Logged")
+                print("Logged")
+        if self.user.user_state == user_state["Waiting"]:
+            if split_message[0] == "STORNO":
+                self.stacked_widget.setCurrentIndex(scenes["Lobby"])
+                print("Waiting")
 
     def login_result(self, split_message):
         """

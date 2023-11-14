@@ -1,4 +1,5 @@
-from PyQt5.QtWidgets import QWidget,  QLabel, QLineEdit, QVBoxLayout, QPushButton
+from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QVBoxLayout, QPushButton
+
 
 class LoginScene(QWidget):
     def __init__(self):
@@ -7,7 +8,6 @@ class LoginScene(QWidget):
         self.text_field_port = QLineEdit(self)
         self.text_field_username = QLineEdit(self)
         self.login_button = QPushButton('Login', self)
-        #self.login_widget =
         self.initUI()
 
     def initUI(self):
@@ -17,7 +17,7 @@ class LoginScene(QWidget):
         label_username = QLabel('Username:')
 
         # Create button to switch to the next scene
-        #switch_button.clicked.connect(self.login_widget)
+        # switch_button.clicked.connect(self.login_widget)
 
         # Create layout for the first scene
         login_layout = QVBoxLayout()
@@ -32,3 +32,48 @@ class LoginScene(QWidget):
         # Create widget for the first scene
         self.login_widget = QWidget()
         self.login_widget.setLayout(login_layout)
+
+
+class LobbyScene(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.label_user = QLabel()
+        self.start_game_button = QPushButton('Start', self)
+        self.disconnect_button = QPushButton('Disconnect', self)
+        self.initUI()
+
+    def initUI(self):
+        lobby_layout = QVBoxLayout()
+        lobby_layout.addWidget(self.label_user)
+        lobby_layout.addWidget(self.start_game_button)
+        lobby_layout.addWidget(self.disconnect_button)
+
+        self.lobby_widget = QWidget()
+        self.lobby_widget.setLayout(lobby_layout)
+
+
+class WaitingScene(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.time_label = QLabel()
+        self.storno_button = QPushButton('Storno', self)
+        self.initUI()
+
+    def initUI(self):
+        label_waiting = QLabel("Waiting for the game")
+
+        waiting_layout = QVBoxLayout()
+        waiting_layout.addWidget(label_waiting)
+        waiting_layout.addWidget(self.time_label)
+        waiting_layout.addWidget(self.storno_button)
+
+        self.waiting_widget = QWidget()
+        self.waiting_widget.setLayout(waiting_layout)
+
+class GameScene(QWidget):
+    def __init__(self):
+        super().__init__()
+
+class ResultScene(QWidget):
+    def __init__(self):
+        super().__init__()

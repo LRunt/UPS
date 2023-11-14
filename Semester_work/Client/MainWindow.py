@@ -25,6 +25,10 @@ class MainWindow(QWidget):
         self.socket = Socket.Socket()
         self.socket.signals.message_received.connect(self.handle_received_message)
         self.login_scene = Scenes.LoginScene()
+        self.lobby_scene = Scenes.LobbyScene()
+        self.waiting_scene = Scenes.WaitingScene()
+        self.game_scene = Scenes.GameScene()
+        self.result_screen = Scenes.ResultScene()
         self.initUI()
 
     def initUI(self):

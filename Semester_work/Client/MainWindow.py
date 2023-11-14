@@ -1,5 +1,5 @@
-from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QVBoxLayout, QPushButton, QStackedWidget
-import LoginScene
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QStackedWidget
+import Scenes
 
 scenes = {
     "Login": 0,
@@ -12,7 +12,7 @@ scenes = {
 class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
-        self.login_scene = LoginScene.LoginScene()
+        self.login_scene = Scenes.LoginScene()
         self.initUI()
 
     def initUI(self):
@@ -42,7 +42,12 @@ class MainWindow(QWidget):
         self.setWindowTitle('TIC-TAC-TOE')
 
     def login(self):
-        print("IP address: ")
+        print("IP address: ", end="")
+        print(self.login_scene.text_field_IP_address.text())
+        print("Port: ", end="")
+        print(self.login_scene.text_field_port.text())
+        print("Username: ", end="")
+        print(self.login_scene.text_field_username.text())
         self.stacked_widget.setCurrentIndex(scenes["Lobby"])
 
     def switch_scene(self):

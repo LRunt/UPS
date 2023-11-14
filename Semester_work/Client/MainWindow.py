@@ -1,14 +1,25 @@
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QStackedWidget
+"""
+Author: Lukas Runt
+Email: lrunt@students.zcu.cz
+Date: 14.11.2023
+Version: 0.1.0
+Description: Securing and managing data of the user, definition of window and its content
+"""
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QStackedWidget
 import Scenes
 import Socket
 
 
 class User:
+    """
+    Class user saves data about user
+    """
     def __init__(self):
         self.user_state = user_state["Disconnect"]
         self.user_name = ""
 
 
+# Possible user states
 user_state = {
     "Disconnect": -1,
     "Logged": 0,
@@ -17,6 +28,7 @@ user_state = {
     "Result_screen": 3
 }
 
+# List of scenes
 scenes = {
     "Login": 0,
     "Lobby": 1,
@@ -27,6 +39,12 @@ scenes = {
 
 
 def convert_string_to_integer(string):
+    """
+    Function converts string to integer,
+    If string is not an integer then returns -1
+    :param string: String what will be converted to integer
+    :return: integer or -1 (wrong input)
+    """
     try:
         integer_value = int(string)
         return integer_value
@@ -48,6 +66,9 @@ class MainWindow(QWidget):
         self.user = User()
 
     def initUI(self):
+        """
+        Initialization of user interface
+        """
         # Defining method for buttons
         self.login_scene.login_button.clicked.connect(self.login)
         self.lobby_scene.start_game_button.clicked.connect(self.start_searching_game)
@@ -70,6 +91,10 @@ class MainWindow(QWidget):
         self.setWindowTitle('TIC-TAC-TOE')
 
     def login(self):
+        """
+        Method for logging the user after clicking login button,
+        method check all information from user and then try to connect to the server
+        """
         server_ip_address = self.login_scene.text_field_IP_address.text()
         server_port = convert_string_to_integer(self.login_scene.text_field_port.text())
         username = self.login_scene.text_field_username.text()
@@ -97,6 +122,10 @@ class MainWindow(QWidget):
         print()
 
     def handle_received_message(self, message):
+        """
+        Method handles message what have come form server
+        :param message: message from server
+        """
         print("Received message: " + message)
         split_message = message.split('|')
         if self.user.user_state == user_state["Disconnect"]:
@@ -106,6 +135,10 @@ class MainWindow(QWidget):
             print("Logged")
 
     def login_result(self, split_message):
+        """
+        Method parsing login message what have come and processing corresponding action
+        :param split_message: split message what have come from server
+        """
         if len(split_message) != 2:
             print("Error: Wrong number of parameters")
         else:

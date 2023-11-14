@@ -1,3 +1,10 @@
+"""
+Author: Lukas Runt
+Email: lrunt@students.zcu.cz
+Date: 14.11.2023
+Version: 0.1.0
+Description: Definition of all scenes
+"""
 from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QVBoxLayout, QPushButton
 
 
@@ -15,9 +22,6 @@ class LoginScene(QWidget):
         label_IP_address = QLabel('IP address:')
         label_port = QLabel('Port:')
         label_username = QLabel('Username:')
-
-        # Create button to switch to the next scene
-        # switch_button.clicked.connect(self.login_widget)
 
         # Create layout for the first scene
         login_layout = QVBoxLayout()

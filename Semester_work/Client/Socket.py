@@ -1,9 +1,18 @@
+"""
+Author: Lukas Runt
+Email: lrunt@students.zcu.cz
+Date: 14.11.2023
+Version: 0.1.0
+Description: Module for communication with server
+"""
 import socket
 import threading
 from PyQt5.QtCore import QObject, pyqtSignal
 
+
 class SocketSignals(QObject):
     message_received = pyqtSignal(str)
+
 
 class Socket:
     def __init__(self):
@@ -11,17 +20,24 @@ class Socket:
         self.signals = SocketSignals()
         self.server_ip_address = ""
         self.server_port = 0
-        print("[+] Socket created")
 
     def load_data(self, server_ip_address, server_port):
+        """
+        Method for setting the parameters for connecting the server
+        :param server_ip_address: ip address of server
+        :param server_port: port where server runs
+        """
         self.server_ip_address = server_ip_address
         self.server_port = server_port
 
     def connect(self):
-        print("[=] trying to connect")
+        """
+        Method for connecting to the server
+        """
+        print("Trying to connect")
         try:
             self.client_socket.connect((self.server_ip_address, self.server_port))
-            print("[+] Connected!")
+            print("Connected!")
 
             self.receive_thread = threading.Thread(target=self.receive)
             self.receive_thread.start()
@@ -30,8 +46,10 @@ class Socket:
             print("Error: Connection failed!", str(e))
             raise
 
-
     def receive(self):
+        """
+        Method for receiving messages from server
+        """
         try:
             while True:
                 message = self.client_socket.recv(1024).decode()
@@ -42,8 +60,11 @@ class Socket:
         finally:
             self.client_socket.close()
 
-
     def send(self, message):
+        """
+        Method sends message to the server
+        :param message: message what will be sent
+        """
         try:
             self.client_socket.send(message.encode())
             print("Message sent: ", message);

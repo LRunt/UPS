@@ -1,7 +1,18 @@
 import socket
+import MainWindow
+
+import sys
+from PyQt5.QtWidgets import QApplication
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv) #app = QApplication([]) - for disabling commnads from command line
+    window = MainWindow.MainWindow()
+    window.show()
+    sys.exit(app.exec_())
 
 
-if __name__ == "__main__":
+
+    """
     server_ip = "127.0.0.1"  # Change this to the IP address of your server
     server_port = 10000  # Change this to the port your server is listening on
 
@@ -19,3 +30,4 @@ if __name__ == "__main__":
         print("Received: " + response.decode())
 
     client_socket.close()
+    """

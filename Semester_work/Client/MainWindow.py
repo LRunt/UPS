@@ -129,17 +129,18 @@ class MainWindow(QWidget):
         """
         Sends message for cancel searching opponent
         """
-        self.socket.send(f"CANCEL")
+        self.socket.send(f"STORNO")
 
     def handle_received_message(self, message):
         """
         Method handles message what have come form server
         :param message: message from server
         """
-        print("Received message: " + message)
+        print("Handler received message: " + message)
         split_message = message.split('|')
         if self.user.user_state == user_state["Disconnect"]:
-            if split_message[0] == "LOGGED":
+            print("Disconnected")
+            if split_message[0] == "LOGIN":
                 self.login_result(split_message)
         if self.user.user_state == user_state["Logged"]:
                 print("Logged")
@@ -153,17 +154,18 @@ class MainWindow(QWidget):
         Method parsing login message what have come and processing corresponding action
         :param split_message: split message what have come from server
         """
+        print("result login")
         if len(split_message) != 2:
             print("Error: Wrong number of parameters")
         else:
-            if split_message[1] == '0':
+            if split_message[1] == "0":
                 self.lobby_scene.label_user.setText(f"User: {self.user.user_name}")
                 self.stacked_widget.setCurrentIndex(scenes["Lobby"])
                 print("correct")
-            elif split_message[1] == '1':
+            elif split_message[1] == "1":
                 print("exit offline user")
                 print("Loading")
-            elif split_message[1] == '2':
+            elif split_message[1] == "2":
                 print("Exit online user")
             elif split_message[1] == '3':
                 print("Illegal characters")

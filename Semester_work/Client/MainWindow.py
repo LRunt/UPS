@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QPushButton, QStackedWidget
-import socket
 import Scenes
+import Socket
 
 scenes = {
     "Login": 0,
@@ -22,6 +22,7 @@ def convert_string_to_integer(string):
 class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
+        self.socket = Socket.Socket()
         self.login_scene = Scenes.LoginScene()
         self.initUI()
 
@@ -64,7 +65,7 @@ class MainWindow(QWidget):
             print("Error: Some fields are not filed!")
             #TODO message error box
         elif server_port == -1:
-            print("Error: Port address is not number")
+            print("Error: Port address is not a number")
         else:
             print("IP address: ", end="")
             print(self.login_scene.text_field_IP_address.text())
@@ -73,30 +74,12 @@ class MainWindow(QWidget):
             print("Username: ", end="")
             print(self.login_scene.text_field_username.text())
             try:
-                client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                client_socket.connect((server_ip_address, server_port))
+                self.socket.load_data(server_ip_address, server_port)
+                self.socket.connect()
+                #client_socket.connect((server_ip_address, server_port))
                 message = f"LOGIN|{username}"
-                client_socket.send(message.encode())
+                self.socket.send(message)
+                #client_socket.send(message.encode())
                 self.stacked_widget.setCurrentIndex(scenes["Lobby"])
             except Exception as e:
-                print("Error: connection failed!")
-
-    """
-    server_ip = "127.0.0.1"  # Change this to the IP address of your server
-    server_port = 10000  # Change this to the port your server is listening on
-
-    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    client_socket.connect((server_ip, server_port))
-
-    while True:
-        message = input("Enter a message (or 'exit' to quit): ")
-        if message == 'exit':
-            break
-
-        client_socket.send(message.encode())
-
-        response = client_socket.recv(1024)
-        print("Received: " + response.decode())
-
-    client_socket.close()
-    """
+                print("Error: connection failed!", str(e))

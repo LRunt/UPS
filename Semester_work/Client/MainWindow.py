@@ -113,13 +113,22 @@ class MainWindow(QWidget):
                 print("Error: connection failed!", str(e))
 
     def start_searching_game(self):
-        print()
+        """
+        Sends message to start looking for opponents
+        """
+        self.socket.send(f"START")
 
     def disconnect(self):
-        print()
+        """
+        Sends message for disconnect the server
+        """
+        self.socket.send(f"DISCONNECT")
 
     def cancel_searching(self):
-        print()
+        """
+        Sends message for cancel searching opponent
+        """
+        self.socket.send(f"CANCEL")
 
     def handle_received_message(self, message):
         """

@@ -23,6 +23,7 @@ class MainWindow(QWidget):
     def __init__(self):
         super().__init__()
         self.socket = Socket.Socket()
+        self.socket.signals.message_received.connect(self.handle_received_message)
         self.login_scene = Scenes.LoginScene()
         self.initUI()
 
@@ -83,3 +84,7 @@ class MainWindow(QWidget):
                 self.stacked_widget.setCurrentIndex(scenes["Lobby"])
             except Exception as e:
                 print("Error: connection failed!", str(e))
+
+    def handle_received_message(self, message):
+        print("Received message: " + message)
+        #TODO handle message

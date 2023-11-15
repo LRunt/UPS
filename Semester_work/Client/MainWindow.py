@@ -91,7 +91,9 @@ class MainWindow(QWidget):
         self.setWindowTitle('TIC-TAC-TOE')
 
     def closeEvent(self, event):
+        print("Closing application")
         QApplication.instance().quit()
+        self.socket.disconnect()
 
     def login(self):
         """
@@ -127,6 +129,7 @@ class MainWindow(QWidget):
         Sends message for disconnect the server
         """
         self.socket.send(f"DISCONNECT")
+        self.socket.disconnect()
 
     def cancel_searching(self):
         """
@@ -150,7 +153,7 @@ class MainWindow(QWidget):
         if self.user.user_state == user_state["Waiting"]:
             if split_message[0] == "STORNO":
                 self.stacked_widget.setCurrentIndex(scenes["Lobby"])
-                print("Waiting")
+            print("Waiting")
 
     def login_result(self, split_message):
         """

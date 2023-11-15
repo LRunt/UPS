@@ -71,3 +71,19 @@ class Socket:
         except Exception as e:
             print("Error sending message: ", str(e))
             raise
+
+    def disconnect(self):
+        """
+        Method for disconnecting from the server
+        """
+        try:
+            self.client_socket.close()
+            print("Disconnected!")
+
+            if hasattr(self, 'receive_thread') and self.receive_thread.is_alive():
+                self.receive_thread.join()
+
+        except Exception as e:
+            print("Error disconnecting: ", str(e))
+            raise
+

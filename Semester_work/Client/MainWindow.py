@@ -5,7 +5,7 @@ Date: 14.11.2023
 Version: 0.1.0
 Description: Securing and managing data of the user, definition of window and its content
 """
-from PyQt5.QtWidgets import QWidget, QVBoxLayout, QStackedWidget
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QStackedWidget, QApplication
 import Scenes
 import Socket
 
@@ -89,6 +89,9 @@ class MainWindow(QWidget):
 
         self.setGeometry(300, 300, 300, 200)
         self.setWindowTitle('TIC-TAC-TOE')
+
+    def closeEvent(self, event):
+        QApplication.instance().quit()
 
     def login(self):
         """

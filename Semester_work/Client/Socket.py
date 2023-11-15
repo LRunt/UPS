@@ -81,7 +81,7 @@ class Socket:
             print("Disconnected!")
 
             if hasattr(self, 'receive_thread') and self.receive_thread.is_alive():
-                self.receive_thread.join()
+                self.receive_thread._stop()
 
         except Exception as e:
             print("Error disconnecting: ", str(e))

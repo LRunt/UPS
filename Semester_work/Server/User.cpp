@@ -291,7 +291,7 @@ shared_ptr<User> User::find_user_by_fd(int fd) {
  */
 shared_ptr<User> User::find_user_by_state(int state, const string& username) {
     for (const auto& user : User::users) {
-        if (user->mState == state && user->mUsername != username && user->mState != DISCONNECTED) {
+        if (user->mState == state && user->mUsername != username && user->mFd != DISCONNECTED) {
             return user;
         }
     }

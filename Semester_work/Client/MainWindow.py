@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QStackedWidget, QApplication
 import Scenes
 import Socket
 from MessageBoxes import show_error_message
+from Logger import logger
 
 class User:
     """
@@ -104,7 +105,7 @@ class MainWindow(QWidget):
         server_port = convert_string_to_integer(self.login_scene.text_field_port.text())
         username = self.login_scene.text_field_username.text()
         if server_ip_address == "" or server_port == "" or username == "":
-            print("Error: Some fields are not filed!")
+            logger.warning("Some fields are not filed!")
             show_error_message("Some fields are not filed!")
         elif server_port == -1:
             print("Error: Port address is not a number")

@@ -5,7 +5,9 @@ Date: 14.11.2023
 Version: 0.1.0
 Description: Definition of all scenes
 """
-from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QVBoxLayout, QPushButton
+from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QVBoxLayout, QPushButton, QGraphicsScene, QGridLayout
+
+NUMBER_OF_FIELDS = 9
 
 
 class LoginScene(QWidget):
@@ -74,16 +76,24 @@ class WaitingScene(QWidget):
         self.waiting_widget = QWidget()
         self.waiting_widget.setLayout(waiting_layout)
 
+
 class GameScene(QWidget):
     def __init__(self):
         super().__init__()
+        self.fields = [None] * 9
         self.initUI()
 
     def initUI(self):
-        game_layout = QVBoxLayout()
+        play_board_layout = QGridLayout()
+
+        # initializing fields
+        for i in range(NUMBER_OF_FIELDS):
+            self.fields[i] = QPushButton("")
+            play_board_layout.addWidget(self.fields[i], i % 3, i / 3)
 
         self.game_widget = QWidget()
-        self.game_widget.setLayout(game_layout)
+        self.game_widget.setLayout(play_board_layout)
+
 
 class ResultScene(QWidget):
     def __init__(self):

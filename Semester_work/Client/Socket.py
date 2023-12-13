@@ -67,7 +67,7 @@ class Socket:
         """
         try:
             self.client_socket.send(message.encode())
-            print("Message sent: ", message);
+            print("Message sent: ", message)
         except Exception as e:
             print("Error sending message: ", str(e))
             raise

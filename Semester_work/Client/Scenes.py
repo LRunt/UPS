@@ -5,7 +5,7 @@ Date: 14.11.2023
 Version: 0.1.0
 Description: Definition of all scenes
 """
-from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QVBoxLayout, QPushButton, QGraphicsScene, QGridLayout
+from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QVBoxLayout, QPushButton, QGridLayout
 
 NUMBER_OF_FIELDS = 9
 

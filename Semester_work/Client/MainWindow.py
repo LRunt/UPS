@@ -8,7 +8,7 @@ Description: Securing and managing data of the user, definition of window and it
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QStackedWidget, QApplication
 import Scenes
 import Socket
-
+from MessageBoxes import show_error_message
 
 class User:
     """
@@ -77,9 +77,9 @@ class MainWindow(QWidget):
 
         # Create stacked widget to manage different scenes
         self.stacked_widget = QStackedWidget(self)
-        #self.stacked_widget.addWidget(self.login_scene.login_widget)
-        #self.stacked_widget.addWidget(self.lobby_scene.lobby_widget)
-        #self.stacked_widget.addWidget(self.waiting_scene.waiting_widget)
+        self.stacked_widget.addWidget(self.login_scene.login_widget)
+        self.stacked_widget.addWidget(self.lobby_scene.lobby_widget)
+        self.stacked_widget.addWidget(self.waiting_scene.waiting_widget)
         self.stacked_widget.addWidget(self.game_scene.game_widget)
         self.stacked_widget.addWidget(self.result_screen.result_widget)
 
@@ -105,7 +105,7 @@ class MainWindow(QWidget):
         username = self.login_scene.text_field_username.text()
         if server_ip_address == "" or server_port == "" or username == "":
             print("Error: Some fields are not filed!")
-            # TODO message error box
+            show_error_message("Some fields are not filed!")
         elif server_port == -1:
             print("Error: Port address is not a number")
         else:

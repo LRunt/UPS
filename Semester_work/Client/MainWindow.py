@@ -80,7 +80,7 @@ class MainWindow(QWidget):
 
         # Create stacked widget to manage different scenes
         self.stacked_widget = QStackedWidget(self)
-        self.stacked_widget.addWidget(self.login_scene.login_widget)
+        #self.stacked_widget.addWidget(self.login_scene.login_widget)
         self.stacked_widget.addWidget(self.lobby_scene.lobby_widget)
         self.stacked_widget.addWidget(self.waiting_scene.waiting_widget)
         self.stacked_widget.addWidget(self.game_scene.game_widget)
@@ -95,8 +95,8 @@ class MainWindow(QWidget):
 
     def closeEvent(self, event):
         QApplication.instance().quit()
-        self.socket.disconnect()
-        self.socket.application_is_running = False
+        if self.socket.connection:
+            self.socket.disconnect()
 
     def login(self):
         """
@@ -126,13 +126,14 @@ class MainWindow(QWidget):
         """
         self.socket.send(f"START")
         self.stacked_widget.setCurrentIndex(scenes["Waiting"])
+        self.user.user_state = user_state["Waiting"]
 
     def disconnect(self):
         """
         Sends message for disconnect the server
         """
-        self.socket.send(f"DISCONNECT")
         self.socket.disconnect()
+        self.stacked_widget.setCurrentIndex(scenes["Lobby"])
 
     def cancel_searching(self):
         """
@@ -157,6 +158,10 @@ class MainWindow(QWidget):
             logger.info("User state: Waiting")
             if split_message[0] == "STORNO":
                 self.stacked_widget.setCurrentIndex(scenes["Lobby"])
+                self.user.user_state = user_state["Logged"]
+            if split_message[0] == "GAME":
+                self.stacked_widget.setCurrentIndex(scenes["Game"])
+                self.user.user_state = user_state["In_Game"]
         if self.user.user_state == user_state["In_Game"]:
             logger.info("User state: In game")
         if self.user.user_state == user_state["Result_screen"]:
@@ -173,6 +178,7 @@ class MainWindow(QWidget):
             if split_message[1] == "0":
                 self.lobby_scene.label_user.setText(f"User: {self.user.user_name}")
                 self.stacked_widget.setCurrentIndex(scenes["Lobby"])
+                self.user.user_state = user_state["Logged"]
                 logger.info("Login success")
             elif split_message[1] == "1":
                 print("exit offline user")

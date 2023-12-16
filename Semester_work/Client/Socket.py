@@ -21,7 +21,7 @@ class Socket:
         self.signals = SocketSignals()
         self.server_ip_address = ""
         self.server_port = 0
-        self.application_is_running = True
+        self.connection = False
 
     def load_data(self, server_ip_address, server_port):
         """
@@ -41,6 +41,7 @@ class Socket:
         try:
             self.client_socket.connect((self.server_ip_address, self.server_port))
             logger.info("Connection success")
+            self.connection = True
 
             self.receive_thread = threading.Thread(target=self.receive)
             self.receive_thread.start()
@@ -54,8 +55,9 @@ class Socket:
         Method for receiving messages from server
         """
         try:
-            while self.application_is_running:
+            while self.connection:
                 message = self.client_socket.recv(1024).decode()
+                logger.info(f"Received message: {message}")
                 self.signals.message_received.emit(message)
         except Exception as e:
             logger.error(f"Receiving message failed: {str(e)}")
@@ -89,5 +91,8 @@ class Socket:
         except Exception as e:
             logger.error(f"Disconnecting failed: {str(e)}")
             raise
+        finally:
+            self.connection = False
+            self.receive_thread.join()
 
         logger.info("Disconnect success")

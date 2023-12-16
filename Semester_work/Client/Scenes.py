@@ -5,7 +5,9 @@ Date: 14.11.2023
 Version: 0.1.0
 Description: Definition of all scenes
 """
-from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QVBoxLayout, QPushButton, QGridLayout
+from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QFont
+from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QVBoxLayout, QPushButton, QGridLayout, QHBoxLayout
 
 NUMBER_OF_FIELDS = 9
 
@@ -85,15 +87,49 @@ class GameScene(QWidget):
 
     def initUI(self):
         play_board_layout = QGridLayout()
+        play_board_layout.setSpacing(0)
 
         # initializing fields
         for i in range(NUMBER_OF_FIELDS):
-            self.fields[i] = QPushButton("")
+            button = QPushButton("")
+            button.setFixedSize(100, 100)
+            button.setStyleSheet("background-color: white; border: 1px solid black;")
+            font = QFont("Arial Rounded MT Bold", 72)
+            button.setFont(font)
+
+            self.fields[i] = button
+            if i % 2 == 0:
+                self.draw_O(i)
+            else:
+                self.draw_X(i)
+
             play_board_layout.addWidget(self.fields[i], i % 3, i / 3)
 
-        self.game_widget = QWidget()
-        self.game_widget.setLayout(play_board_layout)
+        player_X = QLabel("X - Lukas")
+        player_O = QLabel("O - Hanka")
+        turn = QLabel("Na tahu: X")
+        players = QVBoxLayout()
+        players.addWidget(player_X)
+        players.addWidget(player_O)
+        players.addWidget(turn)
 
+        play_board_widget = QWidget()
+        play_board_widget.setLayout(play_board_layout)
+
+        game_scene = QHBoxLayout()
+        game_scene.addWidget(play_board_widget, alignment=Qt.AlignCenter)
+        game_scene.addLayout(players)
+
+        self.game_widget = QWidget()
+        self.game_widget.setLayout(game_scene)
+
+    def draw_X(self, index):
+        self.fields[index].setText("×")
+        self.fields[index].setStyleSheet("color: red; font-size: 108px; background-color: white; border: 1px solid black;")
+
+    def draw_O(self, index):
+        self.fields[index].setText("O")
+        self.fields[index].setStyleSheet("color: blue; font-size: 72px; background-color: white; border: 1px solid black;font-weight: bold;")
 
 class ResultScene(QWidget):
     def __init__(self):

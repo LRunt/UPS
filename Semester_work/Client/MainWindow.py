@@ -78,9 +78,9 @@ class MainWindow(QWidget):
 
         # Create stacked widget to manage different scenes
         self.stacked_widget = QStackedWidget(self)
-        self.stacked_widget.addWidget(self.login_scene.login_widget)
-        self.stacked_widget.addWidget(self.lobby_scene.lobby_widget)
-        self.stacked_widget.addWidget(self.waiting_scene.waiting_widget)
+        #self.stacked_widget.addWidget(self.login_scene.login_widget)
+        #self.stacked_widget.addWidget(self.lobby_scene.lobby_widget)
+        #self.stacked_widget.addWidget(self.waiting_scene.waiting_widget)
         self.stacked_widget.addWidget(self.game_scene.game_widget)
         self.stacked_widget.addWidget(self.result_screen.result_widget)
 
@@ -108,9 +108,10 @@ class MainWindow(QWidget):
             logger.warning("Some fields are not filed!")
             show_error_message("Some fields are not filed!")
         elif server_port == -1:
-            print("Error: Port address is not a number")
+            logger.error("Port address is not a number")
         else:
             try:
+                logger.info(f"Trying to connect server IP: {server_ip_address}, Port: {server_port}, Username: {username}")
                 self.socket.load_data(server_ip_address, server_port)
                 self.socket.connect()
                 self.socket.send(f"LOGIN|{username}")

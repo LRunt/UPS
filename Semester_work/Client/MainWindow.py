@@ -11,10 +11,12 @@ import Socket
 from MessageBoxes import show_error_message
 from Logger import logger
 
+
 class User:
     """
     Class user saves data about user
     """
+
     def __init__(self):
         self.user_state = user_state["Disconnect"]
         self.user_name = ""
@@ -92,9 +94,9 @@ class MainWindow(QWidget):
         self.setWindowTitle('TIC-TAC-TOE')
 
     def closeEvent(self, event):
-        print("Closing application")
         QApplication.instance().quit()
         self.socket.disconnect()
+        self.socket.application_is_running = False
 
     def login(self):
         """
@@ -108,10 +110,9 @@ class MainWindow(QWidget):
             logger.warning("Some fields are not filed!")
             show_error_message("Some fields are not filed!")
         elif server_port == -1:
-            logger.error("Port address is not a number")
+            logger.warning("Port address is not a number")
         else:
             try:
-                logger.info(f"Trying to connect server IP: {server_ip_address}, Port: {server_port}, Username: {username}")
                 self.socket.load_data(server_ip_address, server_port)
                 self.socket.connect()
                 self.socket.send(f"LOGIN|{username}")
@@ -147,29 +148,32 @@ class MainWindow(QWidget):
         print("Handler received message: " + message)
         split_message = message.split('|')
         if self.user.user_state == user_state["Disconnect"]:
-            print("Disconnected")
+            logger.info("User state: Disconnect")
             if split_message[0] == "LOGIN":
                 self.login_result(split_message)
         if self.user.user_state == user_state["Logged"]:
-                print("Logged")
+            logger.info("User state: Logged")
         if self.user.user_state == user_state["Waiting"]:
+            logger.info("User state: Waiting")
             if split_message[0] == "STORNO":
                 self.stacked_widget.setCurrentIndex(scenes["Lobby"])
-            print("Waiting")
+        if self.user.user_state == user_state["In_Game"]:
+            logger.info("User state: In game")
+        if self.user.user_state == user_state["Result_screen"]:
+            logger.info("User state: Result screen")
 
     def login_result(self, split_message):
         """
         Method parsing login message what have come and processing corresponding action
         :param split_message: split message what have come from server
         """
-        print("result login")
         if len(split_message) != 2:
-            print("Error: Wrong number of parameters")
+            logger.error("Wrong number of parameters")
         else:
             if split_message[1] == "0":
                 self.lobby_scene.label_user.setText(f"User: {self.user.user_name}")
                 self.stacked_widget.setCurrentIndex(scenes["Lobby"])
-                print("correct")
+                logger.info("Login success")
             elif split_message[1] == "1":
                 print("exit offline user")
                 print("Loading")
@@ -183,4 +187,3 @@ class MainWindow(QWidget):
                 print("Long username")
             else:
                 print("Wrong code")
-        print("Login")

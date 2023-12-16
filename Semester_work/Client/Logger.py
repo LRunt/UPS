@@ -1,8 +1,22 @@
+"""
+Author: Lukas Runt
+Email: lrunt@students.zcu.cz
+Date: 16.12.2023
+Version: 0.1.0
+Description: Logger of the application
+"""
 import logging
 
+
 def setup_logger(name, log_file='app.log'):
-    logger = logging.getLogger(name)
-    logger.setLevel(logging.DEBUG)
+    """
+    Setup of the logger
+    :param name: The name of the logger
+    :param log_file:The path to the log file (default is 'app.log')
+    :return: The configured logger
+    """
+    logg = logging.getLogger(name)
+    logg.setLevel(logging.DEBUG)
 
     # Create a file handler
     file_handler = logging.FileHandler(log_file)
@@ -18,10 +32,11 @@ def setup_logger(name, log_file='app.log'):
     console_handler.setFormatter(formatter)
 
     # Add the handlers to the logger
-    logger.addHandler(file_handler)
-    logger.addHandler(console_handler)
+    logg.addHandler(file_handler)
+    logg.addHandler(console_handler)
 
-    return logger
+    return logg
+
 
 # Create a logger
 logger = setup_logger(__name__)

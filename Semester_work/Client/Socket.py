@@ -7,6 +7,7 @@ Description: Module for communication with server
 """
 import socket
 import threading
+from Logger import logger
 from PyQt5.QtCore import QObject, pyqtSignal
 
 
@@ -20,6 +21,7 @@ class Socket:
         self.signals = SocketSignals()
         self.server_ip_address = ""
         self.server_port = 0
+        self.application_is_running = True
 
     def load_data(self, server_ip_address, server_port):
         """
@@ -34,16 +36,17 @@ class Socket:
         """
         Method for connecting to the server
         """
-        print("Trying to connect")
+        logger.info("Trying to connect ...")
+        logger.info(f"server IP: {self.server_ip_address}, Port: {self.server_port}")
         try:
             self.client_socket.connect((self.server_ip_address, self.server_port))
-            print("Connected!")
+            logger.info("Connection success")
 
             self.receive_thread = threading.Thread(target=self.receive)
             self.receive_thread.start()
 
         except Exception as e:
-            print("Error: Connection failed!", str(e))
+            logger.error(f"Connection failed: {str(e)}")
             raise
 
     def receive(self):
@@ -51,11 +54,11 @@ class Socket:
         Method for receiving messages from server
         """
         try:
-            while True:
+            while self.application_is_running:
                 message = self.client_socket.recv(1024).decode()
                 self.signals.message_received.emit(message)
         except Exception as e:
-            print("Error receiving message: ", str(e))
+            logger.error(f"Receiving message failed: {str(e)}")
             raise
         finally:
             self.client_socket.close()
@@ -67,9 +70,9 @@ class Socket:
         """
         try:
             self.client_socket.send(message.encode())
-            print("Message sent: ", message)
+            logger.info(f"Sending message: {message}")
         except Exception as e:
-            print("Error sending message: ", str(e))
+            logger.error(f"Sending message failed: {str(e)}")
             raise
 
     def disconnect(self):
@@ -77,13 +80,14 @@ class Socket:
         Method for disconnecting from the server
         """
         try:
+            logger.info("Trying to disconnect ...")
             self.client_socket.close()
-            print("Disconnected!")
 
             if hasattr(self, 'receive_thread') and self.receive_thread.is_alive():
-                self.receive_thread._stop()
+                self.receive_thread.stop()
 
         except Exception as e:
-            print("Error disconnecting: ", str(e))
+            logger.error(f"Disconnecting failed: {str(e)}")
             raise
 
+        logger.info("Disconnect success")

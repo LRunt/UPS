@@ -80,7 +80,7 @@ class MainWindow(QWidget):
 
         # Create stacked widget to manage different scenes
         self.stacked_widget = QStackedWidget(self)
-        #self.stacked_widget.addWidget(self.login_scene.login_widget)
+        self.stacked_widget.addWidget(self.login_scene.login_widget)
         self.stacked_widget.addWidget(self.lobby_scene.lobby_widget)
         self.stacked_widget.addWidget(self.waiting_scene.waiting_widget)
         self.stacked_widget.addWidget(self.game_scene.game_widget)

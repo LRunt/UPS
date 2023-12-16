@@ -83,16 +83,14 @@ class Socket:
         """
         try:
             logger.info("Trying to disconnect ...")
-            self.client_socket.close()
+            self.connection = False
 
             if hasattr(self, 'receive_thread') and self.receive_thread.is_alive():
-                self.receive_thread.stop()
+                self.receive_thread.join()
 
+            self.client_socket.close()
         except Exception as e:
             logger.error(f"Disconnecting failed: {str(e)}")
             raise
-        finally:
-            self.connection = False
-            self.receive_thread.join()
 
         logger.info("Disconnect success")

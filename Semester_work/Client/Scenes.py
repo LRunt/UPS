@@ -7,7 +7,7 @@ Description: Definition of all scenes
 """
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QVBoxLayout, QPushButton, QGridLayout, QHBoxLayout
+from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QVBoxLayout, QPushButton, QGridLayout, QHBoxLayout, QFormLayout
 
 NUMBER_OF_FIELDS = 9
 
@@ -28,13 +28,13 @@ class LoginScene(QWidget):
         label_username = QLabel('Username:')
 
         # Create layout for the first scene
+        form_layout = QFormLayout()
+        form_layout.addRow(label_IP_address, self.text_field_IP_address)
+        form_layout.addRow(label_port, self.text_field_port)
+        form_layout.addRow(label_username, self.text_field_username)
+
         login_layout = QVBoxLayout()
-        login_layout.addWidget(label_IP_address)
-        login_layout.addWidget(self.text_field_IP_address)
-        login_layout.addWidget(label_port)
-        login_layout.addWidget(self.text_field_port)
-        login_layout.addWidget(label_username)
-        login_layout.addWidget(self.text_field_username)
+        login_layout.addLayout(form_layout)
         login_layout.addWidget(self.login_button)
 
         # Create widget for the first scene

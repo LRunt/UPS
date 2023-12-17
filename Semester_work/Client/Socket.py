@@ -34,6 +34,7 @@ class Socket:
         logger.info(f"server IP: {self.server_ip_address}, Port: {self.server_port}")
         try:
             self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.client_socket.settimeout(1.0)
             self.client_socket.connect((self.server_ip_address, self.server_port))
             logger.info("Connection success")
             self.connection = True
@@ -79,7 +80,6 @@ class Socket:
         """
         try:
             logger.info("Trying to disconnect ...")
-            self.send("DISCONNECT")
             self.client_socket.close()
             self.receive_thread.join()
             self.connection = False

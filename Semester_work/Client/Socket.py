@@ -10,7 +10,7 @@ class SocketSignals(QObject):
 
 class Socket:
     def __init__(self):
-        self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.client_socket = None
         self.signals = SocketSignals()
         self.server_ip_address = ""
         self.server_port = 0
@@ -33,6 +33,7 @@ class Socket:
         logger.info("Trying to connect ...")
         logger.info(f"server IP: {self.server_ip_address}, Port: {self.server_port}")
         try:
+            self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.client_socket.connect((self.server_ip_address, self.server_port))
             logger.info("Connection success")
             self.connection = True
@@ -51,7 +52,7 @@ class Socket:
         try:
             while True:
                 message = self.client_socket.recv(1024).decode()
-                if not message:
+                if not message or message == "DISCONNECT":
                     break
                 logger.info(f"Received message: {message}")
                 self.signals.message_received.emit(message)
@@ -78,7 +79,9 @@ class Socket:
         """
         try:
             logger.info("Trying to disconnect ...")
+            self.send("DISCONNECT")
             self.client_socket.close()
+            self.receive_thread.join()
             self.connection = False
         except Exception as e:
             logger.error(f"Disconnecting failed: {str(e)}")

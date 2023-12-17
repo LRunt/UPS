@@ -1,19 +1,10 @@
-"""
-Author: Lukas Runt
-Email: lrunt@students.zcu.cz
-Date: 14.11.2023
-Version: 0.1.0
-Description: Module for communication with server
-"""
 import socket
 import threading
 from Logger import logger
 from PyQt5.QtCore import QObject, pyqtSignal
 
-
 class SocketSignals(QObject):
     message_received = pyqtSignal(str)
-
 
 class Socket:
     def __init__(self):
@@ -23,6 +14,7 @@ class Socket:
         self.server_port = 0
         self.connection = False
         self.receive_thread = None
+        self.stop_receive_event = threading.Event()
 
     def load_data(self, server_ip_address, server_port):
         """
@@ -56,7 +48,7 @@ class Socket:
         Method for receiving messages from server
         """
         try:
-            while self.connection:
+            while self.connection and not self.stop_receive_event.is_set():
                 message = self.client_socket.recv(1024).decode()
                 if not message:
                     break
@@ -64,7 +56,6 @@ class Socket:
                 self.signals.message_received.emit(message)
         except Exception as e:
             logger.error(f"Receiving message failed: {str(e)}")
-            raise
         finally:
             logger.info("Receiving ended!")
 
@@ -88,15 +79,16 @@ class Socket:
             logger.info("Trying to disconnect ...")
             self.connection = False
 
-            logger.info(f"Connection: {self.connection}")
+            logger.info("Setting stop_receive_event")
+            self.stop_receive_event.set()
 
             if hasattr(self, 'receive_thread') and self.receive_thread.is_alive():
                 logger.info("Waiting for join")
-                self.receive_thread.join()
+                self.receive_thread.join(timeout=5)  # Add a timeout for a graceful stop
 
             self.client_socket.close()
         except Exception as e:
             logger.error(f"Disconnecting failed: {str(e)}")
             raise
-
-        logger.info("Disconnect success")
+        finally:
+            logger.info("Disconnect success")

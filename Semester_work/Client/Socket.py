@@ -58,6 +58,8 @@ class Socket:
         try:
             while self.connection:
                 message = self.client_socket.recv(1024).decode()
+                if not message:
+                    break
                 logger.info(f"Received message: {message}")
                 self.signals.message_received.emit(message)
         except Exception as e:

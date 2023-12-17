@@ -133,7 +133,7 @@ class MainWindow(QWidget):
         Sends message for disconnect the server
         """
         self.socket.disconnect()
-        self.stacked_widget.setCurrentIndex(scenes["Lobby"])
+        self.stacked_widget.setCurrentIndex(scenes["Login"])
 
     def cancel_searching(self):
         """

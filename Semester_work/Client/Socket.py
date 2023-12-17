@@ -84,7 +84,7 @@ class Socket:
 
             if hasattr(self, 'receive_thread') and self.receive_thread.is_alive():
                 logger.info("Waiting for join")
-                self.receive_thread.join(timeout=5)  # Add a timeout for a graceful stop
+                #self.receive_thread.join(timeout=5)  # Add a timeout for a graceful stop
 
             self.client_socket.close()
         except Exception as e:

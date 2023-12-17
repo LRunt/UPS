@@ -22,6 +22,7 @@ class Socket:
         self.server_ip_address = ""
         self.server_port = 0
         self.connection = False
+        self.receive_thread = None
 
     def load_data(self, server_ip_address, server_port):
         """
@@ -63,7 +64,7 @@ class Socket:
             logger.error(f"Receiving message failed: {str(e)}")
             raise
         finally:
-            self.client_socket.close()
+            logger.info("Receiving ended!")
 
     def send(self, message):
         """
@@ -85,7 +86,10 @@ class Socket:
             logger.info("Trying to disconnect ...")
             self.connection = False
 
+            logger.info(f"Connection: {self.connection}")
+
             if hasattr(self, 'receive_thread') and self.receive_thread.is_alive():
+                logger.info("Waiting for join")
                 self.receive_thread.join()
 
             self.client_socket.close()

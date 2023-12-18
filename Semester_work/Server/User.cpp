@@ -50,6 +50,8 @@ enum login_code{
 #define MESSAGE_GAME_STATUS "GAME"
 #define MESSAGE_REMATCH "REMATCH"
 #define MESSAGE_ERROR "ERROR"
+#define MESSAGE_LOGGED "LOGGED"
+#define MESSAGE_PING "PING"
 
 /** Initializing vector of users */
 vector<shared_ptr<User>> User::users;
@@ -112,7 +114,9 @@ string User::execute_message(const string& message, int fd) {
             switch(user->mState){
                 case LOGGED:
                     cout <<"Logged" << endl;
-                    if(parsedMessage[0] == MESSAGE_START_SEARCHING_GAME){
+                    if(parsedMessage[0] == MESSAGE_PING){
+                        response = MESSAGE_LOGGED;
+                    }else if(parsedMessage[0] == MESSAGE_START_SEARCHING_GAME){
                         user->mState++;
                         response = user->find_user_for_game();
                     }else{
@@ -121,8 +125,10 @@ string User::execute_message(const string& message, int fd) {
                     break;
                 case WAITING:
                     cout << "Waiting" << endl;
-                    if(parsedMessage[0] == MESSAGE_WAITING){
-                        return MESSAGE_WAITING;
+                    if(parsedMessage[0] == MESSAGE_PING){
+                        response = MESSAGE_WAITING;
+                    }else if(parsedMessage[0] == MESSAGE_WAITING){
+                        response = MESSAGE_WAITING;
                     }else if(parsedMessage[0] == MESSAGE_CANCEL_SEARCHING_GAME){
                         user->mState = LOGGED;
                         response = string(MESSAGE_CANCEL_SEARCHING_GAME);
@@ -132,9 +138,9 @@ string User::execute_message(const string& message, int fd) {
                     break;
                 case IN_GAME:
                     cout << "In game" << endl;
-                    if(parsedMessage[0] == MESSAGE_WAITING || parsedMessage[0] == MESSAGE_GAME_STATUS){
+                    if(parsedMessage[0] == MESSAGE_WAITING || parsedMessage[0] == MESSAGE_GAME_STATUS || parsedMessage[0] == MESSAGE_PING){
                         user->test_if_game_is_running();
-                        return user->mGame->get_game_state(user->mUsername);
+                        response = user->mGame->get_game_state(user->mUsername);
                     }else if(parsedMessage[0] == MESSAGE_MAKE_TURN){
                         cout << "making turn" << endl;
                         response = user->mGame->make_turn(user->mUsername, stoi(parsedMessage[1]));
@@ -146,7 +152,9 @@ string User::execute_message(const string& message, int fd) {
                     break;
                 case RESULT_SCREEN:
                     cout <<"Result screen" << endl;
-                    if(parsedMessage[0] == MESSAGE_REMATCH){
+                    if(parsedMessage[0] == MESSAGE_PING){
+                        response = MESSAGE_WAITING;
+                    }else if(parsedMessage[0] == MESSAGE_REMATCH){
                         int rematch = user->mGame->rematch(user->mUsername, stoi(parsedMessage[1]));
                         user->evaluate_rematch(rematch);
                     }else if(parsedMessage[0] == MESSAGE_WAITING){

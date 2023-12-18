@@ -3,6 +3,8 @@ import threading
 from Logger import logger
 from PyQt5.QtCore import QObject, pyqtSignal
 
+CONNECTION_TIMEOUT = 5 #seconds
+
 
 class SocketSignals(QObject):
     message_received = pyqtSignal(str)
@@ -34,7 +36,7 @@ class Socket:
         logger.info(f"server IP: {self.server_ip_address}, Port: {self.server_port}")
         try:
             self.client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.client_socket.settimeout(1.0)
+            self.client_socket.settimeout(CONNECTION_TIMEOUT)
             self.client_socket.connect((self.server_ip_address, self.server_port))
             logger.info("Connection success")
             self.connection = True
@@ -53,14 +55,15 @@ class Socket:
         try:
             while True:
                 message = self.client_socket.recv(1024).decode()
-                if not message or message == "DISCONNECT":
+                if not message:
                     break
                 logger.info(f"Received message: {message}")
                 self.signals.message_received.emit(message)
         except Exception as e:
             logger.error(f"Receiving message failed: {str(e)}")
         finally:
-            logger.info("Receiving ended!")
+            logger.info("Connection lost")
+            self.disconnect()
 
     def send(self, message):
         """
@@ -79,7 +82,6 @@ class Socket:
         Method for disconnecting from the server
         """
         try:
-            logger.info("Trying to disconnect ...")
             self.client_socket.close()
             self.receive_thread.join()
             self.connection = False

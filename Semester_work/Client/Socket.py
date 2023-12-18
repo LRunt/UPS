@@ -1,6 +1,7 @@
 import socket
 import threading
 from Logger import logger
+import Heartbeat
 from PyQt5.QtCore import QObject, pyqtSignal
 
 CONNECTION_TIMEOUT = 5 #seconds
@@ -18,6 +19,7 @@ class Socket:
         self.server_port = 0
         self.connection = False
         self.receive_thread = None
+        self.heartbeat_thread = None
 
     def load_data(self, server_ip_address, server_port):
         """
@@ -43,6 +45,9 @@ class Socket:
 
             self.receive_thread = threading.Thread(target=self.receive)
             self.receive_thread.start()
+
+            self.heartbeat_thread = Heartbeat(self, CONNECTION_TIMEOUT/5.0)
+            self.heartbeat_thread.start()
 
         except Exception as e:
             logger.error(f"Connection failed: {str(e)}")
@@ -82,6 +87,8 @@ class Socket:
         Method for disconnecting from the server
         """
         try:
+            self.heartbeat_thread.stop()
+            self.heartbeat_thread.join()
             self.client_socket.close()
             self.receive_thread.join()
             self.connection = False

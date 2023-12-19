@@ -170,6 +170,8 @@ class MainWindow(QWidget):
                 self.stacked_widget.setCurrentIndex(scenes["Game"])
                 self.user.user_state = user_state["In_Game"]
         if self.user.user_state == user_state["In_Game"]:
+            if split_message[0] == "GAME":
+                self.game.parse_game_status_message(split_message, self.user.user_name)
             logger.info("User state: In game")
         if self.user.user_state == user_state["Result_screen"]:
             logger.info("User state: Result screen")

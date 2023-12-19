@@ -11,6 +11,8 @@ import time
 from Logger import logger
 
 
+MESSAGE_PING = "PING"
+
 class Heartbeat(threading.Thread):
     def __init__(self, socket_instance, time_interval=1):
         super().__init__()
@@ -22,10 +24,11 @@ class Heartbeat(threading.Thread):
         """
         Method sends ping message in time_interval
         """
+        logger.info("Heartbeat started")
         while not self.stop_event.is_set():
             try:
                 # send heartbeat message and wait
-                self.socket_instance.send("PING")
+                self.socket_instance.send(MESSAGE_PING.encode())
                 time.sleep(self.time_interval)
             except Exception as e:
                 logger.error(f"Heartbeat failed: {str(e)}")

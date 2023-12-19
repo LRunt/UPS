@@ -10,7 +10,6 @@ import Scenes
 import Socket
 from MessageBoxes import show_error_message
 from Logger import logger
-from Game import Game
 
 
 class User:
@@ -68,7 +67,6 @@ class MainWindow(QWidget):
         self.result_screen = Scenes.ResultScene()
         self.initUI()
         self.user = User()
-        self.game = Game(self.game_scene)
 
     def initUI(self):
         """
@@ -202,3 +200,27 @@ class MainWindow(QWidget):
                 print("Long username")
             else:
                 print("Wrong code")
+
+    def parse_game_message(self, params):
+        if params[1] == "1":
+            self.game_scene.player_1.setText(f"X - {self.user.user_name} (YOU)")
+            self.game_scene.player_2.setText(f"O - {params[2]}")
+        else:
+            self.game_scene.player_1.setText(f"X - {params[2]}")
+            self.game_scene.player_2.setText(f"O - {self.user.user_name} (YOU)")
+        turn = convert_string_to_integer(params[3])
+        if turn % 2 == 0:
+            self.game_scene.turn.setText("Na tahu je hráč: O")
+        else:
+            self.game_scene.turn.setText("Na tahu je hráč: X")
+        game_state = convert_string_to_integer(params[4])
+        # Filling game play board
+        for i in range(len(self.game_scene.fields)):
+            index = i + 5
+            play_field = convert_string_to_integer(params[index])
+            if play_field == 0:
+                self.game_scene.clean_field(index)
+            elif play_field % 2 == 1:
+                self.game_scene.draw_X(index)
+            else:
+                self.game_scene.draw_O(index)

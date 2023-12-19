@@ -12,7 +12,7 @@ class Game:
         # Setting side
         self.side = params[1]
         # Players
-        if self.side == 1:
+        if self.side == "1":
             self.player1 == f"{username} (YOU)"
             self.player2 == params[2]
             self.game_scene.player_1.setText(f"X - {username} (YOU)")

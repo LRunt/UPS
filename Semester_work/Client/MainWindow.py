@@ -147,7 +147,7 @@ class MainWindow(QWidget):
 
     def on_button_clicked(self, index):
         print(f"Button {index} clicked!")
-        self.socket.send(f"TURN|{self.user.user_name}|{str(index)}")
+        self.socket.send(f"TURN|{str(index)}")
 
     def handle_received_message(self, message):
         """

@@ -10,6 +10,7 @@ import Scenes
 import Socket
 from MessageBoxes import show_error_message
 from Logger import logger
+from Game import Game
 
 
 class User:
@@ -67,6 +68,7 @@ class MainWindow(QWidget):
         self.result_screen = Scenes.ResultScene()
         self.initUI()
         self.user = User()
+        self.game = Game(self.game_scene)
 
     def initUI(self):
         """
@@ -77,6 +79,8 @@ class MainWindow(QWidget):
         self.lobby_scene.start_game_button.clicked.connect(self.start_searching_game)
         self.lobby_scene.disconnect_button.clicked.connect(self.disconnect)
         self.waiting_scene.storno_button.clicked.connect(self.cancel_searching)
+        for i, button in enumerate(self.game_scene.fields):
+            button.clicked.connect(lambda checked, index=i: self.on_button_clicked(index))
 
         # Create stacked widget to manage different scenes
         self.stacked_widget = QStackedWidget(self)
@@ -141,12 +145,15 @@ class MainWindow(QWidget):
         """
         self.socket.send(f"STORNO")
 
+    def on_button_clicked(self, index):
+        print(f"Button {index} clicked!")
+        self.socket.send(f"TURN|{self.user.user_name}|{str(index)}")
+
     def handle_received_message(self, message):
         """
         Method handles message what have come form server
         :param message: message from server
         """
-        print("Handler received message: " + message)
         split_message = message.split('|')
         if self.user.user_state == user_state["Disconnect"]:
             logger.info("User state: Disconnect")

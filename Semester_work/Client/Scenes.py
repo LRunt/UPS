@@ -82,7 +82,11 @@ class WaitingScene(QWidget):
 class GameScene(QWidget):
     def __init__(self):
         super().__init__()
+        self.game_widget = None
         self.fields = [None] * 9
+        self.player_1 = None  # Player X
+        self.player_2 = None  # Player O
+        self.turn = None
         self.initUI()
 
     def initUI(self):
@@ -98,20 +102,16 @@ class GameScene(QWidget):
             button.setFont(font)
 
             self.fields[i] = button
-            if i % 2 == 0:
-                self.draw_O(i)
-            else:
-                self.draw_X(i)
 
             play_board_layout.addWidget(self.fields[i], i % 3, i / 3)
 
-        player_X = QLabel("X - Lukas")
-        player_O = QLabel("O - Hanka")
-        turn = QLabel("Na tahu: X")
+        self.player_1 = QLabel("X - Lukas")
+        self.player_2 = QLabel("O - Hanka")
+        self.turn = QLabel("Na tahu: X")
         players = QVBoxLayout()
-        players.addWidget(player_X)
-        players.addWidget(player_O)
-        players.addWidget(turn)
+        players.addWidget(self.player_1)
+        players.addWidget(self.player_2)
+        players.addWidget(self.turn)
 
         play_board_widget = QWidget()
         play_board_widget.setLayout(play_board_layout)
@@ -123,13 +123,19 @@ class GameScene(QWidget):
         self.game_widget = QWidget()
         self.game_widget.setLayout(game_scene)
 
+    def clean_field(self, index):
+        self.fields[index].setText("")
+
     def draw_X(self, index):
         self.fields[index].setText("×")
-        self.fields[index].setStyleSheet("color: red; font-size: 108px; background-color: white; border: 1px solid black;")
+        self.fields[index].setStyleSheet(
+            "color: red; font-size: 108px; background-color: white; border: 1px solid black;")
 
     def draw_O(self, index):
         self.fields[index].setText("O")
-        self.fields[index].setStyleSheet("color: blue; font-size: 72px; background-color: white; border: 1px solid black;font-weight: bold;")
+        self.fields[index].setStyleSheet(
+            "color: blue; font-size: 72px; background-color: white; border: 1px solid black;font-weight: bold;")
+
 
 class ResultScene(QWidget):
     def __init__(self):

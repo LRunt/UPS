@@ -199,7 +199,7 @@ int Game::get_rematch_state() const{
  * @return message in format RESULT|<game_result>|<index1>|...|indexN>|<winIndex1>|...|<winIndex3>
  */
 string Game::get_result(const string& player){
-    string message = string(MESSAGE_RESULT) + DELIMITER + get_game_state(player);
+    string message = string(MESSAGE_RESULT) + DELIMITER + to_string(get_game_result(player));
     for(int field : mPlayBoard){
         message += DELIMITER + to_string(field);
     }

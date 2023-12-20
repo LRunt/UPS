@@ -245,7 +245,7 @@ class MainWindow(QWidget):
         RESULT|<game_result>|<index1>|...|indexN>|<winIndex1>|...|<winIndex3>
         :param message: message with result
         """
-        self.result_screen.result.setText(results[message[1]])
+        self.result_screen.result.setText(results[convert_string_to_integer(message[1])])
         # Filling game play board
         for i in range(len(self.result_screen.fields)):
             index = i + 2

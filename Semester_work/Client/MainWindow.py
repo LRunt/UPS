@@ -41,9 +41,9 @@ scenes = {
 }
 
 results = {
-    1: "WIN",
-    2: "LOSE",
-    3: "DRAW"
+    1: "Vítězství",
+    2: "Prohra",
+    3: "Remíza"
 }
 
 
@@ -70,7 +70,7 @@ class MainWindow(QWidget):
         self.lobby_scene = Scenes.LobbyScene()
         self.waiting_scene = Scenes.WaitingScene()
         self.game_scene = Scenes.GameScene()
-        self.result_screen = Scenes.ResultScene()
+        self.result_scene = Scenes.ResultScene()
         self.initUI()
         self.user = User()
 
@@ -85,6 +85,8 @@ class MainWindow(QWidget):
         self.waiting_scene.storno_button.clicked.connect(self.cancel_searching)
         for i, button in enumerate(self.game_scene.fields):
             button.clicked.connect(lambda checked, index=i: self.on_button_clicked(index))
+        self.result_scene.play_again_button.clicked.connect(self.play_again)
+        self.result_scene.exit_button.clicked.connect(self.leave_to_lobby)
 
         # Create stacked widget to manage different scenes
         self.stacked_widget = QStackedWidget(self)
@@ -92,7 +94,7 @@ class MainWindow(QWidget):
         self.stacked_widget.addWidget(self.lobby_scene.lobby_widget)
         self.stacked_widget.addWidget(self.waiting_scene.waiting_widget)
         self.stacked_widget.addWidget(self.game_scene.game_widget)
-        self.stacked_widget.addWidget(self.result_screen.result_widget)
+        self.stacked_widget.addWidget(self.result_scene.result_widget)
 
         # Set up the main layout
         main_layout = QVBoxLayout(self)
@@ -150,8 +152,16 @@ class MainWindow(QWidget):
         self.socket.send(f"STORNO")
 
     def on_button_clicked(self, index):
-        print(f"Button {index} clicked!")
+        logger.info(f"User clicked button with index {index}")
         self.socket.send(f"TURN|{str(index)}")
+
+    def play_again(self):
+        logger.info(f"User {self.user.user_name} want rematch")
+        self.socket.send(f"REMATCH|1")
+
+    def leave_to_lobby(self):
+        logger.info(f"User {self.user.user_name} do not want rematch")
+        self.socket.send(f"REMATCH|0")
 
     def handle_received_message(self, message):
         """
@@ -178,6 +188,7 @@ class MainWindow(QWidget):
                 self.parse_game_message(split_message)
             if split_message[0] == "RESULT":
                 self.stacked_widget.setCurrentIndex(scenes["Result"])
+                self.user.user_state == user_state["Result_screen"]
                 self.parse_result_message(split_message)
             logger.info("User state: In game")
         if self.user.user_state == user_state["Result_screen"]:
@@ -245,14 +256,14 @@ class MainWindow(QWidget):
         RESULT|<game_result>|<index1>|...|indexN>|<winIndex1>|...|<winIndex3>
         :param message: message with result
         """
-        self.result_screen.result.setText(results[convert_string_to_integer(message[1])])
+        self.result_scene.result.setText(results[convert_string_to_integer(message[1])])
         # Filling game play board
-        for i in range(len(self.result_screen.fields)):
+        for i in range(len(self.result_scene.fields)):
             index = i + 2
             play_field = convert_string_to_integer(message[index])
             if play_field == 0:
-                self.result_screen.clean_field(i)
+                self.result_scene.clean_field(i)
             elif play_field % 2 == 1:
-                self.result_screen.draw_X(i)
+                self.result_scene.draw_X(i)
             else:
-                self.result_screen.draw_O(i)
+                self.result_scene.draw_O(i)

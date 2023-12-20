@@ -25,10 +25,16 @@ enum turn_code{
     PLAYER_NOT_ON_TURN = 4
 };
 
-enum game_code{
+enum game_state{
     RUNNING = 0,
     WIN_PLAYER1 = 1,
     WIN_PLAYER2 = 2,
+    TIE = 3
+};
+
+enum game_result{
+    WIN = 1,
+    LOSE = 2,
     DRAW = 3
 };
 
@@ -36,6 +42,7 @@ enum game_code{
 
 #define MESSAGE_GAME_STATE "GAME"
 #define MESSAGE_VALID "VALID"
+#define MESSAGE_RESULT "RESULT"
 
 /**
  * Method prints a play board
@@ -140,7 +147,7 @@ int Game::check_game_state() {
     }
     //Testing draw
     if(mTurn == 9){
-        return DRAW;
+        return TIE;
     }
     return RUNNING;
 }
@@ -185,6 +192,35 @@ int Game::get_rematch_state() const{
     }
     return -1;
 }
+
+/**
+ * Generating message for result screen
+ * @param player the player to whom the message will be sent
+ * @return message in format RESULT|<game_result>|<index1>|...|indexN>|<winIndex1>|...|<winIndex3>
+ */
+string Game::get_result(const string& player){
+    string message = string(MESSAGE_RESULT) + DELIMITER + get_game_state(player);
+    for(int field : mPlayBoard){
+        message += DELIMITER + to_string(field);
+    }
+    return message;
+}
+
+/**
+ * Method returns result of the player
+ * @param player the player for whom we are looking for a result
+ * @return result of the player
+ */
+int Game::get_game_result(const string& player){
+    if(this->mState == TIE){
+        return DRAW;
+    }else if((this->mState == WIN_PLAYER1 && player == this->mPlayer1) || (this->mState == WIN_PLAYER2 && player == this->mPlayer2)){
+        return WIN;
+    }else{
+        return LOSE;
+    }
+}
+
 
 /**
  * Method to reset game

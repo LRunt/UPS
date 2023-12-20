@@ -139,13 +139,18 @@ string User::execute_message(const string& message, int fd) {
                 case IN_GAME:
                     cout << "In game" << endl;
                     if(parsedMessage[0] == MESSAGE_WAITING || parsedMessage[0] == MESSAGE_GAME_STATUS || parsedMessage[0] == MESSAGE_PING){
-                        user->test_if_game_is_running();
-                        response = user->mGame->get_game_state(user->mUsername);
+                        if(user->is_game_running()){
+                            response = user->mGame->get_game_state(user->mUsername);
+                        } else{
+                            response = user->mGame->get_result(user->mUsername);
+                        }
                     }else if(parsedMessage[0] == MESSAGE_MAKE_TURN){
                         cout << "making turn" << endl;
                         response = user->mGame->make_turn(user->mUsername, stoi(parsedMessage[1]));
                         //if game ended
-                        user->test_if_game_is_running();
+                        if(!user->is_game_running()){
+                            response = user->mGame->get_result(user->mUsername);
+                        }
                     }else{
                         response = string(MESSAGE_ERROR);
                     }
@@ -153,7 +158,7 @@ string User::execute_message(const string& message, int fd) {
                 case RESULT_SCREEN:
                     cout <<"Result screen" << endl;
                     if(parsedMessage[0] == MESSAGE_PING){
-                        response = MESSAGE_WAITING;
+                        response = user->mGame->get_result(user->mUsername);
                     }else if(parsedMessage[0] == MESSAGE_REMATCH){
                         int rematch = user->mGame->rematch(user->mUsername, stoi(parsedMessage[1]));
                         user->evaluate_rematch(rematch);
@@ -322,17 +327,20 @@ void User::change_user_fd(const string &username, int fd) {
 
 /**
  * Method test if game is running. If not then set user state to game result screen.
+ * @return true - game is running, false - game is not running
  */
-void User::test_if_game_is_running() {
+bool User::is_game_running() {
     if(this->mGame->mState != 0){
         this->mState = RESULT_SCREEN;
+        return false;
     }
+    return true;
 }
 
 /**
  * Method evaluate the rematch and do everything possible
  * @param rematch rematch code -1 = Waiting, 0 = No rematch, 1 = Rematch
- * @return
+ * @return rematch string
  */
 string User::evaluate_rematch(int rematch) {
     if(rematch == 0){

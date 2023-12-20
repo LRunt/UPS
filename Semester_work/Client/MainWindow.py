@@ -105,7 +105,7 @@ class MainWindow(QWidget):
         Method for logging the user after clicking login button,
         method check all information from user and then try to connect to the server
         """
-        server_ip_address = self.login_scene.text_field_IP_address.text()
+        server_ip_address = self.login_scene.text_field_ip_address.text()
         server_port = convert_string_to_integer(self.login_scene.text_field_port.text())
         username = self.login_scene.text_field_username.text()
         if server_ip_address == "" or server_port == "" or username == "":

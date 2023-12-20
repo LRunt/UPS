@@ -46,6 +46,8 @@ public:
 
     string get_game_state(const string& player);
 
+    string get_result(const string& player);
+
     int rematch(const string& player, bool rematch);
 
     [[nodiscard]] int get_rematch_state() const;
@@ -60,6 +62,8 @@ private:
     int validate_turn(const string& player, int index);
 
     int check_game_state();
+
+    int get_game_result(const string& player);
 
     [[nodiscard]] int get_winner_by_turn() const;
 

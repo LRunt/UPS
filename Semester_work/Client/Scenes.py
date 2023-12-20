@@ -7,7 +7,8 @@ Description: Definition of all scenes
 """
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QVBoxLayout, QPushButton, QGridLayout, QHBoxLayout, QFormLayout
+from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QVBoxLayout, QPushButton, QGridLayout, QHBoxLayout, QFormLayout, \
+    QSizePolicy
 
 NUMBER_OF_FIELDS = 9
 
@@ -15,7 +16,7 @@ NUMBER_OF_FIELDS = 9
 class LoginScene(QWidget):
     def __init__(self):
         super().__init__()
-        self.text_field_IP_address = QLineEdit(self)
+        self.text_field_ip_address = QLineEdit(self)
         self.text_field_port = QLineEdit(self)
         self.text_field_username = QLineEdit(self)
         self.login_button = QPushButton('Login', self)
@@ -23,13 +24,13 @@ class LoginScene(QWidget):
 
     def initUI(self):
         # Create labels and text fields for the first scene
-        label_IP_address = QLabel('IP address:')
+        label_ip_address = QLabel('IP address:')
         label_port = QLabel('Port:')
         label_username = QLabel('Username:')
 
         # Create layout for the first scene
         form_layout = QFormLayout()
-        form_layout.addRow(label_IP_address, self.text_field_IP_address)
+        form_layout.addRow(label_ip_address, self.text_field_ip_address)
         form_layout.addRow(label_port, self.text_field_port)
         form_layout.addRow(label_username, self.text_field_username)
 
@@ -83,7 +84,7 @@ class GameScene(QWidget):
     def __init__(self):
         super().__init__()
         self.game_widget = None
-        self.fields = [None] * 9
+        self.fields = [0] * NUMBER_OF_FIELDS
         self.player_1 = None  # Player X
         self.player_2 = None  # Player O
         self.turn = None
@@ -105,8 +106,8 @@ class GameScene(QWidget):
 
             play_board_layout.addWidget(self.fields[i], i % 3, i / 3)
 
-        self.player_1 = QLabel("X - Lukas")
-        self.player_2 = QLabel("O - Hanka")
+        self.player_1 = QLabel("X - ")
+        self.player_2 = QLabel("O - ")
         self.turn = QLabel("Na tahu: X")
         players = QVBoxLayout()
         players.addWidget(self.player_1)
@@ -140,10 +141,63 @@ class GameScene(QWidget):
 class ResultScene(QWidget):
     def __init__(self):
         super().__init__()
+        self.result = None
+        self.fields = [0] * NUMBER_OF_FIELDS
+        self.play_again_button = None
+        self.exit_button = None
         self.initUI()
 
     def initUI(self):
         result_layout = QVBoxLayout()
+
+        self.result = QLabel("Výhra")
+
+        font = self.result.font()
+        font.setPointSize(20)
+        font.setBold(True)
+        self.result.setFont(font)
+
+        # Play board
+        play_board_layout = QGridLayout()
+        play_board_layout.setSpacing(0)
+
+        # initializing fields
+        for i in range(NUMBER_OF_FIELDS):
+            button = QPushButton("")
+            button.setFixedSize(100, 100)
+            button.setStyleSheet("background-color: white; border: 1px solid black;")
+            font = QFont("Arial Rounded MT Bold", 72)
+            button.setFont(font)
+
+            self.fields[i] = button
+
+            play_board_layout.addWidget(self.fields[i], i % 3, i / 3)
+
+        play_board = QHBoxLayout()
+        lab1 = QLabel("")
+        lab2 = QLabel("")
+
+        play_board.addWidget(lab1)
+        play_board.addLayout(play_board_layout)
+        play_board.addWidget(lab2)
+
+        play = QVBoxLayout()
+        label = QLabel("")
+        play.addLayout(play_board)
+        play.addWidget(label)
+
+        # Buttons under play board
+        buttons = QHBoxLayout()
+
+        self.play_again_button = QPushButton("Odveta")
+        self.exit_button = QPushButton("Lobby")
+
+        buttons.addWidget(self.play_again_button)
+        buttons.addWidget(self.exit_button)
+
+        result_layout.addWidget(self.result, alignment=Qt.AlignCenter)
+        result_layout.addLayout(play)
+        result_layout.addLayout(buttons)
 
         self.result_widget = QWidget()
         self.result_widget.setLayout(result_layout)

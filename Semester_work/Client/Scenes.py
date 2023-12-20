@@ -201,3 +201,16 @@ class ResultScene(QWidget):
 
         self.result_widget = QWidget()
         self.result_widget.setLayout(result_layout)
+
+    def clean_field(self, index):
+        self.fields[index].setText("")
+
+    def draw_X(self, index):
+        self.fields[index].setText("×")
+        self.fields[index].setStyleSheet(
+            "color: red; font-size: 108px; background-color: white; border: 1px solid black;")
+
+    def draw_O(self, index):
+        self.fields[index].setText("O")
+        self.fields[index].setStyleSheet(
+            "color: blue; font-size: 72px; background-color: white; border: 1px solid black;font-weight: bold;")

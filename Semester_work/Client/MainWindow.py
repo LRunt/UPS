@@ -40,6 +40,12 @@ scenes = {
     "Result": 4
 }
 
+results = {
+    1: "WIN",
+    2: "LOSE",
+    3: "DRAW"
+}
+
 
 def convert_string_to_integer(string):
     """
@@ -170,6 +176,9 @@ class MainWindow(QWidget):
         if self.user.user_state == user_state["In_Game"]:
             if split_message[0] == "GAME":
                 self.parse_game_message(split_message)
+            if split_message[0] == "RESULT":
+                self.stacked_widget.setCurrentIndex(scenes["Result"])
+                self.parse_result_message(split_message)
             logger.info("User state: In game")
         if self.user.user_state == user_state["Result_screen"]:
             logger.info("User state: Result screen")
@@ -202,6 +211,11 @@ class MainWindow(QWidget):
                 print("Wrong code")
 
     def parse_game_message(self, params):
+        """
+        Method for parsing message of game state in format:
+        GAME|<side_of_player>|<opponent_name>|<number_of_turn>|<game_status>|<play_field1>|...|<play_fieldN>
+        :param params: received message with game status
+        """
         if params[1] == "1":
             self.game_scene.player_1.setText(f"X - {self.user.user_name} (YOU)")
             self.game_scene.player_2.setText(f"O - {params[2]}")
@@ -224,3 +238,21 @@ class MainWindow(QWidget):
                 self.game_scene.draw_X(i)
             else:
                 self.game_scene.draw_O(i)
+
+    def parse_result_message(self, message):
+        """
+        Method for parsing message with result in format:
+        RESULT|<game_result>|<index1>|...|indexN>|<winIndex1>|...|<winIndex3>
+        :param message: message with result
+        """
+        self.result_screen.result.setText(results[message[1]])
+        # Filling game play board
+        for i in range(len(self.result_screen.fields)):
+            index = i + 2
+            play_field = convert_string_to_integer(message[index])
+            if play_field == 0:
+                self.result_screen.clean_field(i)
+            elif play_field % 2 == 1:
+                self.result_screen.draw_X(i)
+            else:
+                self.result_screen.draw_O(i)

@@ -169,7 +169,7 @@ class MainWindow(QWidget):
                 self.user.user_state = user_state["In_Game"]
         if self.user.user_state == user_state["In_Game"]:
             if split_message[0] == "GAME":
-                self.game.parse_game_status_message(split_message, self.user.user_name)
+                self.parse_game_message(split_message)
             logger.info("User state: In game")
         if self.user.user_state == user_state["Result_screen"]:
             logger.info("User state: Result screen")
@@ -219,8 +219,8 @@ class MainWindow(QWidget):
             index = i + 5
             play_field = convert_string_to_integer(params[index])
             if play_field == 0:
-                self.game_scene.clean_field(index)
+                self.game_scene.clean_field(i)
             elif play_field % 2 == 1:
-                self.game_scene.draw_X(index)
+                self.game_scene.draw_X(i)
             else:
-                self.game_scene.draw_O(index)
+                self.game_scene.draw_O(i)

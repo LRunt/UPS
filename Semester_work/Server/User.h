@@ -66,6 +66,6 @@ private:
 
     string evaluate_rematch(int rematch);
 
-    void test_if_game_is_running();
+    bool is_game_running();
 };
 

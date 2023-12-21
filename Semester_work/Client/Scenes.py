@@ -7,8 +7,7 @@ Description: Definition of all scenes
 """
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
-from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QVBoxLayout, QPushButton, QGridLayout, QHBoxLayout, QFormLayout, \
-    QSizePolicy, QStackedWidget
+from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QVBoxLayout, QPushButton, QGridLayout, QHBoxLayout, QFormLayout
 
 NUMBER_OF_FIELDS = 9
 
@@ -185,7 +184,7 @@ class ResultScene(QWidget):
         play = QVBoxLayout()
         self.text_label = QLabel("")
         play.addLayout(play_board)
-        play.addWidget(self.text_label)
+        play.addWidget(self.text_label, alignment=Qt.AlignCenter)
 
         # Buttons under play board - State no-one respond
         buttons = QHBoxLayout()
@@ -202,6 +201,10 @@ class ResultScene(QWidget):
 
         self.result_widget = QWidget()
         self.result_widget.setLayout(result_layout)
+
+    def reset_fields(self):
+        for i in range(len(self.fields)):
+            self.fields[i].setStyleSheet("background-color: white; border: 1px solid black;")
 
     def clean_field(self, index):
         self.fields[index].setText("")

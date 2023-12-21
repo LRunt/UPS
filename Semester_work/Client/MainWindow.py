@@ -188,7 +188,7 @@ class MainWindow(QWidget):
                 self.parse_game_message(split_message)
             if split_message[0] == "RESULT":
                 self.stacked_widget.setCurrentIndex(scenes["Result"])
-                self.user.user_state == user_state["Result_screen"]
+                self.user.user_state = user_state["Result_screen"]
                 self.parse_result_message(split_message)
             logger.info("User state: In game")
         if self.user.user_state == user_state["Result_screen"]:
@@ -196,10 +196,10 @@ class MainWindow(QWidget):
                 self.parse_result_message(split_message)
             if split_message[0] == "LOGGED":
                 self.stacked_widget.setCurrentIndex(scenes["Lobby"])
-                self.user.user_state == user_state["Logged"]
+                self.user.user_state = user_state["Logged"]
             if split_message[0] == "GAME":
                 self.stacked_widget.setCurrentIndex(scenes["Game"])
-                self.user.user_state == user_state["In_Game"]
+                self.user.user_state = user_state["In_Game"]
                 self.parse_game_message(split_message)
             logger.info("User state: Result screen")
 

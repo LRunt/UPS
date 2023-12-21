@@ -145,7 +145,7 @@ class ResultScene(QWidget):
         self.fields = [0] * NUMBER_OF_FIELDS
         self.play_again_button = None
         self.exit_button = None
-        self.stacked_widget = None
+        self.text_label = None
         self.initUI()
 
     def initUI(self):
@@ -183,9 +183,9 @@ class ResultScene(QWidget):
         play_board.addWidget(lab2)
 
         play = QVBoxLayout()
-        text_label = QLabel("")
+        self.text_label = QLabel("")
         play.addLayout(play_board)
-        play.addWidget(text_label)
+        play.addWidget(self.text_label)
 
         # Buttons under play board - State no-one respond
         buttons = QHBoxLayout()
@@ -195,47 +195,10 @@ class ResultScene(QWidget):
 
         buttons.addWidget(self.play_again_button)
         buttons.addWidget(self.exit_button)
-        buttons_widget = QWidget()
-        buttons_widget.setLayout(buttons)
-
-        # Leave button - State opponent leave the game
-        leave_layout = QVBoxLayout()
-
-        label_opponent_leaved = QLabel("Protihráč nechce hrát znovu.")
-
-        leave_layout.addWidget(label_opponent_leaved)
-        leave_layout.addWidget(self.exit_button)
-        leave_widget = QWidget()
-        leave_widget.setLayout(leave_layout)
-
-        # Opponent wants a rematch
-        rematch_layout = QVBoxLayout()
-
-        label_opponent_wants_rematch = QLabel("Protihráč chce hrát znovu.")
-
-        rematch_layout.addWidget(label_opponent_wants_rematch)
-        rematch_layout.addLayout(buttons)
-        rematch_widget = QWidget()
-        rematch_widget.setLayout(rematch_layout)
-
-        # Waiting for opponent response
-        waiting_layout = QVBoxLayout()
-
-        label_waiting_for_opponent = QLabel("Čekám na odpověď protihráče.")
-
-        waiting_layout.addWidget(label_waiting_for_opponent)
-        waiting_for_response_widget = QWidget()
-        waiting_for_response_widget.setLayout(waiting_layout)
-
-        self.stacked_widget = QStackedWidget()
-        self.stacked_widget.addWidget(buttons_widget)
-        self.stacked_widget.addWidget(leave_widget)
-        self.stacked_widget.addWidget(rematch_widget)
-        self.stacked_widget.addWidget(waiting_for_response_widget)
 
         result_layout.addWidget(self.result, alignment=Qt.AlignCenter)
         result_layout.addLayout(play)
-        result_layout.addWidget(self.stacked_widget)
+        result_layout.addLayout(buttons)
 
         self.result_widget = QWidget()
         self.result_widget.setLayout(result_layout)
@@ -257,11 +220,19 @@ class ResultScene(QWidget):
         self.fields[index].setStyleSheet(self.fields[index].styleSheet() + "background-color: lightyellow;")
 
     def change_widget_scene(self, mode):
+        if mode == 0:
+            self.text_label.setText("")
+            self.play_again_button.setEnabled(True)
+            self.exit_button.setEnabled(True)
         if mode == 1:
-            self.stacked_widget.setCurrentIndex(0)
-        if mode == 2:
-            self.stacked_widget.setCurrentIndex(1)
+            self.sext_label.setText("Protihráč nechce hrát znovu.")
+            self.play_again_button.setEnabled(False)
+            self.exit_button.setEnabled(True)
         if mode == 3:
-            self.stacked_widget.setCurrentIndex(2)
-        if mode == 5:
-            self.stacked_widget.setCurrentIndex(3)
+            self.sext_label.setText("Protihráč chce hrát znovu.")
+            self.play_again_button.setEnabled(True)
+            self.exit_button.setEnabled(True)
+        if mode == 4:
+            self.sext_label.setText("Čekám na odpověď protihráče.")
+            self.play_again_button.setEnabled(False)
+            self.exit_button.setEnabled(False)

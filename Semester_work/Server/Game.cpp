@@ -38,6 +38,22 @@ enum game_result{
     DRAW = 3
 };
 
+enum rematch{
+    NO_RESPONSE = -1,
+    NO = 0,
+    YES = 1
+};
+
+enum new_game{
+    NO_ANSWER = 0,
+    OPPONENT_LOBBY = 1,
+    OPPONENT_WANT = 2,
+    USER_LOBBY = 3,
+    USER_WANT = 4,
+    BOTH_LOBBY = 5,
+    BOTH_WANT = 6
+};
+
 #define DELIMITER "|"
 
 #define MESSAGE_GAME_STATE "GAME"
@@ -176,21 +192,39 @@ int Game::rematch(const string &player, bool rematch) {
     }else{
         mRematchP2 = rematch;
     }
-    return get_rematch_state();
+    return get_rematch_state(player);
 }
 
 /**
  * Method to get a state of rematch
- * @return rematch or not
+ * @param player name of the player
+ * @return state from enum new_game
  */
-int Game::get_rematch_state() const{
-    if(mRematchP1 != -1 && mRematchP2 != -1){
-        if(mRematchP1 == 1 && mRematchP2 == 1){
-            return 1;
-        }
-        else return 0;
+int Game::get_rematch_state(const string& player){
+    int user_response, opponent_response;
+    if(player == mPlayer1){
+        user_response = mRematchP1;
+        opponent_response = mRematchP2;
+    }else{
+        user_response = mRematchP2;
+        opponent_response = mRematchP1;
     }
-    return -1;
+
+    if(user_response == NO_RESPONSE && opponent_response == NO_RESPONSE){
+        return NO_ANSWER;
+    }else if(user_response == NO_RESPONSE && opponent_response == NO){
+        return OPPONENT_LOBBY;
+    }else if(user_response == NO_RESPONSE && opponent_response == YES){
+        return OPPONENT_WANT;
+    }else if(user_response == NO && opponent_response == NO_RESPONSE){
+        return USER_LOBBY;
+    }else if(user_response == YES && opponent_response == NO_RESPONSE){
+        return USER_WANT;
+    }else if(user_response == YES && opponent_response == YES){
+        return BOTH_WANT;
+    }else{
+        return BOTH_LOBBY;
+    }
 }
 
 /**

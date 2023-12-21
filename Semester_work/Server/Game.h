@@ -50,7 +50,7 @@ public:
 
     int rematch(const string& player, bool rematch);
 
-    [[nodiscard]] int get_rematch_state() const;
+    int get_rematch_state(const string& player);
 
     void reset_game();
 

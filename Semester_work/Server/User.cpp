@@ -163,7 +163,7 @@ string User::execute_message(const string& message, int fd) {
                         int rematch = user->mGame->rematch(user->mUsername, stoi(parsedMessage[1]));
                         user->evaluate_rematch(rematch);
                     }else if(parsedMessage[0] == MESSAGE_WAITING){
-                        int rematch = user->mGame->get_rematch_state();
+                        int rematch = user->mGame->get_rematch_state(user->mUsername);
                         user->evaluate_rematch(rematch);
                     }else{
                         response = string(MESSAGE_ERROR);

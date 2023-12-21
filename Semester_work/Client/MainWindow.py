@@ -192,6 +192,15 @@ class MainWindow(QWidget):
                 self.parse_result_message(split_message)
             logger.info("User state: In game")
         if self.user.user_state == user_state["Result_screen"]:
+            if split_message[0] == "RESULT":
+                self.parse_result_message(split_message)
+            if split_message[0] == "LOGGED":
+                self.stacked_widget.setCurrentIndex(scenes["Lobby"])
+                self.user.user_state == user_state["Logged"]
+            if split_message[0] == "GAME":
+                self.stacked_widget.setCurrentIndex(scenes["Game"])
+                self.user.user_state == user_state["In_Game"]
+                self.parse_game_message(split_message)
             logger.info("User state: Result screen")
 
     def login_result(self, split_message):
@@ -224,7 +233,7 @@ class MainWindow(QWidget):
     def parse_game_message(self, params):
         """
         Method for parsing message of game state in format:
-        GAME|<side_of_player>|<opponent_name>|<number_of_turn>|<game_status>|<play_field1>|...|<play_fieldN>
+        GAME|<side_of_player>|<opponent_name>|<number_of_turn>|<play_field1>|...|<play_fieldN>
         :param params: received message with game status
         """
         if params[1] == "1":
@@ -238,10 +247,9 @@ class MainWindow(QWidget):
             self.game_scene.turn.setText("Na tahu je hráč: O")
         else:
             self.game_scene.turn.setText("Na tahu je hráč: X")
-        game_state = convert_string_to_integer(params[4])
         # Filling game play board
         for i in range(len(self.game_scene.fields)):
-            index = i + 5
+            index = i + 4
             play_field = convert_string_to_integer(params[index])
             if play_field == 0:
                 self.game_scene.clean_field(i)
@@ -259,7 +267,7 @@ class MainWindow(QWidget):
         self.result_scene.result.setText(results[convert_string_to_integer(message[1])])
         # Filling game play board
         for i in range(len(self.result_scene.fields)):
-            index = i + 2
+            index = i + 3
             play_field = convert_string_to_integer(message[index])
             if play_field == 0:
                 self.result_scene.clean_field(i)

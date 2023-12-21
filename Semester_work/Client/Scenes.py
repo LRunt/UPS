@@ -225,14 +225,14 @@ class ResultScene(QWidget):
             self.play_again_button.setEnabled(True)
             self.exit_button.setEnabled(True)
         if mode == 1:
-            self.sext_label.setText("Protihráč nechce hrát znovu.")
+            self.text_label.setText("Protihráč nechce hrát znovu.")
             self.play_again_button.setEnabled(False)
             self.exit_button.setEnabled(True)
         if mode == 3:
-            self.sext_label.setText("Protihráč chce hrát znovu.")
+            self.text_label.setText("Protihráč chce hrát znovu.")
             self.play_again_button.setEnabled(True)
             self.exit_button.setEnabled(True)
         if mode == 4:
-            self.sext_label.setText("Čekám na odpověď protihráče.")
+            self.text_label.setText("Čekám na odpověď protihráče.")
             self.play_again_button.setEnabled(False)
             self.exit_button.setEnabled(False)

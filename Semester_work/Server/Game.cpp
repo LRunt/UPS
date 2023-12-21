@@ -74,7 +74,7 @@ void Game::print_board() {
 
 /**
  * Generating message about state of the game in format:
- * GAME|<side_of_player>|<opponent_name>|<number_of_turn>|<game_status>|<play_field1>|...|<play_fieldN>
+ * GAME|<side_of_player>|<opponent_name>|<number_of_turn>|<play_field1>|...|<play_fieldN>
  * @param player Player who is asking for game state
  * @return generated message
  */
@@ -86,7 +86,6 @@ string Game::get_game_state(const string& player) {
         response += to_string(O) + DELIMITER + mPlayer1;
     }
     response += DELIMITER + to_string(mTurn);
-    response += DELIMITER + to_string(mState);
     for(int i : mPlayBoard){
         response += DELIMITER + to_string(i);
     }

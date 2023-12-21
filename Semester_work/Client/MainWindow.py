@@ -261,10 +261,11 @@ class MainWindow(QWidget):
     def parse_result_message(self, message):
         """
         Method for parsing message with result in format:
-        RESULT|<game_result>|<index1>|...|indexN>|<winIndex1>|...|<winIndex3>
+        RESULT|<game_result>|<response_state>|<index1>|...|indexN>|<winIndex1>|...|<winIndex3>
         :param message: message with result
         """
         self.result_scene.result.setText(results[convert_string_to_integer(message[1])])
+        self.result_scene.change_widget_scene(convert_string_to_integer(message[2]))
         # Filling game play board
         for i in range(len(self.result_scene.fields)):
             index = i + 3

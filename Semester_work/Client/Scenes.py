@@ -214,3 +214,6 @@ class ResultScene(QWidget):
         self.fields[index].setText("O")
         self.fields[index].setStyleSheet(
             "color: blue; font-size: 72px; background-color: white; border: 1px solid black;font-weight: bold;")
+
+    def color_winner_field(self, index):
+        self.fields[index].setStyleSheet(self.fields[index].styleSheet() + "background-color: lightyellow;")

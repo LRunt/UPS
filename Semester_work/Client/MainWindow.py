@@ -275,3 +275,7 @@ class MainWindow(QWidget):
                 self.result_scene.draw_X(i)
             else:
                 self.result_scene.draw_O(i)
+        if message[1] == 1 or message[1] == 2:
+            for i in range(3):
+                index = i + 12
+                self.result_scene.color_winner_field(convert_string_to_integer(message[index]))

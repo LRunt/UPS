@@ -231,7 +231,7 @@ class ResultScene(QWidget):
             self.text_label.setText("Protihráč nechce hrát znovu.")
             self.play_again_button.setEnabled(False)
             self.exit_button.setEnabled(True)
-        if mode == 3:
+        if mode == 2:
             self.text_label.setText("Protihráč chce hrát znovu.")
             self.play_again_button.setEnabled(True)
             self.exit_button.setEnabled(True)

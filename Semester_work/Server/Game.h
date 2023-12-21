@@ -46,7 +46,7 @@ public:
 
     string get_game_state(const string& player);
 
-    string get_result(const string& player);
+    string get_result(const string& player, int rematch_state);
 
     int rematch(const string& player, bool rematch);
 

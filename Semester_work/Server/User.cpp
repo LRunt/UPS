@@ -35,6 +35,16 @@ enum login_code{
     LONG_USERNAME = 5
 };
 
+enum new_game{
+    NO_ANSWER = 0,
+    OPPONENT_LOBBY = 1,
+    OPPONENT_WANT = 2,
+    USER_LOBBY = 3,
+    USER_WANT = 4,
+    BOTH_LOBBY = 5,
+    BOTH_WANT = 6
+};
+
 #define MIN_USERNAME_LENGTH 3
 #define MAX_USERNAME_LENGTH 20
 
@@ -156,15 +166,14 @@ string User::execute_message(const string& message, int fd) {
                     }
                     break;
                 case RESULT_SCREEN:
+                    int rematch;
                     cout <<"Result screen" << endl;
-                    if(parsedMessage[0] == MESSAGE_PING){
-                        response = user->mGame->get_result(user->mUsername);
+                    if(parsedMessage[0] == MESSAGE_PING || parsedMessage[0] == MESSAGE_WAITING){
+                        rematch = user->mGame->get_rematch_state(user->mUsername);
+                        response = user->evaluate_rematch(rematch);
                     }else if(parsedMessage[0] == MESSAGE_REMATCH){
-                        int rematch = user->mGame->rematch(user->mUsername, stoi(parsedMessage[1]));
-                        user->evaluate_rematch(rematch);
-                    }else if(parsedMessage[0] == MESSAGE_WAITING){
-                        int rematch = user->mGame->get_rematch_state(user->mUsername);
-                        user->evaluate_rematch(rematch);
+                        rematch = user->mGame->rematch(user->mUsername, stoi(parsedMessage[1]));
+                        response = user->evaluate_rematch(rematch);
                     }else{
                         response = string(MESSAGE_ERROR);
                     }
@@ -339,21 +348,21 @@ bool User::is_game_running() {
 
 /**
  * Method evaluate the rematch and do everything possible
- * @param rematch rematch code -1 = Waiting, 0 = No rematch, 1 = Rematch
+ * @param rematch rematch code 0-4 = waiting for response of both users, 5 = no_rematch, 6 = rematch
  * @return rematch string
  */
 string User::evaluate_rematch(int rematch) {
-    if(rematch == 0){
+    if(rematch == USER_LOBBY || rematch == BOTH_LOBBY){
         //No rematch
         this->mGame = nullptr;
         this->mState = LOGGED;
-        return string(MESSAGE_REMATCH) + to_string(0);
-    }else if(rematch == -1){
-        return MESSAGE_WAITING;
-    }else{
+        return string(MESSAGE_LOGGED);
+    }else if(rematch == BOTH_WANT){
         this->mState = IN_GAME;
         this->mGame->reset_game();
-        return string(MESSAGE_REMATCH) + to_string(1);
+        return this->mGame->get_game_state(mUsername);
+    }else{
+        return this->mGame->get_result(mUsername);
     }
 }
 

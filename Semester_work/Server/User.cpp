@@ -121,6 +121,7 @@ string User::execute_message(const string& message, int fd) {
             cout << "User wants to disconnect." << endl;
             user->disconnect_user();
         }else{
+            int rematch;
             switch(user->mState){
                 case LOGGED:
                     cout <<"Logged" << endl;
@@ -152,21 +153,22 @@ string User::execute_message(const string& message, int fd) {
                         if(user->is_game_running()){
                             response = user->mGame->get_game_state(user->mUsername);
                         } else{
-                            response = user->mGame->get_result(user->mUsername);
+                            rematch = user->mGame->get_rematch_state(user->mUsername);
+                            response = user->mGame->get_result(user->mUsername, rematch);
                         }
                     }else if(parsedMessage[0] == MESSAGE_MAKE_TURN){
                         cout << "making turn" << endl;
                         response = user->mGame->make_turn(user->mUsername, stoi(parsedMessage[1]));
                         //if game ended
                         if(!user->is_game_running()){
-                            response = user->mGame->get_result(user->mUsername);
+                            rematch = user->mGame->get_rematch_state(user->mUsername);
+                            response = user->mGame->get_result(user->mUsername, rematch);
                         }
                     }else{
                         response = string(MESSAGE_ERROR);
                     }
                     break;
                 case RESULT_SCREEN:
-                    int rematch;
                     cout <<"Result screen" << endl;
                     if(parsedMessage[0] == MESSAGE_PING || parsedMessage[0] == MESSAGE_WAITING){
                         rematch = user->mGame->get_rematch_state(user->mUsername);
@@ -362,7 +364,7 @@ string User::evaluate_rematch(int rematch) {
         this->mGame->reset_game();
         return this->mGame->get_game_state(mUsername);
     }else{
-        return this->mGame->get_result(mUsername);
+        return this->mGame->get_result(mUsername, rematch);
     }
 }
 

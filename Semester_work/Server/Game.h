@@ -17,7 +17,11 @@ class Game {
 public:
     static const int PLAY_BOARD_SIZE = 9;
 
+    static const int WIN_COMBINATION_SIZE = 3;
+
     int mPlayBoard[PLAY_BOARD_SIZE]{};
+
+    int mWinFields[WIN_COMBINATION_SIZE]{};
 
     int mTurn;
 
@@ -53,6 +57,8 @@ public:
     int get_rematch_state(const string& player);
 
     void reset_game();
+
+    void set_win_combination(int index1, int index2, int index3);
 
 
 private:

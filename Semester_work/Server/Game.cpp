@@ -103,10 +103,10 @@ string Game::make_turn(const string &player, int index) {
     if(validity == VALID){
         //making the turn
         if(mTurn % 2 == 1){
-	    mPlayBoard[index] = X;
-	}else{
-	    mPlayBoard[index] = O;
-	}
+	        mPlayBoard[index] = X;
+	    }else{
+	        mPlayBoard[index] = O;
+	    }
         mState = check_game_state();
         mTurn++;
         cout << this->to_str() << endl;
@@ -145,19 +145,23 @@ int Game::check_game_state() {
     for(int i = 0; i < 3; i++){
         //Row
         if(mPlayBoard[i * 3] == mPlayBoard[i * 3 + 1] && mPlayBoard[i * 3] == mPlayBoard[i * 3 + 2] && mPlayBoard[i * 3] != 0){
+            set_win_combination(i * 3, i * 3 + 1, i * 3 + 2);
             return get_winner_by_turn();
         }
         //Column
         if(mPlayBoard[i] == mPlayBoard[i + 3] && mPlayBoard[i] == mPlayBoard[i + 6] && mPlayBoard[i] != 0){
+            set_win_combination(i, i + 3, i + 6);
             return get_winner_by_turn();
         }
     }
 
     //Check diagonals
     if(mPlayBoard[0] == mPlayBoard[4] && mPlayBoard[4] == mPlayBoard[8] && mPlayBoard[0] != 0){
+        set_win_combination(0, 4, 8);
         return get_winner_by_turn();
     }
     if(mPlayBoard[2] == mPlayBoard[4] && mPlayBoard[4] == mPlayBoard[6] && mPlayBoard[2] != 0){
+        set_win_combination(2, 4, 6);
         return get_winner_by_turn();
     }
     //Testing draw
@@ -237,6 +241,11 @@ string Game::get_result(const string& player, int rematch_state){
     for(int field : mPlayBoard){
         message += DELIMITER + to_string(field);
     }
+    if(mState != RUNNING && mState != DRAW){
+        for(int field : mWinFields){
+            message += DELIMITER + to_string(field);
+        }
+    }
     return message;
 }
 
@@ -255,6 +264,17 @@ int Game::get_game_result(const string& player){
     }
 }
 
+/**
+ * Method sets field where the game is decided
+ * @param index1 index of field where is win combination
+ * @param index2 index of field where is win combination
+ * @param index3 index of field where is win combination
+ */
+void Game::set_win_combination(int index1, int index2, int index3){
+    mWinFields[0] = index1;
+    mWinFields[1] = index2;
+    mWinFields[2] = index3;
+}
 
 /**
  * Method to reset game
@@ -271,6 +291,9 @@ void Game::reset_game() {
     }else{
         mRematchP1 = -1;
         mRematchP2 = -1;
+    }
+    for(int & i : mWinFields){
+        i = 0;
     }
 }
 

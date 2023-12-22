@@ -10,8 +10,8 @@ import threading
 import time
 from Logger import logger
 
-
 MESSAGE_PING = "PING"
+
 
 class Heartbeat(threading.Thread):
     def __init__(self, socket_instance, time_interval=1):

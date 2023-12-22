@@ -197,17 +197,28 @@ class MainWindow(QWidget):
             if split_message[0] == "RESULT":
                 self.parse_result_message(split_message)
             if split_message[0] == "LOGGED":
+                self.result_scene.reset_fields()
                 self.stacked_widget.setCurrentIndex(scenes["Lobby"])
                 self.user.user_state = user_state["Logged"]
             if split_message[0] == "GAME":
+                self.result_scene.reset_fields()
                 self.stacked_widget.setCurrentIndex(scenes["Game"])
                 self.user.user_state = user_state["In_Game"]
                 self.parse_game_message(split_message)
             logger.info("User state: Result screen")
-        if self.user_state == user_state["Loading"]:
+        if self.user.user_state == user_state["Loading"]:
             if split_message[0] == "LOGGED":
                 self.stacked_widget.setCurrentIndex(scenes["Lobby"])
                 self.user.user_state = user_state["Logged"]
+            if split_message[0] == "WAITING":
+                self.stacked_widget.setCurrentIndex(scenes["Waiting"])
+                self.user.user_state = user_state["Waiting"]
+            if split_message[0] == "GAME":
+                self.stacked_widget.setCurrentIndex(scenes["Game"])
+                self.user.user_state = user_state["In_Game"]
+            if split_message[0] == "RESULT":
+                self.stacked_widget.setCurrentIndex(scenes["Result"])
+                self.user.user_state = user_state["Result_screen"]
 
     def login_result(self, split_message):
         """

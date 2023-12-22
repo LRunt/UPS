@@ -4,7 +4,7 @@ from Logger import logger
 from Heartbeat import Heartbeat
 from PyQt5.QtCore import QObject, pyqtSignal
 
-CONNECTION_TIMEOUT = 5 #seconds
+CONNECTION_TIMEOUT = 1 #seconds
 
 
 class SocketSignals(QObject):
@@ -46,7 +46,7 @@ class Socket:
             self.receive_thread = threading.Thread(target=self.receive)
             self.receive_thread.start()
 
-            self.heartbeat_thread = Heartbeat(self.client_socket, 1)
+            self.heartbeat_thread = Heartbeat(self.client_socket, 0.25)
             self.heartbeat_thread.start()
 
         except Exception as e:
@@ -90,7 +90,6 @@ class Socket:
             self.heartbeat_thread.stop()
             self.heartbeat_thread.join()
             self.client_socket.close()
-            self.receive_thread.join()
             self.connection = False
             logger.info("Disconnect success")
         except Exception as e:

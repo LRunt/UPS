@@ -28,7 +28,8 @@ user_state = {
     "Logged": 0,
     "Waiting": 1,
     "In_Game": 2,
-    "Result_screen": 3
+    "Result_screen": 3,
+    "Loading": 4
 }
 
 # List of scenes
@@ -144,6 +145,7 @@ class MainWindow(QWidget):
         """
         self.socket.disconnect()
         self.stacked_widget.setCurrentIndex(scenes["Login"])
+        self.user.user_state = user_state["Disconnect"]
 
     def cancel_searching(self):
         """
@@ -202,6 +204,10 @@ class MainWindow(QWidget):
                 self.user.user_state = user_state["In_Game"]
                 self.parse_game_message(split_message)
             logger.info("User state: Result screen")
+        if self.user_state == user_state["Loading"]:
+            if split_message[0] == "LOGGED":
+                self.stacked_widget.setCurrentIndex(scenes["Lobby"])
+                self.user.user_state = user_state["Logged"]
 
     def login_result(self, split_message):
         """
@@ -217,18 +223,19 @@ class MainWindow(QWidget):
                 self.user.user_state = user_state["Logged"]
                 logger.info("Login success")
             elif split_message[1] == "1":
-                print("exit offline user")
+                logger.info("Loading user data")
+                self.user.user_state = user_state["Loading"]
                 print("Loading")
             elif split_message[1] == "2":
-                print("Exit online user")
+                logger.info("Exist online user with same name")
             elif split_message[1] == '3':
-                print("Illegal characters")
+                logger.info("Illegal characters")
             elif split_message[1] == '4':
-                print("Short username")
+                logger.info("Short username")
             elif split_message[1] == '5':
-                print("Long username")
+                logger.info("Long username")
             else:
-                print("Wrong code")
+                logger.info("Wrong code")
 
     def parse_game_message(self, params):
         """

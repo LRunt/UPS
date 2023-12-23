@@ -18,14 +18,26 @@ class LoginScene(QWidget):
         self.text_field_ip_address = QLineEdit(self)
         self.text_field_port = QLineEdit(self)
         self.text_field_username = QLineEdit(self)
+        self.error_label = QLabel("Error", self)
         self.login_button = QPushButton('Login', self)
         self.initUI()
 
     def initUI(self):
+        self.error_label.setVisible(False)
         # Create labels and text fields for the first scene
+        label_name_of_scene = QLabel("Server login")
         label_ip_address = QLabel('IP address:')
         label_port = QLabel('Port:')
         label_username = QLabel('Username:')
+
+        # Set fonts and styles
+        label_name_of_scene.setFont(QFont("Arial", 20, QFont.Bold))
+        label_ip_address.setFont(QFont("Arial", 12, QFont.Bold))
+        label_port.setFont(QFont("Arial", 12, QFont.Bold))
+        label_username.setFont(QFont("Arial", 12, QFont.Bold))
+
+        self.error_label.setStyleSheet("background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; "
+                                       "padding: 8px; border-radius: 4px;")
 
         # Create layout for the first scene
         form_layout = QFormLayout()
@@ -33,9 +45,19 @@ class LoginScene(QWidget):
         form_layout.addRow(label_port, self.text_field_port)
         form_layout.addRow(label_username, self.text_field_username)
 
-        login_layout = QVBoxLayout()
-        login_layout.addLayout(form_layout)
-        login_layout.addWidget(self.login_button)
+        form_widget = QWidget()
+        form_widget.setLayout(form_layout)
+        form_widget.setMaximumWidth(1000)
+
+        login_layout = QVBoxLayout(self)
+        login_layout.addSpacing(30)  # Add space at the top
+        login_layout.addWidget(label_name_of_scene, alignment=Qt.AlignCenter)
+        login_layout.addSpacing(20)  # Add space between the title and the form
+        login_layout.addWidget(form_widget, alignment=Qt.AlignCenter)
+        login_layout.addSpacing(20)  # Add space between the form and the error label
+        login_layout.addWidget(self.error_label, alignment=Qt.AlignCenter)
+        login_layout.addWidget(self.login_button, alignment=Qt.AlignCenter)
+        login_layout.addSpacing(30)  # Add space at the bottom
 
         # Create widget for the first scene
         self.login_widget = QWidget()
@@ -150,12 +172,9 @@ class ResultScene(QWidget):
     def initUI(self):
         result_layout = QVBoxLayout()
 
-        self.result = QLabel("Výhra")
+        self.result = QLabel("WIN")
 
-        font = self.result.font()
-        font.setPointSize(20)
-        font.setBold(True)
-        self.result.setFont(font)
+        self.result.setFont(QFont("Arial", 20, QFont.Bold))
 
         # Play board
         play_board_layout = QGridLayout()
@@ -189,7 +208,7 @@ class ResultScene(QWidget):
         # Buttons under play board - State no-one respond
         buttons = QHBoxLayout()
 
-        self.play_again_button = QPushButton("Odveta")
+        self.play_again_button = QPushButton("Rematch")
         self.exit_button = QPushButton("Lobby")
 
         buttons.addWidget(self.play_again_button)
@@ -228,14 +247,14 @@ class ResultScene(QWidget):
             self.play_again_button.setEnabled(True)
             self.exit_button.setEnabled(True)
         if mode == 1:
-            self.text_label.setText("Protihráč nechce hrát znovu.")
+            self.text_label.setText("Opponent don't wanna play again.")
             self.play_again_button.setEnabled(False)
             self.exit_button.setEnabled(True)
         if mode == 2:
-            self.text_label.setText("Protihráč chce hrát znovu.")
+            self.text_label.setText("Opponent want a rematch.")
             self.play_again_button.setEnabled(True)
             self.exit_button.setEnabled(True)
         if mode == 4:
-            self.text_label.setText("Čekám na odpověď protihráče.")
+            self.text_label.setText("Waiting for opponent.")
             self.play_again_button.setEnabled(False)
             self.exit_button.setEnabled(False)

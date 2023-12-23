@@ -42,9 +42,9 @@ scenes = {
 }
 
 results = {
-    1: "Vítězství",
-    2: "Prohra",
-    3: "Remíza"
+    1: "WIN",
+    2: "LOSE",
+    3: "DRAW"
 }
 
 
@@ -118,9 +118,10 @@ class MainWindow(QWidget):
         server_port = convert_string_to_integer(self.login_scene.text_field_port.text())
         username = self.login_scene.text_field_username.text()
         if server_ip_address == "" or server_port == "" or username == "":
-            logger.warning("Some fields are not filed!")
-            show_error_message("Some fields are not filed!")
+            self.show_login_error("Error: Some fields are not filled in!")
+            logger.warning("Some fields are not filed in!")
         elif server_port == -1:
+            self.show_login_error("Error: Port address is not a number.")
             logger.warning("Port address is not a number")
         else:
             try:
@@ -129,23 +130,22 @@ class MainWindow(QWidget):
                 self.socket.send(f"LOGIN|{username}")
                 self.user.user_name = username
             except Exception as e:
-                print("Error: connection failed!", str(e))
+                self.show_login_error("Error: Connection failed.")
+                logger.error(f"Connection failed: {str(e)}")
 
     def start_searching_game(self):
         """
         Sends message to start looking for opponents
         """
         self.socket.send(f"START")
-        self.stacked_widget.setCurrentIndex(scenes["Waiting"])
-        self.user.user_state = user_state["Waiting"]
+        self.change_state("Waiting", "Waiting")
 
     def disconnect(self):
         """
         Sends message for disconnect the server
         """
         self.socket.disconnect()
-        self.stacked_widget.setCurrentIndex(scenes["Login"])
-        self.user.user_state = user_state["Disconnect"]
+        self.change_state("Login", "Disconnect")
 
     def cancel_searching(self):
         """
@@ -180,17 +180,14 @@ class MainWindow(QWidget):
         if self.user.user_state == user_state["Waiting"]:
             logger.info("User state: Waiting")
             if split_message[0] == "STORNO":
-                self.stacked_widget.setCurrentIndex(scenes["Lobby"])
-                self.user.user_state = user_state["Logged"]
+                self.change_state("Lobby", "Logged")
             if split_message[0] == "GAME":
-                self.stacked_widget.setCurrentIndex(scenes["Game"])
-                self.user.user_state = user_state["In_Game"]
+                self.change_state("Game", "In_Game")
         if self.user.user_state == user_state["In_Game"]:
             if split_message[0] == "GAME":
                 self.parse_game_message(split_message)
             if split_message[0] == "RESULT":
-                self.stacked_widget.setCurrentIndex(scenes["Result"])
-                self.user.user_state = user_state["Result_screen"]
+                self.change_state("Result", "Result_screen")
                 self.parse_result_message(split_message)
             logger.info("User state: In game")
         if self.user.user_state == user_state["Result_screen"]:
@@ -198,27 +195,30 @@ class MainWindow(QWidget):
                 self.parse_result_message(split_message)
             if split_message[0] == "LOGGED":
                 self.result_scene.reset_fields()
-                self.stacked_widget.setCurrentIndex(scenes["Lobby"])
-                self.user.user_state = user_state["Logged"]
+                self.change_state("Lobby", "Logged")
             if split_message[0] == "GAME":
                 self.result_scene.reset_fields()
-                self.stacked_widget.setCurrentIndex(scenes["Game"])
-                self.user.user_state = user_state["In_Game"]
+                self.change_state("Game", "In_Game")
                 self.parse_game_message(split_message)
             logger.info("User state: Result screen")
         if self.user.user_state == user_state["Loading"]:
             if split_message[0] == "LOGGED":
-                self.stacked_widget.setCurrentIndex(scenes["Lobby"])
-                self.user.user_state = user_state["Logged"]
+                self.change_state("Lobby", "Logged")
             if split_message[0] == "WAITING":
-                self.stacked_widget.setCurrentIndex(scenes["Waiting"])
-                self.user.user_state = user_state["Waiting"]
+                self.change_state("Waiting", "Waiting")
             if split_message[0] == "GAME":
-                self.stacked_widget.setCurrentIndex(scenes["Game"])
-                self.user.user_state = user_state["In_Game"]
+                self.change_state("Game", "In_Game")
             if split_message[0] == "RESULT":
-                self.stacked_widget.setCurrentIndex(scenes["Result"])
-                self.user.user_state = user_state["Result_screen"]
+                self.change_state("Result", "Result_screen")
+
+    def change_state(self, screen, state):
+        """
+        Method sets state and screen where will player play
+        :param state: new state of the user
+        :param screen: screen what will be shoved to the user
+        """
+        self.stacked_widget.setCurrentIndex(scenes[screen])
+        self.user.user_state = user_state[state]
 
     def login_result(self, split_message):
         """
@@ -229,24 +229,39 @@ class MainWindow(QWidget):
             logger.error("Wrong number of parameters")
         else:
             if split_message[1] == "0":
+                self.login_scene.error_label.setVisible(False)
                 self.lobby_scene.label_user.setText(f"User: {self.user.user_name}")
                 self.stacked_widget.setCurrentIndex(scenes["Lobby"])
                 self.user.user_state = user_state["Logged"]
                 logger.info("Login success")
             elif split_message[1] == "1":
-                logger.info("Loading user data")
+                self.login_scene.error_label.setVisible(False)
                 self.user.user_state = user_state["Loading"]
+                self.lobby_scene.label_user.setText(f"User: {self.user.user_name}")
+                logger.info("Loading user data")
                 print("Loading")
             elif split_message[1] == "2":
-                logger.info("Exist online user with same name")
+                self.show_login_error("Error: There is online user with same name.")
+                logger.warning("Exist online user with same username")
             elif split_message[1] == '3':
-                logger.info("Illegal characters")
+                self.show_login_error("Error: There are illegal characters in your name.")
+                logger.warning("Illegal characters")
             elif split_message[1] == '4':
-                logger.info("Short username")
+                self.show_login_error("Error: Username is too short.")
+                logger.warning("Short username")
             elif split_message[1] == '5':
-                logger.info("Long username")
+                self.show_login_error("Error: Username is too long.")
+                logger.warning("Long username")
             else:
                 logger.info("Wrong code")
+
+    def show_login_error(self, error_message):
+        """
+        Method to showing error to the user
+        :param error_message: error message what will be shown to the user
+        """
+        self.login_scene.error_label.setVisible(True)
+        self.login_scene.error_label.setText(error_message)
 
     def parse_game_message(self, params):
         """
@@ -262,9 +277,9 @@ class MainWindow(QWidget):
             self.game_scene.player_2.setText(f"O - {self.user.user_name} (YOU)")
         turn = convert_string_to_integer(params[3])
         if turn % 2 == 0:
-            self.game_scene.turn.setText("Na tahu je hráč: O")
+            self.game_scene.turn.setText("It's the player's turn: O")
         else:
-            self.game_scene.turn.setText("Na tahu je hráč: X")
+            self.game_scene.turn.setText("It's the player's turn: X")
         # Filling game play board
         for i in range(len(self.game_scene.fields)):
             index = i + 4

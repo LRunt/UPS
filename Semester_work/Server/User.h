@@ -44,7 +44,7 @@ public:
 
     static string execute_message(const string& message, int fd);
 
-    void disconnect_user();
+    void set_user_disconnected();
 
     static int login(vector<string> parsedMessage, int fd);
 

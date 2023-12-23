@@ -145,12 +145,22 @@ int main(int argc, char *argv[]){
                             std::string message(buffer);
 			                std::cout << "File descriptor: " << fd << std::endl;
                             std::string response = User::execute_message(buffer, fd);
-			                send(fd, response.c_str(), static_cast<int>(response.size()), 0);
+
+                            if (response == "LOGIN|2" || response == "LOGIN|3" || response == "LOGIN|4" || response == "LOGIN|5"){
+                                send(fd, response.c_str(), static_cast<int>(response.size()), 0);
+                                close(fd);
+                                FD_CLR(fd, &client_socks);
+                            }else if (response == "ERROR"){
+                                close(fd);
+                                FD_CLR(fd, &client_socks);
+                            }else{
+                                send(fd, response.c_str(), static_cast<int>(response.size()), 0);
+                            }
                         }
                     } else {
                         //setting user disconnected
                         std::shared_ptr<User> user = User::get_user_by_fd(fd);
-                        user->disconnect_user();
+                        user->set_user_disconnected();
                         close(fd);
                         FD_CLR(fd, &client_socks);
                         std::cout << "User disconnected and removed from the socket set" << std::endl;

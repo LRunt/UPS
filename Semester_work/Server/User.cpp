@@ -119,7 +119,7 @@ string User::execute_message(const string& message, int fd) {
     }else{
         if(parsedMessage[0] == MESSAGE_DISCONNECT){
             cout << "User wants to disconnect." << endl;
-            user->disconnect_user();
+            user->set_user_disconnected();
         }else{
             int rematch;
             switch(user->mState){
@@ -193,7 +193,7 @@ string User::execute_message(const string& message, int fd) {
 /**
  * Sets user as disconnected
  */
-void User::disconnect_user() {
+void User::set_user_disconnected() {
     cout << "disconnecting user" << endl;
     mFd = DISCONNECTED;
 }

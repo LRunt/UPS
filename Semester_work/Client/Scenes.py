@@ -20,6 +20,7 @@ class LoginScene(QWidget):
         self.text_field_username = QLineEdit(self)
         self.error_label = QLabel("Error", self)
         self.login_button = QPushButton('Login', self)
+        self.login_widget = QWidget(self)
         self.initUI()
 
     def initUI(self):
@@ -60,20 +61,53 @@ class LoginScene(QWidget):
         login_layout.addSpacing(30)  # Add space at the bottom
 
         # Create widget for the first scene
-        self.login_widget = QWidget()
         self.login_widget.setLayout(login_layout)
 
 
 class LobbyScene(QWidget):
     def __init__(self):
         super().__init__()
-        self.label_user = QLabel()
-        self.start_game_button = QPushButton('Start', self)
-        self.disconnect_button = QPushButton('Disconnect', self)
+        self.label_user = QLabel('', self)
+        self.start_game_button = QPushButton('START', self)
+        self.disconnect_button = QPushButton('DISCONNECT', self)
         self.initUI()
 
     def initUI(self):
+        lobby_label = QLabel("LOBBY")
+        lobby_label.setFont(QFont("Arial", 32, QFont.Bold))
+        lobby_label.setAlignment(Qt.AlignCenter)
+        lobby_label.setStyleSheet("QLabel {"
+                                  "  color: #333333;"  # Set text color to a dark shade
+                                  "}")
+
+        self.start_game_button.setStyleSheet("QPushButton {"
+                                             "  background-color: #4CAF50;"  # Green background color
+                                             "  color: black;"  # Black text color
+                                             "  border: 1px solid #4CAF50;"  # Green border
+                                             "  border-radius: 5px;"  # Rounded corners
+                                             "  padding: 8px 16px;"  # Increased padding around the text
+                                             "  font-size: 16px;"  # Larger font size
+                                             "  font-weight: bold;"  # Bold text
+                                             "}"
+                                             "QPushButton:hover {"
+                                             "  background-color: #45a049;"  # Darker green on hover
+                                             "}")
+
+        self.disconnect_button.setStyleSheet("QPushButton {"
+                                             "  background-color: #f44336;"  # Red background color
+                                             "  color: black;"  # Black text color
+                                             "  border: 1px solid #f44336;"  # Red border
+                                             "  border-radius: 5px;"  # Rounded corners
+                                             "  padding: 8px 16px;"  # Increased padding around the text
+                                             "  font-size: 16px;"  # Larger font size
+                                             "  font-weight: bold;"  # Bold text
+                                             "}"
+                                             "QPushButton:hover {"
+                                             "  background-color: #d32f2f;"  # Darker red on hover
+                                             "}")
+
         lobby_layout = QVBoxLayout()
+        lobby_layout.addWidget(lobby_label)
         lobby_layout.addWidget(self.label_user)
         lobby_layout.addWidget(self.start_game_button)
         lobby_layout.addWidget(self.disconnect_button)

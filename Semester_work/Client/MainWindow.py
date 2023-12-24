@@ -128,7 +128,7 @@ class MainWindow(QWidget):
         else:
             try:
                 self.socket.load_data(server_ip_address, server_port)
-                self.socket.connect(self.user)
+                self.socket.connect()
                 self.socket.send(f"LOGIN|{username}")
                 self.user.user_name = username
             except Exception as e:

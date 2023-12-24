@@ -287,8 +287,10 @@ class MainWindow(QWidget):
         turn = convert_string_to_integer(params[3])
         if turn % 2 == 0:
             self.game_scene.turn.setText(f"O is on the turn {o}")
+            self.game_scene.set_turn_color("O")
         else:
             self.game_scene.turn.setText(f"X is on the turn {x}")
+            self.game_scene.set_turn_color("X")
         # Filling game play board
         for i in range(len(self.game_scene.fields)):
             index = i + 4

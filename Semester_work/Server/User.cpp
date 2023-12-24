@@ -136,12 +136,12 @@ string User::execute_message(const string& message, int fd) {
                     break;
                 case WAITING:
                     cout << "Waiting" << endl;
-                    if(parsedMessage[0] == MESSAGE_PING){
-                        response = MESSAGE_WAITING;
-                    }else if(parsedMessage[0] == MESSAGE_WAITING){
-                        response = MESSAGE_WAITING;
+                    if(parsedMessage[0] == MESSAGE_PING || parsedMessage[0] == MESSAGE_WAITING){
+                        response = string(MESSAGE_WAITING) + DELIMITER + to_string(user->mWaiting);
+                        user->mWaiting++;
                     }else if(parsedMessage[0] == MESSAGE_CANCEL_SEARCHING_GAME){
                         user->mState = LOGGED;
+                        user->mWaiting = 0;
                         response = string(MESSAGE_CANCEL_SEARCHING_GAME);
                     }else{
                         response = string(MESSAGE_ERROR);
@@ -249,13 +249,15 @@ string User::find_user_for_game() {
     shared_ptr<User> opponent = find_user_by_state(WAITING, this->mUsername);
     if(opponent == nullptr){
         cout << "Opponent not found" << endl;
-        return MESSAGE_WAITING;
+        return string(MESSAGE_WAITING) + DELIMITER + to_string(this->mWaiting);
     }else{
         shared_ptr<Game> new_game = make_shared<Game>(this->mUsername, opponent->mUsername);
         this->mGame = new_game;
         this->mState = IN_GAME;
+        this->mWaiting = 0;
         opponent->mGame = new_game;
         opponent->mState = IN_GAME;
+        opponent->mWaiting = 0;
         cout << "Game_test created! Player1: " << this->mUsername << ", Player2: " << opponent->mUsername << endl;
         return this->mGame->get_game_state(mUsername);
     }

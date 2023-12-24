@@ -47,6 +47,8 @@ results = {
     3: "DRAW"
 }
 
+HEARTBEAT_TIME = 0.25
+
 
 def convert_string_to_integer(string):
     """
@@ -72,6 +74,7 @@ class MainWindow(QWidget):
         self.waiting_scene = Scenes.WaitingScene()
         self.game_scene = Scenes.GameScene()
         self.result_scene = Scenes.ResultScene()
+        self.stacked_widget = QStackedWidget(self)
         self.initUI()
         self.user = User()
 
@@ -83,17 +86,16 @@ class MainWindow(QWidget):
         self.login_scene.login_button.clicked.connect(self.login)
         self.lobby_scene.start_game_button.clicked.connect(self.start_searching_game)
         self.lobby_scene.disconnect_button.clicked.connect(self.disconnect)
-        self.waiting_scene.storno_button.clicked.connect(self.cancel_searching)
+        self.waiting_scene.cancel_button.clicked.connect(self.cancel_searching)
         for i, button in enumerate(self.game_scene.fields):
             button.clicked.connect(lambda checked, index=i: self.on_button_clicked(index))
         self.result_scene.play_again_button.clicked.connect(self.play_again)
         self.result_scene.exit_button.clicked.connect(self.leave_to_lobby)
 
         # Create stacked widget to manage different scenes
-        self.stacked_widget = QStackedWidget(self)
-        self.stacked_widget.addWidget(self.login_scene.login_widget)
-        self.stacked_widget.addWidget(self.lobby_scene.lobby_widget)
-        self.stacked_widget.addWidget(self.waiting_scene.waiting_widget)
+        #self.stacked_widget.addWidget(self.login_scene.login_widget)
+        #self.stacked_widget.addWidget(self.lobby_scene.lobby_widget)
+        #self.stacked_widget.addWidget(self.waiting_scene.waiting_widget)
         self.stacked_widget.addWidget(self.game_scene.game_widget)
         self.stacked_widget.addWidget(self.result_scene.result_widget)
 
@@ -126,7 +128,7 @@ class MainWindow(QWidget):
         else:
             try:
                 self.socket.load_data(server_ip_address, server_port)
-                self.socket.connect()
+                self.socket.connect(self.user)
                 self.socket.send(f"LOGIN|{username}")
                 self.user.user_name = username
             except Exception as e:
@@ -269,17 +271,24 @@ class MainWindow(QWidget):
         GAME|<side_of_player>|<opponent_name>|<number_of_turn>|<play_field1>|...|<play_fieldN>
         :param params: received message with game status
         """
+        opponent = params[2]
+        x = ""
+        o = ""
         if params[1] == "1":
             self.game_scene.player_1.setText(f"X - {self.user.user_name} (YOU)")
-            self.game_scene.player_2.setText(f"O - {params[2]}")
+            self.game_scene.player_2.setText(f"O - {opponent}")
+            x = self.user.user_name
+            o = opponent
         else:
-            self.game_scene.player_1.setText(f"X - {params[2]}")
+            self.game_scene.player_1.setText(f"X - {opponent}")
             self.game_scene.player_2.setText(f"O - {self.user.user_name} (YOU)")
+            x = opponent
+            o = self.user.user_name
         turn = convert_string_to_integer(params[3])
         if turn % 2 == 0:
-            self.game_scene.turn.setText("It's the player's turn: O")
+            self.game_scene.turn.setText(f"O is on the turn {o}")
         else:
-            self.game_scene.turn.setText("It's the player's turn: X")
+            self.game_scene.turn.setText(f"X is on the turn {x}")
         # Filling game play board
         for i in range(len(self.game_scene.fields)):
             index = i + 4

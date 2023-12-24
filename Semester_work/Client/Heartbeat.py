@@ -14,7 +14,7 @@ MESSAGE_PING = "PING"
 
 
 class Heartbeat(threading.Thread):
-    def __init__(self, socket_instance, time_interval=1):
+    def __init__(self, socket_instance, time_interval):
         super().__init__()
         self.socket_instance = socket_instance
         self.time_interval = time_interval

@@ -93,9 +93,9 @@ class MainWindow(QWidget):
         self.result_scene.exit_button.clicked.connect(self.leave_to_lobby)
 
         # Create stacked widget to manage different scenes
-        #self.stacked_widget.addWidget(self.login_scene.login_widget)
-        #self.stacked_widget.addWidget(self.lobby_scene.lobby_widget)
-        #self.stacked_widget.addWidget(self.waiting_scene.waiting_widget)
+        self.stacked_widget.addWidget(self.login_scene.login_widget)
+        self.stacked_widget.addWidget(self.lobby_scene.lobby_widget)
+        self.stacked_widget.addWidget(self.waiting_scene.waiting_widget)
         self.stacked_widget.addWidget(self.game_scene.game_widget)
         self.stacked_widget.addWidget(self.result_scene.result_widget)
 

@@ -181,6 +181,8 @@ class MainWindow(QWidget):
             logger.info("User state: Logged")
         if self.user.user_state == user_state["Waiting"]:
             logger.info("User state: Waiting")
+            if split_message[0] == "WAITING":
+                self.ticks_to_time_string(convert_string_to_integer(split_message[1]))
             if split_message[0] == "STORNO":
                 self.change_state("Lobby", "Logged")
             if split_message[0] == "GAME":
@@ -264,6 +266,20 @@ class MainWindow(QWidget):
         """
         self.login_scene.error_label.setVisible(True)
         self.login_scene.error_label.setText(error_message)
+
+    def ticks_to_time_string(self, waiting_time):
+        """
+        Method compute and sets time in the queue
+        :param waiting_time: number of ping messages, what have been sent
+        """
+        # Calculate minutes and seconds
+        minutes = waiting_time // 4 // 60
+        seconds = (waiting_time // 4) % 60
+
+        # Format the time string
+        time_string = f"{minutes}:{seconds:02d}"  # Use :02d to ensure two digits for seconds
+
+        self.waiting_scene.time_label.setText(f"Time in queue: {time_string}")
 
     def parse_game_message(self, params):
         """

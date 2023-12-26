@@ -9,6 +9,7 @@
 #pragma once
 
 #include <iostream>
+#include <chrono>
 
 using namespace std;
 
@@ -35,12 +36,19 @@ public:
 
     int mRematchP2;
 
+    using TimePoint = std::chrono::high_resolution_clock::time_point;
+
+    decltype(chrono::high_resolution_clock::now()) mLastMessageP1;
+    decltype(chrono::high_resolution_clock::now()) mLastMessageP2;
+
     Game(const string& player1, const string& player2){
         cout << "New game created!" << endl;
         mTurn = 1;
         mState = 0;
         mPlayer1 = player1;
         mPlayer2 = player2;
+        mLastMessageP1 = chrono::high_resolution_clock::now();;
+        mLastMessageP2 = chrono::high_resolution_clock::now();;
         mRematchP1 = -1;
         mRematchP2 = -1;
         cout << this->to_str() << endl;
@@ -59,6 +67,8 @@ public:
     void reset_game();
 
     void set_win_combination(int index1, int index2, int index3);
+
+    bool check_player_connection(int last_ping);
 
 
 private:

@@ -82,8 +82,10 @@ string Game::get_game_state(const string& player) {
     string response = string(MESSAGE_GAME_STATE) + DELIMITER;
     if(player == mPlayer1){
         response += to_string(X) + DELIMITER + mPlayer2;
+        mLastMessageP1 = chrono::high_resolution_clock::now();
     }else{
         response += to_string(O) + DELIMITER + mPlayer1;
+        mLastMessageP2 = chrono::high_resolution_clock::now();
     }
     response += DELIMITER + to_string(mTurn);
     for(int i : mPlayBoard){
@@ -274,6 +276,15 @@ void Game::set_win_combination(int index1, int index2, int index3){
     mWinFields[0] = index1;
     mWinFields[1] = index2;
     mWinFields[2] = index3;
+}
+
+/**
+ * Method checks if the opponent is online or not
+ * @param last_ping number of pings of player when opponent last pings
+ * @return true - Opponent is connected, false - Opponent is not connected
+ */
+bool check_player_connection(int last_ping){
+    return true;
 }
 
 /**

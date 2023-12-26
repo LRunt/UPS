@@ -68,7 +68,7 @@ public:
 
     void set_win_combination(int index1, int index2, int index3);
 
-    bool check_player_connection(int last_ping);
+    int check_opponent_connection(string player);
 
 
 private:

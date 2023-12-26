@@ -74,7 +74,7 @@ void Game::print_board() {
 
 /**
  * Generating message about state of the game in format:
- * GAME|<side_of_player>|<opponent_name>|<number_of_turn>|<play_field1>|...|<play_fieldN>
+ * GAME|<side_of_player>|<opponent_name>|<opponent_connected>|<number_of_turn>|<play_field1>|...|<play_fieldN>
  * @param player Player who is asking for game state
  * @return generated message
  */
@@ -87,6 +87,7 @@ string Game::get_game_state(const string& player) {
         response += to_string(O) + DELIMITER + mPlayer1;
         mLastMessageP2 = chrono::high_resolution_clock::now();
     }
+    response += DELIMITER + to_string(check_opponent_connection(player));
     response += DELIMITER + to_string(mTurn);
     for(int i : mPlayBoard){
         response += DELIMITER + to_string(i);
@@ -280,11 +281,24 @@ void Game::set_win_combination(int index1, int index2, int index3){
 
 /**
  * Method checks if the opponent is online or not
- * @param last_ping number of pings of player when opponent last pings
- * @return true - Opponent is connected, false - Opponent is not connected
+ * @param player name of the player
+ * @return 0 - opponent is connected, 1-30 - time what opponent wasn't connected, -1 - opponent lost, game ends
  */
-bool check_player_connection(int last_ping){
-    return true;
+int Game::check_opponent_connection(string player){
+    chrono::high_resolution_clock::time_point now = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<long long> difference;
+    if(player == mPlayer1){
+        difference = std::chrono::duration_cast<std::chrono::seconds>(now - mLastMessageP2);
+    }else{
+        difference = std::chrono::duration_cast<std::chrono::seconds>(now - mLastMessageP1);
+    }
+    if (difference.count() < 1) {
+        return 0;
+    } else if(difference.count() < 30){
+        return difference.count();
+    } else{
+        return -1;
+    }
 }
 
 /**

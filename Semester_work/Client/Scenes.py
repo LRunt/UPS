@@ -12,6 +12,7 @@ from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QVBoxLayout, QPushButton
 NUMBER_OF_FIELDS = 9
 RED = "#cf2121"
 BLUE = "#6d59ff"
+GRAY = "#946f6f"
 
 
 class LoginScene(QWidget):
@@ -266,42 +267,42 @@ class GameScene(QWidget):
         if turn == "Error":
             self.turn.setStyleSheet("QLabel {"
                                     "  color: white;"  # White text color for the turn label
-                                    "  background-color: #f8d7da;"  # Light red background color (Bootstrap error)
+                                    f"  background-color: {GRAY};"  # Light red background color (Bootstrap error)
                                     "  padding: 5px;"  # Padding around the text
                                     "  font-size: 18px;"  # Font size
                                     "  font-family: Arial;"  # Font family
                                     "  font-weight: bold;"  # Bold text
                                     "}"
                                     "QLabel::border {"
-                                    "  border: 1px solid #f5c6cb;"  # Dark red border color (Bootstrap error)
+                                    f"  border: 1px solid {GRAY};"  # Dark red border color (Bootstrap error)
                                     "  border-radius: 5px;"  # Rounded corners
                                     "  padding: 2px;"  # Adjust the padding around the border
                                     "}")
         elif turn == "X":
             self.turn.setStyleSheet("QLabel {"
                                     "  color: white;"  # Black text color for the turn label
-                                    f"  background-color: {RED};"  # Yellow background color
+                                    f"  background-color: {RED};"  # Red background color
                                     "  padding: 5px;"  # Padding around the text
                                     "  font-size: 18px;"  # Font size
                                     "  font-family: Arial;"  # Font family
                                     "  font-weight: bold;"  # Bold text
                                     "}"
                                     "QLabel::border {"
-                                    f"  border: 1px solid {RED};"  # Black border color around the text
+                                    f"  border: 1px solid {RED};"  # Red border color around the text
                                     "  border-radius: 5px;"  # Rounded corners
                                     "  padding: 2px;"  # Adjust the padding around the border
                                     "}")
         else:
             self.turn.setStyleSheet("QLabel {"
                                     "  color: white;"  # Black text color for the turn label
-                                    f"  background-color: {BLUE};"  # Yellow background color
+                                    f"  background-color: {BLUE};"  # Blue background color
                                     "  padding: 5px;"  # Padding around the text
                                     "  font-size: 18px;"  # Font size
                                     "  font-family: Arial;"  # Font family
                                     "  font-weight: bold;"  # Bold text
                                     "}"
                                     "QLabel::border {"
-                                    f"  border: 1px solid {BLUE};"  # Black border color around the text
+                                    f"  border: 1px solid {BLUE};"  # Blue border color around the text
                                     "  border-radius: 5px;"  # Rounded corners
                                     "  padding: 2px;"  # Adjust the padding around the border
                                     "}")
@@ -346,7 +347,13 @@ class ResultScene(QWidget):
                                              "}"
                                              "QPushButton:pressed {"
                                              "  background-color: #1e7e34;"  # Even darker green when pressed
-                                             "}")
+                                             "}"
+                                             "QPushButton:disabled {"
+                                             "  background-color: #6c757d;"  # Gray background for disabled state
+                                             "  color: #ced4da;"  # Light text color for disabled state
+                                             "  border: 1px solid #6c757d;"  # Gray border for disabled state
+                                             "}"
+                                             )
 
         self.exit_button.setStyleSheet("QPushButton {"
                                        "  background-color: #dc3545;"  # Red background color
@@ -362,7 +369,13 @@ class ResultScene(QWidget):
                                        "}"
                                        "QPushButton:pressed {"
                                        "  background-color: #bd2130;"  # Even darker red when pressed
-                                       "}")
+                                       "}"
+                                       "QPushButton:disabled {"
+                                       "  background-color: #6c757d;"  # Gray background for disabled state
+                                       "  color: #ced4da;"  # Light text color for disabled state
+                                       "  border: 1px solid #6c757d;"  # Gray border for disabled state
+                                       "}"
+                                       )
 
         result_layout = QVBoxLayout()
 

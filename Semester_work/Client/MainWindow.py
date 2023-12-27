@@ -44,7 +44,7 @@ results = {
     1: "WIN",
     2: "LOSE",
     3: "DRAW",
-    4: "OPPONENT CONNECTION LOST"
+    4: "CONNECTION ERROR"
 }
 
 HEARTBEAT_TIME = 0.25
@@ -329,8 +329,11 @@ class MainWindow(QWidget):
         RESULT|<game_result>|<response_state>|<index1>|...|indexN>|<winIndex1>|...|<winIndex3>
         :param message: message with result
         """
-        self.result_scene.result.setText(results[convert_string_to_integer(message[1])])
+        game_result = convert_string_to_integer(message[1])
+        self.result_scene.result.setText(results[game_result])
         self.result_scene.change_widget_scene(convert_string_to_integer(message[2]))
+        if game_result == 4:
+            self.result_scene.play_again_button.setEnabled(False)
         # Filling game play board
         for i in range(len(self.result_scene.fields)):
             index = i + 3

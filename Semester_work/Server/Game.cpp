@@ -29,13 +29,15 @@ enum game_state{
     RUNNING = 0,
     WIN_PLAYER1 = 1,
     WIN_PLAYER2 = 2,
-    TIE = 3
+    TIE = 3,
+    USER_DISCONNECT = 4
 };
 
 enum game_result{
     WIN = 1,
     LOSE = 2,
-    DRAW = 3
+    DRAW = 3,
+    OPPONENT_DISCONNECT = 4
 };
 
 enum rematch{
@@ -59,6 +61,9 @@ enum new_game{
 #define MESSAGE_GAME_STATE "GAME"
 #define MESSAGE_VALID "VALID"
 #define MESSAGE_RESULT "RESULT"
+
+// 30 seconds
+#define WAITING_TIME_FOR_OPPONENT 30
 
 /**
  * Method prints a play board
@@ -87,7 +92,14 @@ string Game::get_game_state(const string& player) {
         response += to_string(O) + DELIMITER + mPlayer1;
         mLastMessageP2 = chrono::high_resolution_clock::now();
     }
-    response += DELIMITER + to_string(check_opponent_connection(player));
+    int opponent_connection = check_opponent_connection(player);
+    if(opponent_connection != -1){
+        response += DELIMITER + to_string(check_opponent_connection(player));
+    }else{
+        mState = USER_DISCONNECT;
+        response = get_rematch_state(player);
+        return response;
+    }
     response += DELIMITER + to_string(mTurn);
     for(int i : mPlayBoard){
         response += DELIMITER + to_string(i);
@@ -258,7 +270,9 @@ string Game::get_result(const string& player, int rematch_state){
  * @return result of the player
  */
 int Game::get_game_result(const string& player){
-    if(this->mState == TIE){
+    if(this->mState == USER_DISCONNECT) {
+        return OPPONENT_DISCONNECT;
+    }else if(this->mState == TIE){
         return DRAW;
     }else if((this->mState == WIN_PLAYER1 && player == this->mPlayer1) || (this->mState == WIN_PLAYER2 && player == this->mPlayer2)){
         return WIN;
@@ -294,7 +308,7 @@ int Game::check_opponent_connection(string player){
     }
     if (difference.count() < 1) {
         return 0;
-    } else if(difference.count() < 30){
+    } else if(difference.count() < WAITING_TIME_FOR_OPPONENT){
         return difference.count();
     } else{
         return -1;

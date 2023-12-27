@@ -10,6 +10,8 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QVBoxLayout, QPushButton, QGridLayout, QHBoxLayout, QFormLayout
 
 NUMBER_OF_FIELDS = 9
+RED = "#cf2121"
+BLUE = "#6d59ff"
 
 
 class LoginScene(QWidget):
@@ -206,27 +208,27 @@ class GameScene(QWidget):
 
         self.player_1.setStyleSheet("QLabel {"
                                     "  color: white;"  # White text color for X
-                                    "  background-color: #990606;"  # Red background color
+                                    f"  background-color: {RED};"  # Red background color
                                     "  padding: 5px;"  # Padding around the text
                                     "  font-size: 20px;"  # Font size
                                     "  font-family: Arial;"  # Font family
                                     "  font-weight: bold;"  # Bold text
                                     "}"
                                     "QLabel::border {"
-                                    "  border: 1px solid #990606;"  # Border color around the text
+                                    f"  border: 1px solid {RED};"  # Border color around the text
                                     "  border-radius: 5px;"  # Rounded corners
                                     "  padding: 2px;"  # Adjust the padding around the border
                                     "}")
         self.player_2.setStyleSheet("QLabel {"
                                     "  color: white;"  # White text color for O
-                                    "  background-color: #6d59ff;"  # Blue background color
+                                    f"  background-color: {BLUE};"  # Blue background color
                                     "  padding: 5px;"  # Padding around the text
                                     "  font-size: 20px;"  # Font size
                                     "  font-family: Arial;"  # Font family
                                     "  font-weight: bold;"  # Bold text
                                     "}"
                                     "QLabel::border {"
-                                    "  border: 1px solid #6d59ff;"  # Border color around the text
+                                    f"  border: 1px solid {BLUE};"  # Border color around the text
                                     "  border-radius: 5px;"  # Rounded corners
                                     "  padding: 2px;"  # Adjust the padding around the border
                                     "}")
@@ -278,28 +280,28 @@ class GameScene(QWidget):
         elif turn == "X":
             self.turn.setStyleSheet("QLabel {"
                                     "  color: white;"  # Black text color for the turn label
-                                    "  background-color: #990606;"  # Yellow background color
+                                    f"  background-color: {RED};"  # Yellow background color
                                     "  padding: 5px;"  # Padding around the text
                                     "  font-size: 18px;"  # Font size
                                     "  font-family: Arial;"  # Font family
                                     "  font-weight: bold;"  # Bold text
                                     "}"
                                     "QLabel::border {"
-                                    "  border: 1px solid #000000;"  # Black border color around the text
+                                    f"  border: 1px solid {RED};"  # Black border color around the text
                                     "  border-radius: 5px;"  # Rounded corners
                                     "  padding: 2px;"  # Adjust the padding around the border
                                     "}")
         else:
             self.turn.setStyleSheet("QLabel {"
                                     "  color: white;"  # Black text color for the turn label
-                                    "  background-color: #6d59ff;"  # Yellow background color
+                                    f"  background-color: {BLUE};"  # Yellow background color
                                     "  padding: 5px;"  # Padding around the text
                                     "  font-size: 18px;"  # Font size
                                     "  font-family: Arial;"  # Font family
                                     "  font-weight: bold;"  # Bold text
                                     "}"
                                     "QLabel::border {"
-                                    "  border: 1px solid #000000;"  # Black border color around the text
+                                    f"  border: 1px solid {BLUE};"  # Black border color around the text
                                     "  border-radius: 5px;"  # Rounded corners
                                     "  padding: 2px;"  # Adjust the padding around the border
                                     "}")

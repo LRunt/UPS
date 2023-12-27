@@ -8,7 +8,6 @@ Description: Securing and managing data of the user, definition of window and it
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QStackedWidget, QApplication
 import Scenes
 import Socket
-from MessageBoxes import show_error_message
 from Logger import logger
 
 
@@ -44,7 +43,8 @@ scenes = {
 results = {
     1: "WIN",
     2: "LOSE",
-    3: "DRAW"
+    3: "DRAW",
+    4: "OPPONENT CONNECTION LOST"
 }
 
 HEARTBEAT_TIME = 0.25

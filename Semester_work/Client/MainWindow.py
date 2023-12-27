@@ -301,10 +301,12 @@ class MainWindow(QWidget):
             x = opponent
             o = self.user.user_name
         user_connected = convert_string_to_integer(params[3])
+        turn = convert_string_to_integer(params[4])
         if user_connected > 0:
             logger.info(f"Opponent is not connected")
-        turn = convert_string_to_integer(params[4])
-        if turn % 2 == 0:
+            self.game_scene.turn.setText(f"Waiting for opponent: {30 - user_connected}")
+            self.game_scene.set_turn_color("Error")
+        elif turn % 2 == 0:
             self.game_scene.turn.setText(f"O is on the turn {o}")
             self.game_scene.set_turn_color("O")
         else:

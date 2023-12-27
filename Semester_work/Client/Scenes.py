@@ -206,27 +206,27 @@ class GameScene(QWidget):
 
         self.player_1.setStyleSheet("QLabel {"
                                     "  color: white;"  # White text color for X
-                                    "  background-color: red;"  # Red background color
+                                    "  background-color: #990606;"  # Red background color
                                     "  padding: 5px;"  # Padding around the text
                                     "  font-size: 20px;"  # Font size
                                     "  font-family: Arial;"  # Font family
                                     "  font-weight: bold;"  # Bold text
                                     "}"
                                     "QLabel::border {"
-                                    "  border: 1px solid red;"  # Border color around the text
+                                    "  border: 1px solid #990606;"  # Border color around the text
                                     "  border-radius: 5px;"  # Rounded corners
                                     "  padding: 2px;"  # Adjust the padding around the border
                                     "}")
         self.player_2.setStyleSheet("QLabel {"
                                     "  color: white;"  # White text color for O
-                                    "  background-color: blue;"  # Blue background color
+                                    "  background-color: #6d59ff;"  # Blue background color
                                     "  padding: 5px;"  # Padding around the text
                                     "  font-size: 20px;"  # Font size
                                     "  font-family: Arial;"  # Font family
                                     "  font-weight: bold;"  # Bold text
                                     "}"
                                     "QLabel::border {"
-                                    "  border: 1px solid blue;"  # Border color around the text
+                                    "  border: 1px solid #6d59ff;"  # Border color around the text
                                     "  border-radius: 5px;"  # Rounded corners
                                     "  padding: 2px;"  # Adjust the padding around the border
                                     "}")
@@ -261,10 +261,24 @@ class GameScene(QWidget):
         self.game_widget.setLayout(game_scene)
 
     def set_turn_color(self, turn):
-        if turn == "X":
+        if turn == "Error":
+            self.turn.setStyleSheet("QLabel {"
+                                    "  color: white;"  # White text color for the turn label
+                                    "  background-color: #f8d7da;"  # Light red background color (Bootstrap error)
+                                    "  padding: 5px;"  # Padding around the text
+                                    "  font-size: 18px;"  # Font size
+                                    "  font-family: Arial;"  # Font family
+                                    "  font-weight: bold;"  # Bold text
+                                    "}"
+                                    "QLabel::border {"
+                                    "  border: 1px solid #f5c6cb;"  # Dark red border color (Bootstrap error)
+                                    "  border-radius: 5px;"  # Rounded corners
+                                    "  padding: 2px;"  # Adjust the padding around the border
+                                    "}")
+        elif turn == "X":
             self.turn.setStyleSheet("QLabel {"
                                     "  color: white;"  # Black text color for the turn label
-                                    "  background-color: red;"  # Yellow background color
+                                    "  background-color: #990606;"  # Yellow background color
                                     "  padding: 5px;"  # Padding around the text
                                     "  font-size: 18px;"  # Font size
                                     "  font-family: Arial;"  # Font family
@@ -278,7 +292,7 @@ class GameScene(QWidget):
         else:
             self.turn.setStyleSheet("QLabel {"
                                     "  color: white;"  # Black text color for the turn label
-                                    "  background-color: blue;"  # Yellow background color
+                                    "  background-color: #6d59ff;"  # Yellow background color
                                     "  padding: 5px;"  # Padding around the text
                                     "  font-size: 18px;"  # Font size
                                     "  font-family: Arial;"  # Font family

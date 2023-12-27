@@ -300,7 +300,10 @@ class MainWindow(QWidget):
             self.game_scene.player_2.setText(f"O - {self.user.user_name} (YOU)")
             x = opponent
             o = self.user.user_name
-        turn = convert_string_to_integer(params[3])
+        user_connected = convert_string_to_integer(params[3])
+        if user_connected > 0:
+            logger.info(f"Opponent is not connected")
+        turn = convert_string_to_integer(params[4])
         if turn % 2 == 0:
             self.game_scene.turn.setText(f"O is on the turn {o}")
             self.game_scene.set_turn_color("O")
@@ -309,7 +312,7 @@ class MainWindow(QWidget):
             self.game_scene.set_turn_color("X")
         # Filling game play board
         for i in range(len(self.game_scene.fields)):
-            index = i + 4
+            index = i + 5
             play_field = convert_string_to_integer(params[index])
             if play_field == 0:
                 self.game_scene.clean_field(i)

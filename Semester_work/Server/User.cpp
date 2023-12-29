@@ -365,6 +365,10 @@ string User::evaluate_rematch(int* rematch) {
         this->mState = IN_GAME;
         this->mGame->reset_game();
         return this->mGame->get_game_state(mUsername);
+    }else if(rematch[0] == USER_WANT && rematch[1] == -2 || rematch[0] == OPPONENT_WANT && rematch[1] == -2){
+        this->mGame = nullptr;
+        this->mState = LOGGED;
+        return string(MESSAGE_LOGGED);
     }else{
         return this->mGame->get_result(mUsername, rematch);
     }

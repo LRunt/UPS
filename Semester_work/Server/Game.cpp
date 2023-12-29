@@ -276,7 +276,7 @@ int* Game::get_rematch_state(const string& player){
  */
 string Game::get_result(const string& player, int* rematch_state){
     string message = string(MESSAGE_RESULT) + DELIMITER + to_string(get_game_result(player)) + DELIMITER
-            + to_string(rematch_state[0]) + DELIMITER + to_string(rematch_state[0]);
+            + to_string(rematch_state[0]) + DELIMITER + to_string(rematch_state[1]);
     for(int field : mPlayBoard){
         message += DELIMITER + to_string(field);
     }

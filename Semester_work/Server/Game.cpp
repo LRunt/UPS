@@ -56,6 +56,11 @@ enum new_game{
     BOTH_WANT = 6
 };
 
+enum rematch_timeout {
+    NO_TIMEOUT = -1,
+    TIME_IS_UP = -2
+};
+
 #define DELIMITER "|"
 
 #define MESSAGE_GAME_STATE "GAME"
@@ -97,7 +102,8 @@ string Game::get_game_state(const string& player) {
         response += DELIMITER + to_string(check_opponent_connection(player));
     }else{
         mState = USER_DISCONNECT;
-        response = get_rematch_state(player);
+        int* rematch = get_rematch_state(player);
+        response = get_result(player, rematch);
         return response;
     }
     response += DELIMITER + to_string(mTurn);
@@ -204,11 +210,13 @@ int Game::get_winner_by_turn() const {
  * @param rematch if the user wants rematch or not
  * @return -1 only one player respond to rematch, 0 - there will be no rematch, 1 - there will be a rematch
  */
-int Game::rematch(const string &player, bool rematch) {
+int* Game::rematch(const string &player, bool rematch) {
     if(player == mPlayer1){
         mRematchP1 = rematch;
+        mLastMessageP1 = chrono::high_resolution_clock::now();
     }else{
         mRematchP2 = rematch;
+        mLastMessageP2 = chrono::high_resolution_clock::now();
     }
     return get_rematch_state(player);
 }
@@ -218,41 +226,57 @@ int Game::rematch(const string &player, bool rematch) {
  * @param player name of the player
  * @return state from enum new_game
  */
-int Game::get_rematch_state(const string& player){
+int* Game::get_rematch_state(const string& player){
     int user_response, opponent_response;
+    decltype(chrono::high_resolution_clock::now()) user_time, opponent_time;
+    static int rematch_state[2];
     if(player == mPlayer1){
         user_response = mRematchP1;
         opponent_response = mRematchP2;
+        user_time = mLastMessageP1;
+        opponent_time = mLastMessageP2;
     }else{
         user_response = mRematchP2;
         opponent_response = mRematchP1;
+        user_time = mLastMessageP2;
+        opponent_time = mLastMessageP1;
     }
 
     if(user_response == NO_RESPONSE && opponent_response == NO_RESPONSE){
-        return NO_ANSWER;
+        rematch_state[0] = NO_ANSWER;
+        rematch_state[1] = NO_TIMEOUT;
     }else if(user_response == NO_RESPONSE && opponent_response == NO){
-        return OPPONENT_LOBBY;
+        rematch_state[0] =  OPPONENT_LOBBY;
+        rematch_state[1] = NO_TIMEOUT;
     }else if(user_response == NO_RESPONSE && opponent_response == YES){
-        return OPPONENT_WANT;
+        rematch_state[0] = OPPONENT_WANT;
+        rematch_state[1] = get_remaining_time(opponent_time);
     }else if(user_response == NO && opponent_response == NO_RESPONSE){
-        return USER_LOBBY;
+        rematch_state[0] = USER_LOBBY;
+        rematch_state[1] = NO_TIMEOUT;
     }else if(user_response == YES && opponent_response == NO_RESPONSE){
-        return USER_WANT;
+        rematch_state[0] = USER_WANT;
+        rematch_state[1] = get_remaining_time(user_time);
     }else if(user_response == YES && opponent_response == YES){
-        return BOTH_WANT;
+        rematch_state[0] = BOTH_WANT;
+        rematch_state[1] = NO_TIMEOUT;
     }else{
-        return BOTH_LOBBY;
+        rematch_state[0] = BOTH_LOBBY;
+        rematch_state[1] = NO_TIMEOUT;
     }
+
+    return rematch_state;
 }
 
 /**
  * Generating message for result screen
  * @param player the player to whom the message will be sent
  * @param rematch_state one of states from enum new game
- * @return message in format RESULT|<game_result>|<index1>|...|indexN>|<winIndex1>|...|<winIndex3>
+ * @return message in format RESULT|<game_result>|<remaining_time>|<index1>|...|indexN>|<winIndex1>|...|<winIndex3>|
  */
-string Game::get_result(const string& player, int rematch_state){
-    string message = string(MESSAGE_RESULT) + DELIMITER + to_string(get_game_result(player)) + DELIMITER + to_string(rematch_state);
+string Game::get_result(const string& player, int* rematch_state){
+    string message = string(MESSAGE_RESULT) + DELIMITER + to_string(get_game_result(player)) + DELIMITER
+            + to_string(rematch_state[0]) + DELIMITER + to_string(rematch_state[0]);
     for(int field : mPlayBoard){
         message += DELIMITER + to_string(field);
     }
@@ -313,6 +337,22 @@ int Game::check_opponent_connection(string player){
     } else{
         return -1;
     }
+}
+
+/**
+ * Method returns remaining time for the response
+ * @param response_time time when user send rematch message
+ * @return remaining time for opponent reaction
+ */
+int Game::get_remaining_time(decltype(chrono::high_resolution_clock::now()) response_time){
+    auto allowed_response_time = std::chrono::seconds(WAITING_TIME_FOR_OPPONENT);
+    auto current_time = std::chrono::high_resolution_clock::now();
+    auto elapsed_time = std::chrono::duration_cast<std::chrono::seconds>(current_time - response_time);
+    auto remaining_time = allowed_response_time - elapsed_time;
+    if (remaining_time.count() < 0) {
+        return TIME_IS_UP;
+    }
+    return static_cast<int>(remaining_time.count());
 }
 
 /**

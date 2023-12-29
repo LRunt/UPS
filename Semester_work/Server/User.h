@@ -67,7 +67,7 @@ private:
 
     static shared_ptr<User> find_user_by_state(int state, const string& username);
 
-    string evaluate_rematch(int rematch);
+    string evaluate_rematch(int* rematch);
 
     bool is_game_running();
 };

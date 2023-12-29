@@ -47,8 +47,8 @@ public:
         mState = 0;
         mPlayer1 = player1;
         mPlayer2 = player2;
-        mLastMessageP1 = chrono::high_resolution_clock::now();;
-        mLastMessageP2 = chrono::high_resolution_clock::now();;
+        mLastMessageP1 = chrono::high_resolution_clock::now();
+        mLastMessageP2 = chrono::high_resolution_clock::now();
         mRematchP1 = -1;
         mRematchP2 = -1;
         cout << this->to_str() << endl;
@@ -58,11 +58,11 @@ public:
 
     string get_game_state(const string& player);
 
-    string get_result(const string& player, int rematch_state);
+    string get_result(const string& player, int* rematch_state);
 
-    int rematch(const string& player, bool rematch);
+    int* rematch(const string& player, bool rematch);
 
-    int get_rematch_state(const string& player);
+    int* get_rematch_state(const string& player);
 
     void reset_game();
 
@@ -80,6 +80,8 @@ private:
     int check_game_state();
 
     int get_game_result(const string& player);
+
+    int get_remaining_time(decltype(chrono::high_resolution_clock::now()) response_time);
 
     [[nodiscard]] int get_winner_by_turn() const;
 

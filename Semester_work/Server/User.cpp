@@ -121,7 +121,7 @@ string User::execute_message(const string& message, int fd) {
             cout << "User wants to disconnect." << endl;
             user->set_user_disconnected();
         }else{
-            int rematch;
+            int* rematch;
             switch(user->mState){
                 case LOGGED:
                     cout <<"Logged" << endl;
@@ -355,13 +355,13 @@ bool User::is_game_running() {
  * @param rematch rematch code 0-4 = waiting for response of both users, 5 = no_rematch, 6 = rematch
  * @return rematch string
  */
-string User::evaluate_rematch(int rematch) {
-    if(rematch == USER_LOBBY || rematch == BOTH_LOBBY){
+string User::evaluate_rematch(int* rematch) {
+    if(rematch[0] == USER_LOBBY || rematch[0] == BOTH_LOBBY){
         //No rematch
         this->mGame = nullptr;
         this->mState = LOGGED;
         return string(MESSAGE_LOGGED);
-    }else if(rematch == BOTH_WANT){
+    }else if(rematch[0] == BOTH_WANT){
         this->mState = IN_GAME;
         this->mGame->reset_game();
         return this->mGame->get_game_state(mUsername);

@@ -331,12 +331,13 @@ class MainWindow(QWidget):
         """
         game_result = convert_string_to_integer(message[1])
         self.result_scene.result.setText(results[game_result])
-        self.result_scene.change_widget_scene(convert_string_to_integer(message[2]))
+
+        self.result_scene.change_widget_scene(convert_string_to_integer(message[2]), convert_string_to_integer(message[3]))
         if game_result == 4:
             self.result_scene.play_again_button.setEnabled(False)
         # Filling game play board
         for i in range(len(self.result_scene.fields)):
-            index = i + 3
+            index = i + 4
             play_field = convert_string_to_integer(message[index])
             if play_field == 0:
                 self.result_scene.clean_field(i)
@@ -346,5 +347,5 @@ class MainWindow(QWidget):
                 self.result_scene.draw_O(i)
         if message[1] == "1" or message[1] == "2":
             for i in range(3):
-                index = i + 12
+                index = i + 13
                 self.result_scene.color_winner_field(convert_string_to_integer(message[index]))

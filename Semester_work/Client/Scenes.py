@@ -441,7 +441,7 @@ class ResultScene(QWidget):
     def color_winner_field(self, index):
         self.fields[index].setStyleSheet(self.fields[index].styleSheet() + "background-color: lightyellow;")
 
-    def change_widget_scene(self, mode):
+    def change_widget_scene(self, mode, timeout):
         if mode == 0:
             self.text_label.setText("")
             self.play_again_button.setEnabled(True)
@@ -451,10 +451,10 @@ class ResultScene(QWidget):
             self.play_again_button.setEnabled(False)
             self.exit_button.setEnabled(True)
         if mode == 2:
-            self.text_label.setText("Opponent want a rematch.")
+            self.text_label.setText(f"Opponent want a rematch: {timeout}")
             self.play_again_button.setEnabled(True)
             self.exit_button.setEnabled(True)
         if mode == 4:
-            self.text_label.setText("Waiting for opponent.")
+            self.text_label.setText(f"Waiting for opponent: {timeout}")
             self.play_again_button.setEnabled(False)
             self.exit_button.setEnabled(False)

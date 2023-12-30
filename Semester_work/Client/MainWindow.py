@@ -151,6 +151,7 @@ class MainWindow(QWidget):
         self.required_disconnection = True
         self.socket.disconnect()
         self.change_state("Login", "Disconnect")
+        self.required_disconnection = False
 
     def cancel_searching(self):
         """
@@ -236,7 +237,6 @@ class MainWindow(QWidget):
         if not self.required_disconnection:
             self.change_state("Login", "Disconnect")
             show_error_message("Connection lost.")
-
 
     def login_result(self, split_message):
         """
@@ -346,7 +346,8 @@ class MainWindow(QWidget):
         game_result = convert_string_to_integer(message[1])
         self.result_scene.result.setText(results[game_result])
 
-        self.result_scene.change_widget_scene(convert_string_to_integer(message[2]), convert_string_to_integer(message[3]))
+        self.result_scene.change_widget_scene(convert_string_to_integer(message[2]),
+                                              convert_string_to_integer(message[3]))
         if game_result == 4:
             self.result_scene.play_again_button.setEnabled(False)
         # Filling game play board

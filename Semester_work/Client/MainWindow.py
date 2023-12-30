@@ -10,6 +10,7 @@ import Scenes
 import Socket
 from Logger import logger
 from MessageBoxes import show_error_message
+from Constants import *
 
 
 class User:
@@ -131,7 +132,7 @@ class MainWindow(QWidget):
             try:
                 self.socket.load_data(server_ip_address, server_port)
                 self.socket.connect()
-                self.socket.send(f"LOGIN|{username}")
+                self.socket.send(f"LOGIN|{username}\n")
                 self.user.user_name = username
             except Exception as e:
                 self.show_login_error("Error: Connection failed.")
@@ -141,7 +142,7 @@ class MainWindow(QWidget):
         """
         Sends message to start looking for opponents
         """
-        self.socket.send(f"START")
+        self.socket.send(MESSAGE_START)
         self.change_state("Waiting", "Waiting")
 
     def disconnect(self):
@@ -157,19 +158,19 @@ class MainWindow(QWidget):
         """
         Sends message for cancel searching opponent
         """
-        self.socket.send(f"STORNO")
+        self.socket.send(MESSAGE_STORNO)
 
     def on_button_clicked(self, index):
         logger.info(f"User clicked button with index {index}")
-        self.socket.send(f"TURN|{str(index)}")
+        self.socket.send(f"TURN|{str(index)}\n")
 
     def play_again(self):
         logger.info(f"User {self.user.user_name} want rematch")
-        self.socket.send(f"REMATCH|1")
+        self.socket.send(f"REMATCH|1\n")
 
     def leave_to_lobby(self):
         logger.info(f"User {self.user.user_name} do not want rematch")
-        self.socket.send(f"REMATCH|0")
+        self.socket.send(f"REMATCH|0\n")
 
     def handle_received_message(self, message):
         """

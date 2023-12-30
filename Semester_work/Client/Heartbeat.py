@@ -9,8 +9,7 @@ Description: Heartbeat sends ping messages in interval when user is connected
 import threading
 import time
 from Logger import logger
-
-MESSAGE_PING = "PING"
+from Constants import MESSAGE_PING
 
 
 class Heartbeat(threading.Thread):

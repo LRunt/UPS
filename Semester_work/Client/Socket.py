@@ -4,7 +4,7 @@ from Logger import logger
 from Heartbeat import Heartbeat
 from PyQt5.QtCore import QObject, pyqtSignal
 
-CONNECTION_TIMEOUT = 1 #seconds
+CONNECTION_TIMEOUT = 1  # 1 second
 
 
 class SocketSignals(QObject):
@@ -68,6 +68,7 @@ class Socket:
             logger.error(f"Receiving message failed: {str(e)}")
         finally:
             logger.info("Connection lost")
+            self.signals.message_received.emit("CONNECTION_LOST")
             self.disconnect()
 
     def send(self, message):

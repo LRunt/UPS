@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import QWidget, QVBoxLayout, QStackedWidget, QApplication
 import Scenes
 import Socket
 from Logger import logger
+from MessageBoxes import show_error_message
 
 
 class User:
@@ -75,6 +76,7 @@ class MainWindow(QWidget):
         self.game_scene = Scenes.GameScene()
         self.result_scene = Scenes.ResultScene()
         self.stacked_widget = QStackedWidget(self)
+        self.required_disconnection = False
         self.initUI()
         self.user = User()
 
@@ -146,6 +148,7 @@ class MainWindow(QWidget):
         """
         Sends message for disconnect the server
         """
+        self.required_disconnection = True
         self.socket.disconnect()
         self.change_state("Login", "Disconnect")
 
@@ -173,6 +176,8 @@ class MainWindow(QWidget):
         :param message: message from server
         """
         split_message = message.split('|')
+        if split_message[0] == "CONNECTION_LOST":
+            self.connection_lost()
         if self.user.user_state == user_state["Disconnect"]:
             logger.info("User state: Disconnect")
             if split_message[0] == "LOGIN":
@@ -223,6 +228,15 @@ class MainWindow(QWidget):
         """
         self.stacked_widget.setCurrentIndex(scenes[screen])
         self.user.user_state = user_state[state]
+
+    def connection_lost(self):
+        """
+        Method handle connection lost
+        """
+        if not self.required_disconnection:
+            self.change_state("Login", "Disconnect")
+            show_error_message("Connection lost.")
+
 
     def login_result(self, split_message):
         """

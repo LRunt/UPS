@@ -151,7 +151,6 @@ class MainWindow(QWidget):
         self.required_disconnection = True
         self.socket.disconnect()
         self.change_state("Login", "Disconnect")
-        self.required_disconnection = False
 
     def cancel_searching(self):
         """
@@ -243,6 +242,7 @@ class MainWindow(QWidget):
         Method parsing login message what have come and processing corresponding action
         :param split_message: split message what have come from server
         """
+        self.required_disconnection = False
         if len(split_message) != 2:
             logger.error("Wrong number of parameters")
         else:

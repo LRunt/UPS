@@ -25,6 +25,18 @@
 #define NUMBER_OF_STREAMS 3 //(stdin,stdout, stderr)
 #define MESSAGE_MAX_USERS ""
 
+std::vector<std::string> splitStringByNewline(const std::string& input) {
+    std::vector<std::string> result;
+    std::istringstream iss(input);
+
+    // Split the string by newline character
+    for (std::string line; std::getline(iss, line, '\n'); ) {
+        result.push_back(line);
+    }
+
+    return result;
+}
+
 int main(int argc, char *argv[]){
     int port = DEFAULT_PORT;
     int max_number_of_connected_users = DEFAULT_MAX_USERS;
@@ -36,6 +48,7 @@ int main(int argc, char *argv[]){
     int a2read;
     struct sockaddr_in my_addr, peer_addr;
     fd_set client_socks, tests;
+    std::vector<std::string> messages;
 
     //reading and parse arguments
     if(argc > 3){
@@ -71,7 +84,7 @@ int main(int argc, char *argv[]){
                     break;
                 case 'p':
                     port = number;
-                    std::cout << "Maximal number of ports: " << number << std::endl;
+                    std::cout << "Port number: " << number << std::endl;
                     break;
                 default:
                     std::cerr << "Wrong flag!" << std::endl;
@@ -133,6 +146,7 @@ int main(int argc, char *argv[]){
                     }else{
                         FD_SET(client_socket, &client_socks);
                         std::cout << "File descriptor fd: " << client_socket << std::endl;
+                        messages[client_socket] = "";
                     }
                 } else {
                     ioctl(fd, FIONREAD, &a2read);
@@ -144,17 +158,21 @@ int main(int argc, char *argv[]){
 
                             std::string message(buffer);
 			                std::cout << "File descriptor: " << fd << std::endl;
-                            std::string response = User::execute_message(buffer, fd);
-
-                            if (response == "LOGIN|2" || response == "LOGIN|3" || response == "LOGIN|4" || response == "LOGIN|5"){
-                                send(fd, response.c_str(), static_cast<int>(response.size()), 0);
-                                close(fd);
-                                FD_CLR(fd, &client_socks);
-                            }else if (response == "ERROR"){
-                                close(fd);
-                                FD_CLR(fd, &client_socks);
-                            }else{
-                                send(fd, response.c_str(), static_cast<int>(response.size()), 0);
+                            messages[fd] += message;
+                            std::vector<std::string> messages_to_execute = splitStringByNewline(messages[fd]);
+                            messages[fd] = messages_to_execute[messages_to_execute.size() - 1];
+                            for(int i = 0; i < messages_to_execute.size() - 1; i++){
+                                std::string response = User::execute_message(buffer, fd);
+                                if (response == "LOGIN|2" || response == "LOGIN|3" || response == "LOGIN|4" || response == "LOGIN|5"){
+                                    send(fd, response.c_str(), static_cast<int>(response.size()), 0);
+                                    close(fd);
+                                    FD_CLR(fd, &client_socks);
+                                }else if (response == "ERROR"){
+                                    close(fd);
+                                    FD_CLR(fd, &client_socks);
+                                }else{
+                                    send(fd, response.c_str(), static_cast<int>(response.size()), 0);
+                                }
                             }
                         }
                     } else {

@@ -48,7 +48,7 @@ int main(int argc, char *argv[]){
     int a2read;
     struct sockaddr_in my_addr, peer_addr;
     fd_set client_socks, tests;
-    std::vector<std::string> messages;
+    std::array<std::string, DEFAULT_MAX_USERS> messages;
 
     //reading and parse arguments
     if(argc > 3){

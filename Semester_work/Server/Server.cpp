@@ -26,6 +26,16 @@
 #define NUMBER_OF_STREAMS 3 //(stdin,stdout, stderr)
 #define MESSAGE_MAX_USERS ""
 
+int countNewlines(const std::string& input) {
+    int count = 0;
+    for (char c : input) {
+        if (c == '\n') {
+            count++;
+        }
+    }
+    return count;
+}
+
 std::vector<std::string> splitStringByNewline(const std::string& input) {
     std::vector<std::string> result;
     std::istringstream iss(input);
@@ -168,9 +178,14 @@ int main(int argc, char *argv[]){
 				            logger.log(LogLevel::INFO, "Message before: " + messages[fd]);
                             messages[fd] += message;
 				            logger.log(LogLevel::INFO, "Message after: " + messages[fd]);
+                            int number_of_messages = countNewlines(messages[fd]);
                             std::vector<std::string> messages_to_execute = splitStringByNewline(messages[fd]);
-                            messages[fd] = messages_to_execute[messages_to_execute.size() - 1];
-                            for(int i = 0; i < messages_to_execute.size() - 1; i++){
+                            if(messages_to_execute.size() == number_of_messages){
+                                messages[fd] = "";
+                            }else{
+                                messages[fd] = messages_to_execute.back();
+                            }
+                            for(int i = 0; i < number_of_messages; i++){
                                 logger.log(LogLevel::INFO, "Message in for cycle: " + messages_to_execute[i]);
                                 std::string response = User::execute_message(messages_to_execute[i], fd);
                                 if (response == "LOGIN|2" || response == "LOGIN|3" || response == "LOGIN|4" || response == "LOGIN|5"){

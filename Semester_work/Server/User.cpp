@@ -8,24 +8,6 @@
 
 #include "User.h"
 
-#define MIN_USERNAME_LENGTH 3
-#define MAX_USERNAME_LENGTH 20
-
-/**
- * Defining expected messages
- */
-#define MESSAGE_LOGIN "LOGIN"
-#define MESSAGE_DISCONNECT "DISCONNECT"
-#define MESSAGE_START_SEARCHING_GAME "START"
-#define MESSAGE_CANCEL_SEARCHING_GAME "CANCEL"
-#define MESSAGE_WAITING "WAITING"
-#define MESSAGE_MAKE_TURN "TURN"
-#define MESSAGE_GAME_STATUS "GAME"
-#define MESSAGE_REMATCH "REMATCH"
-#define MESSAGE_ERROR "ERROR"
-#define MESSAGE_LOGGED "LOGGED"
-#define MESSAGE_PING "PING"
-
 /** Initializing vector of users */
 vector<shared_ptr<User>> User::users;
 
@@ -112,7 +94,7 @@ string User::execute_message(const string& message, int fd) {
                     break;
                 case IN_GAME:
                     cout << "In game" << endl;
-                    if(parsedMessage[0] == MESSAGE_WAITING || parsedMessage[0] == MESSAGE_GAME_STATUS || parsedMessage[0] == MESSAGE_PING){
+                    if(parsedMessage[0] == MESSAGE_WAITING || parsedMessage[0] == MESSAGE_GAME_STATE || parsedMessage[0] == MESSAGE_PING){
                         if(user->is_game_running()){
                             response = user->mGame->get_game_state(user->mUsername);
                         } else{

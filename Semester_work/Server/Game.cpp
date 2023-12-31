@@ -8,10 +8,6 @@
 
 #include "Game.h"
 
-#define MESSAGE_GAME_STATE "GAME"
-#define MESSAGE_VALID "VALID"
-#define MESSAGE_RESULT "RESULT"
-
 /**
  * Method prints a play board
  */
@@ -31,7 +27,7 @@ void Game::print_board() {
  * @return generated message
  */
 string Game::get_game_state(const string& player) {
-    string response = string(MESSAGE_GAME_STATE) + DELIMITER;
+    string response = MESSAGE_GAME_STATE + DELIMITER;
     if(player == mPlayer1){
         response += to_string(X) + DELIMITER + mPlayer2;
         mLastMessageP1 = chrono::high_resolution_clock::now();
@@ -75,7 +71,7 @@ string Game::make_turn(const string &player, int index) {
         cout << this->to_str() << endl;
         return get_game_state(player);
     } else{
-        return string(MESSAGE_VALID) + DELIMITER + to_string(validity);
+        return MESSAGE_VALID + DELIMITER + to_string(validity);
     }
 }
 
@@ -217,7 +213,7 @@ int* Game::get_rematch_state(const string& player){
  * @return message in format RESULT|<game_result>|<remaining_time>|<index1>|...|indexN>|<winIndex1>|...|<winIndex3>|
  */
 string Game::get_result(const string& player, int* rematch_state){
-    string message = string(MESSAGE_RESULT) + DELIMITER + to_string(get_game_result(player)) + DELIMITER
+    string message = MESSAGE_RESULT + DELIMITER + to_string(get_game_result(player)) + DELIMITER
             + to_string(rematch_state[0]) + DELIMITER + to_string(rematch_state[1]);
     for(int field : mPlayBoard){
         message += DELIMITER + to_string(field);

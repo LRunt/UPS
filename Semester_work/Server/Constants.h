@@ -22,6 +22,20 @@ const char DELIMITER = '|';
 /** 30 seconds */
 const int WAITING_TIME_FOR_OPPONENT = 30;
 
+const int MIN_USERNAME_LENGTH = 3;
+const int MAX_USERNAME_LENGTH = 20;
+
 // MESSAGES
 const string MESSAGE_PING = "PING";
 const string MESSAGE_ERROR = "ERROR";
+const string MESSAGE_GAME_STATE = "GAME";
+const string MESSAGE_VALID = "VALID";
+const string MESSAGE_RESULT = "RESULT";
+const string MESSAGE_LOGIN = "LOGIN";
+const string MESSAGE_DISCONNECT = "DISCONNECT";
+const string MESSAGE_START_SEARCHING_GAME = "START";
+const string MESSAGE_CANCEL_SEARCHING_GAME = "CANCEL";
+const string MESSAGE_WAITING = "WAITING";
+const string MESSAGE_MAKE_TURN = "TURN";
+const string MESSAGE_REMATCH = "REMATCH";
+const string MESSAGE_LOGGED = "LOGGED";

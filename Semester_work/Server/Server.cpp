@@ -15,9 +15,9 @@
 #include <cstdlib>
 #include <sys/ioctl.h>
 #include <memory>
+#include <boost/log/trivial.hpp>
 
 #include "User.h"
-#include "Logger.h"
 #include <array>
 
 #define MAX_BUFFER_SIZE 1024
@@ -50,9 +50,6 @@ int main(int argc, char *argv[]){
     struct sockaddr_in my_addr, peer_addr;
     fd_set client_socks, tests;
     std::array<std::string, DEFAULT_MAX_USERS> messages;
-
-    //initializing logger
-    Logger::instance().setLogFile("logfile.txt");
 
     //reading and parse arguments
     if(argc > 3){
@@ -113,11 +110,10 @@ int main(int argc, char *argv[]){
     return_value = bind(server_socket, (struct sockaddr *) &my_addr, sizeof(struct sockaddr_in));
 
     if (return_value == 0){
-        Logger::instance().log("Bind - OK");
+        BOOST_LOG_TRIVIAL(info) << "Bind - OK";
         std::cout << "Bind - OK" << std::endl;
-}
+    }
     else {
-        Logger::instance().error("Bind - ERR");
         std::cerr << "Bind - ERR" << std::endl;
         return -1;
     }
@@ -164,11 +160,11 @@ int main(int argc, char *argv[]){
                            buffer[bytes_received] = '\0';  // Null-terminate the received data (assuming it's a string)
 
                             std::string message(buffer, bytes_received + 1);
-				std::cout << "received message: " << message << std::endl;
+				            std::cout << "received message: " << message << std::endl;
 			                std::cout << "File descriptor: " << fd << std::endl;
-				std::cout << "Message before: " << messages[fd] << std::endl;
+				            std::cout << "Message before: " << messages[fd] << std::endl;
                             messages[fd] += message;
-				std::cout << "Message after: " << messages[fd] << std::endl;
+				            std::cout << "Message after: " << messages[fd] << std::endl;
                             std::vector<std::string> messages_to_execute = splitStringByNewline(messages[fd]);
                             messages[fd] = messages_to_execute[messages_to_execute.size() - 1];
                             for(int i = 0; i < messages_to_execute.size() - 1; i++){

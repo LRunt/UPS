@@ -8,40 +8,6 @@
 
 #include "User.h"
 
-/**
- * Enumeration of possible states
- */
-enum states{
-    DISCONNECTED = -1,
-    LOGGED = 0,
-    WAITING = 1,
-    IN_GAME = 2,
-    RESULT_SCREEN = 3
-};
-
-/**
- * Enumerate of returning codes
- */
-enum login_code{
-    INVALID_MESSAGE = -1,
-    NEW_USER = 0,
-    EXIST_OFFLINE_USER = 1,
-    EXIST_ONLINE_USER = 2,
-    ILLEGAL_CHARACTERS = 3,
-    SHORT_USERNAME = 4,
-    LONG_USERNAME = 5
-};
-
-enum new_game{
-    NO_ANSWER = 0,
-    OPPONENT_LOBBY = 1,
-    OPPONENT_WANT = 2,
-    USER_LOBBY = 3,
-    USER_WANT = 4,
-    BOTH_LOBBY = 5,
-    BOTH_WANT = 6
-};
-
 #define MIN_USERNAME_LENGTH 3
 #define MAX_USERNAME_LENGTH 20
 

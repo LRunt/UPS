@@ -8,59 +8,6 @@
 
 #include "Game.h"
 
-/**
- * Enumeration of possible field states
- */
-enum field_state{
-    FREE = 0,
-    X = 1,
-    O = 2
-};
-
-enum turn_code{
-    VALID = 0,
-    OUT_OF_BOUNDS = 1,
-    PLAYING_FIELD_TAKEN = 2,
-    INVALID_USER = 3,
-    PLAYER_NOT_ON_TURN = 4
-};
-
-enum game_state{
-    RUNNING = 0,
-    WIN_PLAYER1 = 1,
-    WIN_PLAYER2 = 2,
-    TIE = 3,
-    USER_DISCONNECT = 4
-};
-
-enum game_result{
-    WIN = 1,
-    LOSE = 2,
-    DRAW = 3,
-    OPPONENT_DISCONNECT = 4
-};
-
-enum rematch{
-    NO_RESPONSE = -1,
-    NO = 0,
-    YES = 1
-};
-
-enum new_game{
-    NO_ANSWER = 0,
-    OPPONENT_LOBBY = 1,
-    OPPONENT_WANT = 2,
-    USER_LOBBY = 3,
-    USER_WANT = 4,
-    BOTH_LOBBY = 5,
-    BOTH_WANT = 6
-};
-
-enum rematch_timeout {
-    NO_TIMEOUT = -1,
-    TIME_IS_UP = -2
-};
-
 #define MESSAGE_GAME_STATE "GAME"
 #define MESSAGE_VALID "VALID"
 #define MESSAGE_RESULT "RESULT"

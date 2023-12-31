@@ -21,10 +21,6 @@
 #include "Constants.h"
 #include <array>
 
-#define MAX_BUFFER_SIZE 1024
-#define DEFAULT_PORT 10000
-#define DEFAULT_MAX_USERS 10
-#define NUMBER_OF_STREAMS 3 //(stdin,stdout, stderr)
 #define MESSAGE_MAX_USERS ""
 
 /**
@@ -53,7 +49,7 @@ std::vector<std::string> split_string_by_newline(const std::string& input) {
     std::istringstream iss(input);
 
     // Split the string by newline character
-    for (std::string line; std::getline(iss, line, '\n'); ) {
+    for (std::string line; std::getline(iss, line, END_OF_MESSAGE); ) {
         result.push_back(line);
     }
 
@@ -75,7 +71,7 @@ int main(int argc, char *argv[]){
 
     // Set the log file
     Logger& logger = Logger::instance();
-    logger.setLogFile("my_log_file.log");
+    logger.setLogFile(NAME_OF_LOGFILE);
 
     // Reading and parse arguments
     if(argc > 3){
@@ -190,7 +186,7 @@ int main(int argc, char *argv[]){
 				            logger.log(LogLevel::INFO, "Message before: " + messages[fd]);
                             messages[fd] += message;
 				            logger.log(LogLevel::INFO, "Message after: " + messages[fd]);
-                            int number_of_messages = count_characters(messages[fd], '\n');
+                            int number_of_messages = count_characters(messages[fd], END_OF_MESSAGE);
                             std::vector<std::string> messages_to_execute = split_string_by_newline(messages[fd]);
                             if(messages_to_execute.size() == number_of_messages){
                                 messages[fd] = "";
@@ -205,7 +201,7 @@ int main(int argc, char *argv[]){
                                     send(fd, response.c_str(), static_cast<int>(response.size()), 0);
                                     close(fd);
                                     FD_CLR(fd, &client_socks);
-                                }else if (response == "ERROR"){
+                                }else if (response == MESSAGE_ERROR){
                                     logger.log(LogLevel::ERROR, "Response ERROR");
                                     close(fd);
                                     FD_CLR(fd, &client_socks);

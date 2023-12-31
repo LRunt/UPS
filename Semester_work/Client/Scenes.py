@@ -8,11 +8,9 @@ Description: Definition of all scenes
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QVBoxLayout, QPushButton, QGridLayout, QHBoxLayout, QFormLayout
+from Constants import *
 
 NUMBER_OF_FIELDS = 9
-RED = "#cf2121"
-BLUE = "#6d59ff"
-GRAY = "#946f6f"
 
 
 class LoginScene(QWidget):

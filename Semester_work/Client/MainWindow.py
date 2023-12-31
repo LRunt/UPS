@@ -78,6 +78,7 @@ class MainWindow(QWidget):
         self.result_scene = Scenes.ResultScene()
         self.stacked_widget = QStackedWidget(self)
         self.required_disconnection = False
+        self.incoming_message = ""
         self.initUI()
         self.user = User()
 
@@ -157,7 +158,7 @@ class MainWindow(QWidget):
         """
         Sends message for cancel searching opponent
         """
-        self.socket.send(MESSAGE_STORNO)
+        self.socket.send(MESSAGE_CANCEL)
 
     def on_button_clicked(self, index):
         logger.info(f"User clicked button with index {index}")
@@ -165,23 +166,39 @@ class MainWindow(QWidget):
 
     def play_again(self):
         logger.info(f"User {self.user.user_name} want rematch")
-        self.socket.send(f"REMATCH|1\n")
+        self.socket.send(MESSAGE_REMATCH_YES)
 
     def leave_to_lobby(self):
         logger.info(f"User {self.user.user_name} do not want rematch")
-        self.socket.send(f"REMATCH|0\n")
+        self.socket.send(MESSAGE_REMATCH_NO)
 
     def handle_received_message(self, message):
         """
         Method handles message what have come form server
+        If message is full (has \n character) then execute the message
         :param message: message from server
         """
+        self.incoming_message += message
+        lines = message.split('\n')
+        newline_count = message.count('\n')
+        if len(lines) > newline_count:
+            self.incoming_message = lines[-1]
+        else:
+            self.incoming_message = ""
+        for i in range(newline_count):
+            self.parse_message(lines[i])
+
+    def parse_message(self, message):
+        """
+        Method parsing and executing the message
+        :param message: message form the server
+        """
         split_message = message.split(DELIMITER)
-        if split_message[0] == "CONNECTION_LOST":
+        if split_message[0] == CONNECTION_LOST:
             self.connection_lost()
         if self.user.user_state == user_state["Disconnect"]:
             logger.info("User state: Disconnect")
-            if split_message[0] == "LOGIN":
+            if split_message[0] == LOGIN:
                 self.login_result(split_message)
         if self.user.user_state == user_state["Logged"]:
             logger.info("User state: Logged")
@@ -189,7 +206,7 @@ class MainWindow(QWidget):
             logger.info("User state: Waiting")
             if split_message[0] == "WAITING":
                 self.ticks_to_time_string(convert_string_to_integer(split_message[1]))
-            if split_message[0] == "STORNO":
+            if split_message[0] == CANCEL:
                 self.change_state("Lobby", "Logged")
             if split_message[0] == "GAME":
                 self.change_state("Game", "In_Game")

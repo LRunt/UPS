@@ -27,6 +27,7 @@ class Heartbeat(threading.Thread):
         while not self.stop_event.is_set():
             try:
                 # send heartbeat message and wait
+                logger.info(f"Sending PING message")
                 self.socket_instance.send(MESSAGE_PING.encode())
                 time.sleep(self.time_interval)
             except Exception as e:

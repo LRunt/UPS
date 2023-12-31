@@ -172,7 +172,7 @@ int main(int argc, char *argv[]){
                         if (bytes_received > 0) {
                            buffer[bytes_received] = '\0';  // Null-terminate the received data (assuming it's a string)
 
-                            std::string message(buffer, bytes_received + 1);
+                            std::string message(buffer, bytes_received);
 				            logger.log(LogLevel::INFO, "Received message: " + message);
 			                logger.log(LogLevel::INFO, "File descriptor: " + std::to_string(fd));
 				            logger.log(LogLevel::INFO, "Message before: " + messages[fd]);
@@ -189,12 +189,12 @@ int main(int argc, char *argv[]){
                                 logger.log(LogLevel::INFO, "Message in for cycle: " + messages_to_execute[i]);
                                 std::string response = User::execute_message(messages_to_execute[i], fd);
                                 if (response == "LOGIN|2" || response == "LOGIN|3" || response == "LOGIN|4" || response == "LOGIN|5"){
-                                    logger.log(LogLevel::ERROR, "Login failed - disconnecting user")
+                                    logger.log(LogLevel::ERROR, "Login failed - disconnecting user");
                                     send(fd, response.c_str(), static_cast<int>(response.size()), 0);
                                     close(fd);
                                     FD_CLR(fd, &client_socks);
                                 }else if (response == "ERROR"){
-                                    logger.log(LogLevel::ERROR, "Response ERROR")
+                                    logger.log(LogLevel::ERROR, "Response ERROR");
                                     close(fd);
                                     FD_CLR(fd, &client_socks);
                                 }else{

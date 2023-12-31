@@ -209,6 +209,7 @@ int main(int argc, char *argv[]){
                                     close(fd);
                                     FD_CLR(fd, &client_socks);
                                 }else{
+                                    response += '\n';
                                     logger.log(LogLevel::INFO, "Sending response: " + response);
                                     send(fd, response.c_str(), static_cast<int>(response.size()), 0);
                                 }

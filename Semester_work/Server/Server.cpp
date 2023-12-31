@@ -112,9 +112,10 @@ int main(int argc, char *argv[]){
 
     return_value = bind(server_socket, (struct sockaddr *) &my_addr, sizeof(struct sockaddr_in));
 
-    if (return_value == 0)
+    if (return_value == 0){
         Logger::instance().log("Bind - OK");
         std::cout << "Bind - OK" << std::endl;
+}
     else {
         Logger::instance().error("Bind - ERR");
         std::cerr << "Bind - ERR" << std::endl;

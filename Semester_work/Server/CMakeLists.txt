@@ -5,16 +5,16 @@ project(UPS_Server)
 # Setting source files
 set(SOURCE_FILES
 	Server.cpp
+	Logger.cpp
 	User.cpp
 	Game.cpp
-	Logger.cpp
 )
 
 # Setting header files
 set(HEADER_FILES
+	Logger.h
 	User.h
 	Game.h
-	Logger.h
 )
 
 # Create the executable	

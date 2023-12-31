@@ -26,17 +26,28 @@
 #define NUMBER_OF_STREAMS 3 //(stdin,stdout, stderr)
 #define MESSAGE_MAX_USERS ""
 
-int countNewlines(const std::string& input) {
+/**
+ * Method counts number of chars in string
+ * @param input string where the characters will be counted
+ * @param character character what we are counting
+ * @return number of characters in the string
+ */
+int count_characters(const std::string& input, char character) {
     int count = 0;
     for (char c : input) {
-        if (c == '\n') {
+        if (c == character) {
             count++;
         }
     }
     return count;
 }
 
-std::vector<std::string> splitStringByNewline(const std::string& input) {
+/**
+ * Method splits string by character
+ * @param input string what will we split
+ * @return vector of strings
+ */
+std::vector<std::string> split_string_by_newline(const std::string& input) {
     std::vector<std::string> result;
     std::istringstream iss(input);
 
@@ -178,8 +189,8 @@ int main(int argc, char *argv[]){
 				            logger.log(LogLevel::INFO, "Message before: " + messages[fd]);
                             messages[fd] += message;
 				            logger.log(LogLevel::INFO, "Message after: " + messages[fd]);
-                            int number_of_messages = countNewlines(messages[fd]);
-                            std::vector<std::string> messages_to_execute = splitStringByNewline(messages[fd]);
+                            int number_of_messages = count_characters(messages[fd], '\n');
+                            std::vector<std::string> messages_to_execute = split_string_by_newline(messages[fd]);
                             if(messages_to_execute.size() == number_of_messages){
                                 messages[fd] = "";
                             }else{

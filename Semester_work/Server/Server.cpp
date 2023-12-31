@@ -17,6 +17,7 @@
 #include <memory>
 
 #include "User.h"
+#include "Logger.h"
 #include <array>
 
 #define MAX_BUFFER_SIZE 1024
@@ -49,6 +50,9 @@ int main(int argc, char *argv[]){
     struct sockaddr_in my_addr, peer_addr;
     fd_set client_socks, tests;
     std::array<std::string, DEFAULT_MAX_USERS> messages;
+
+    //initializing logger
+    Logger::instance().setLogFile("logfile.txt");
 
     //reading and parse arguments
     if(argc > 3){
@@ -109,8 +113,10 @@ int main(int argc, char *argv[]){
     return_value = bind(server_socket, (struct sockaddr *) &my_addr, sizeof(struct sockaddr_in));
 
     if (return_value == 0)
+        Logger::instance().log("Bind - OK");
         std::cout << "Bind - OK" << std::endl;
     else {
+        Logger::instance().error("Bind - ERR");
         std::cerr << "Bind - ERR" << std::endl;
         return -1;
     }

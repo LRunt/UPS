@@ -7,12 +7,14 @@ set(SOURCE_FILES
 	Server.cpp
 	User.cpp
 	Game.cpp
+	Logger.cpp
 )
 
 # Setting header files
 set(HEADER_FILES
 	User.h
 	Game.h
+	Logger.h
 )
 
 # Create the executable	

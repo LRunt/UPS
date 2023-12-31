@@ -52,12 +52,13 @@ int main(int argc, char *argv[]){
     std::array<std::string, DEFAULT_MAX_USERS> messages;
 
     // Set the log file
-    Logger::instance().setLogFile("my_log_file.log");
+    Logger& logger = Logger::instance();
+    logger.setLogFile("my_log_file.log");
 
-    //reading and parse arguments
+    // Reading and parse arguments
     if(argc > 3){
-        std::cerr << "Invalid number of parameters: " << argc << std::endl;
-        std::cerr << "Parameters are:\n-c<number> = maximal number of connected users\n-p<number> = port" << std::endl;
+        logger.log(LogLevel::ERROR, "Invalid number of parameters: " + std::to_string(argc));
+        logger.log(LogLevel::ERROR, "Parameters are:\n-c<number> = maximal number of connected users\n-p<number> = port");
         return EXIT_FAILURE;
     }
 
@@ -74,34 +75,34 @@ int main(int argc, char *argv[]){
             try{
                 number = std::stoi(number_string);
             } catch (const std::invalid_argument& e) {
-                std::cerr << "Invalid argument: " << e.what() << std::endl;
+                logger.log(LogLevel::ERROR, "Invalid argument: " + std::string(e.what()));
                 return EXIT_FAILURE;
             } catch (const std::out_of_range& e) {
-                std::cerr << "Out of range: " << e.what() << std::endl;
+                logger.log(LogLevel::ERROR, "Out of range: " + std::string(e.what()));
                 return EXIT_FAILURE;
             }
 
             switch (flag){
                 case 'c':
                     max_number_of_connected_users = number;
-                    std::cout << "Maximal number of clients: " << number << std::endl;
+                    logger.log(LogLevel::INFO, "Maximal number of clients: " + std::to_string(number));
                     break;
                 case 'p':
                     port = number;
-                    std::cout << "Port number: " << number << std::endl;
+                    logger.log(LogLevel::INFO, "Port number: " + std::to_string(number));
                     break;
                 default:
-                    std::cerr << "Wrong flag!" << std::endl;
+                    logger.log(LogLevel::ERROR, "Wrong flag!");
                     return EXIT_FAILURE;
             }
 
         }else{
-            std::cerr << "Invalid argument format: " << arg << std::endl;
+            logger.log(LogLevel::ERROR, "Invalid argument format: " + std::string(arg));
             return EXIT_FAILURE;
         }
     }
 
-    //defining server socket
+    // Defining server socket
     server_socket = socket(AF_INET, SOCK_STREAM, 0);
 
     memset(&my_addr, 0, sizeof(struct sockaddr_in));
@@ -113,19 +114,19 @@ int main(int argc, char *argv[]){
     return_value = bind(server_socket, (struct sockaddr *) &my_addr, sizeof(struct sockaddr_in));
 
     if (return_value == 0){
-        LOG_INFO("Bind - OK");
+        logger.log(LogLevel::INFO, "Bind - OK");
         std::cout << "Bind - OK" << std::endl;
     }
     else {
-        std::cerr << "Bind - ERR" << std::endl;
+        logger.log(LogLevel::ERROR, "Bind - ERR");
         return -1;
     }
 
     return_value = listen(server_socket, 5);
     if (return_value == 0){
-        std::cout << "Listen - OK"<< std::endl;
+        logger.log(LogLevel::INFO, "Listen - OK");
     } else {
-        std::cerr << "Listen - ERR" << std::endl;
+        logger.log(LogLevel::ERROR, "Listen - ERR");
         return -1;
     }
 
@@ -138,7 +139,7 @@ int main(int argc, char *argv[]){
         return_value = select(FD_SETSIZE, &tests, (fd_set *) 0, (fd_set *) 0, (struct timeval *) 0);
 
         if (return_value < 0) {
-            std::cerr << "Select - ERR" << std::endl;
+            logger.log(LogLevel::ERROR, "Select - ERR");
             return -1;
         }
 
@@ -146,12 +147,12 @@ int main(int argc, char *argv[]){
             if (FD_ISSET(fd, &tests)) {
                 if (fd == server_socket) {
                     client_socket = accept(server_socket, (struct sockaddr *) &peer_addr, &len_addr);
-                    //Testing maximal number of connected users
+                    // Testing maximal number of connected users
                     if(client_socket > (max_number_of_connected_users - NUMBER_OF_STREAMS)){
                         send(client_socket, MESSAGE_MAX_USERS, strlen(MESSAGE_MAX_USERS), 0);
                     }else{
                         FD_SET(client_socket, &client_socks);
-                        std::cout << "File descriptor fd: " << client_socket << std::endl;
+                        logger.log(LogLevel::INFO, "File descriptor fd: " + std::to_string(client_socket));
                         messages[client_socket] = "";
                     }
                 } else {
@@ -163,15 +164,15 @@ int main(int argc, char *argv[]){
                            buffer[bytes_received] = '\0';  // Null-terminate the received data (assuming it's a string)
 
                             std::string message(buffer, bytes_received + 1);
-				            std::cout << "received message: " << message << std::endl;
-			                std::cout << "File descriptor: " << fd << std::endl;
-				            std::cout << "Message before: " << messages[fd] << std::endl;
+				            logger.log(LogLevel::INFO, "Received message: " + message);
+			                logger.log(LogLevel::INFO, "File descriptor: " + std::to_string(fd));
+				            logger.log(LogLevel::INFO, "Message before: " + messages[fd]);
                             messages[fd] += message;
-				            std::cout << "Message after: " << messages[fd] << std::endl;
+				            logger.log(LogLevel::INFO, "Message after: " + messages[fd]);
                             std::vector<std::string> messages_to_execute = splitStringByNewline(messages[fd]);
                             messages[fd] = messages_to_execute[messages_to_execute.size() - 1];
                             for(int i = 0; i < messages_to_execute.size() - 1; i++){
-                                std::cout << "Message in for cycle: " << messages_to_execute[i] << std::endl;
+                                logger.log(LogLevel::INFO, "Message in for cycle: " + messages_to_execute[i]);
                                 std::string response = User::execute_message(messages_to_execute[i], fd);
                                 if (response == "LOGIN|2" || response == "LOGIN|3" || response == "LOGIN|4" || response == "LOGIN|5"){
                                     send(fd, response.c_str(), static_cast<int>(response.size()), 0);
@@ -181,18 +182,18 @@ int main(int argc, char *argv[]){
                                     close(fd);
                                     FD_CLR(fd, &client_socks);
                                 }else{
-				std::cout << "Sending response: " << response << std::endl;
+                                    logger.log(LogLevel::INFO, "Sending response: " + response);
                                     send(fd, response.c_str(), static_cast<int>(response.size()), 0);
                                 }
                             }
                         }
                     } else {
-                        //setting user disconnected
+                        // Setting user disconnected
                         std::shared_ptr<User> user = User::get_user_by_fd(fd);
                         user->set_user_disconnected();
                         close(fd);
                         FD_CLR(fd, &client_socks);
-                        std::cout << "User disconnected and removed from the socket set" << std::endl;
+                        logger.log(LogLevel::INFO, "User disconnected and removed from the socket set");
                     }
                 }
             }

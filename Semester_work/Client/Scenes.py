@@ -303,18 +303,18 @@ class GameScene(QWidget):
                                     "  padding: 2px;"  # Adjust the padding around the border
                                     "}")
 
-    def clean_field(self, index):
+    def clean_field(self, index: int):
         self.fields[index].setText("")
 
-    def draw_X(self, index):
+    def draw_X(self, index: int):
         self.fields[index].setText("×")
         self.fields[index].setStyleSheet(
-            "color: red; font-size: 108px; background-color: white; border: 1px solid black;")
+            f"color: {RED}; font-size: 108px; background-color: white; border: 1px solid black;")
 
-    def draw_O(self, index):
+    def draw_O(self, index: int):
         self.fields[index].setText("O")
         self.fields[index].setStyleSheet(
-            "color: blue; font-size: 81px; background-color: white; border: 1px solid black;font-weight: bold;")
+            f"color: {BLUE}; font-size: 81px; background-color: white; border: 1px solid black;font-weight: bold;")
 
 
 class ResultScene(QWidget):

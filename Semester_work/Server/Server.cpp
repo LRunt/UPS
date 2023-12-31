@@ -115,7 +115,6 @@ int main(int argc, char *argv[]){
 
     if (return_value == 0){
         logger.log(LogLevel::INFO, "Bind - OK");
-        std::cout << "Bind - OK" << std::endl;
     }
     else {
         logger.log(LogLevel::ERROR, "Bind - ERR");
@@ -175,10 +174,12 @@ int main(int argc, char *argv[]){
                                 logger.log(LogLevel::INFO, "Message in for cycle: " + messages_to_execute[i]);
                                 std::string response = User::execute_message(messages_to_execute[i], fd);
                                 if (response == "LOGIN|2" || response == "LOGIN|3" || response == "LOGIN|4" || response == "LOGIN|5"){
+                                    logger.log(LogLevel::ERROR, "Login failed - disconnecting user")
                                     send(fd, response.c_str(), static_cast<int>(response.size()), 0);
                                     close(fd);
                                     FD_CLR(fd, &client_socks);
                                 }else if (response == "ERROR"){
+                                    logger.log(LogLevel::ERROR, "Response ERROR")
                                     close(fd);
                                     FD_CLR(fd, &client_socks);
                                 }else{

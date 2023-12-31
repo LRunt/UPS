@@ -61,14 +61,9 @@ enum rematch_timeout {
     TIME_IS_UP = -2
 };
 
-#define DELIMITER "|"
-
 #define MESSAGE_GAME_STATE "GAME"
 #define MESSAGE_VALID "VALID"
 #define MESSAGE_RESULT "RESULT"
-
-// 30 seconds
-#define WAITING_TIME_FOR_OPPONENT 30
 
 /**
  * Method prints a play board

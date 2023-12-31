@@ -10,6 +10,8 @@
 
 #include <iostream>
 #include <chrono>
+#include "Constants.h"
+#include "Enums.h"
 
 using namespace std;
 

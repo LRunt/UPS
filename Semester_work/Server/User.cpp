@@ -8,9 +8,6 @@
 
 #include "User.h"
 
-/** delimiter in incoming messages */
-#define DELIMITER '|'
-
 /**
  * Enumeration of possible states
  */

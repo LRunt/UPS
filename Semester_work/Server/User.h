@@ -15,6 +15,8 @@
 #include <sstream>
 #include <memory>
 #include "Game.h"
+#include "Constants.h"
+#include "Enums.h"
 
 using namespace std;
 

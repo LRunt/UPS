@@ -12,6 +12,8 @@ set(SOURCE_FILES
 
 # Setting header files
 set(HEADER_FILES
+    Constants.h
+    Enums.h
     Logger.h
     User.h
     Game.h

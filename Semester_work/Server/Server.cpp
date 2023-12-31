@@ -18,6 +18,7 @@
 
 #include "Logger.h"
 #include "User.h"
+#include "Constants.h"
 #include <array>
 
 #define MAX_BUFFER_SIZE 1024
@@ -209,7 +210,7 @@ int main(int argc, char *argv[]){
                                     close(fd);
                                     FD_CLR(fd, &client_socks);
                                 }else{
-                                    response += '\n';
+                                    response += END_OF_MESSAGE;
                                     logger.log(LogLevel::INFO, "Sending response: " + response);
                                     send(fd, response.c_str(), static_cast<int>(response.size()), 0);
                                 }

@@ -176,7 +176,7 @@ class MainWindow(QWidget):
         Method handles message what have come form server
         :param message: message from server
         """
-        split_message = message.split('|')
+        split_message = message.split(DELIMITER)
         if split_message[0] == "CONNECTION_LOST":
             self.connection_lost()
         if self.user.user_state == user_state["Disconnect"]:

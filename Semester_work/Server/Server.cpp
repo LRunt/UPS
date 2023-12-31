@@ -15,8 +15,8 @@
 #include <cstdlib>
 #include <sys/ioctl.h>
 #include <memory>
-#include <boost/log/trivial.hpp>
 
+#include "Logger.h"
 #include "User.h"
 #include <array>
 
@@ -50,6 +50,9 @@ int main(int argc, char *argv[]){
     struct sockaddr_in my_addr, peer_addr;
     fd_set client_socks, tests;
     std::array<std::string, DEFAULT_MAX_USERS> messages;
+
+    // Set the log file
+    Logger::instance().setLogFile("my_log_file.log");
 
     //reading and parse arguments
     if(argc > 3){
@@ -110,7 +113,7 @@ int main(int argc, char *argv[]){
     return_value = bind(server_socket, (struct sockaddr *) &my_addr, sizeof(struct sockaddr_in));
 
     if (return_value == 0){
-        BOOST_LOG_TRIVIAL(info) << "Bind - OK";
+        LOG_INFO("Bind - OK");
         std::cout << "Bind - OK" << std::endl;
     }
     else {

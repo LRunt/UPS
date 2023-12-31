@@ -11,6 +11,7 @@ import Socket
 from Logger import logger
 from MessageBoxes import show_error_message
 from Constants import *
+from Enums import *
 
 
 class User:
@@ -23,36 +24,7 @@ class User:
         self.user_name = ""
 
 
-# Possible user states
-user_state = {
-    "Disconnect": -1,
-    "Logged": 0,
-    "Waiting": 1,
-    "In_Game": 2,
-    "Result_screen": 3,
-    "Loading": 4
-}
-
-# List of scenes
-scenes = {
-    "Login": 0,
-    "Lobby": 1,
-    "Waiting": 2,
-    "Game": 3,
-    "Result": 4
-}
-
-results = {
-    1: "WIN",
-    2: "LOSE",
-    3: "DRAW",
-    4: "CONNECTION ERROR"
-}
-
-HEARTBEAT_TIME = 0.25
-
-
-def convert_string_to_integer(string):
+def convert_string_to_integer(string: str):
     """
     Function converts string to integer,
     If string is not an integer then returns -1
@@ -108,7 +80,7 @@ class MainWindow(QWidget):
         main_layout.addWidget(self.stacked_widget)
 
         self.setGeometry(300, 300, 300, 200)
-        self.setWindowTitle('TIC-TAC-TOE')
+        self.setWindowTitle(WINDOW_TITLE)
 
     def closeEvent(self, event):
         QApplication.instance().quit()
@@ -133,7 +105,7 @@ class MainWindow(QWidget):
             try:
                 self.socket.load_data(server_ip_address, server_port)
                 self.socket.connect()
-                self.socket.send(f"LOGIN|{username}\n")
+                self.socket.send(f"{MESSAGE_LOGIN}{DELIMITER}{username}")
                 self.user.user_name = username
             except Exception as e:
                 self.show_login_error("Error: Connection failed.")
@@ -161,14 +133,26 @@ class MainWindow(QWidget):
         self.socket.send(MESSAGE_CANCEL)
 
     def on_button_clicked(self, index):
+        """
+        Reaction on clink on play board button
+        :param index: index of button
+        """
         logger.info(f"User clicked button with index {index}")
-        self.socket.send(f"TURN|{str(index)}\n")
+        self.socket.send(f"{MESSAGE_TURN}{DELIMITER}{str(index)}")
 
     def play_again(self):
+        """
+        Reaction on rematch button in result screen
+        sends that user wants play again
+        """
         logger.info(f"User {self.user.user_name} want rematch")
         self.socket.send(MESSAGE_REMATCH_YES)
 
     def leave_to_lobby(self):
+        """
+        Reaction on lobby button in result screen
+        sends that user do not want to play again
+        """
         logger.info(f"User {self.user.user_name} do not want rematch")
         self.socket.send(MESSAGE_REMATCH_NO)
 
@@ -179,8 +163,8 @@ class MainWindow(QWidget):
         :param message: message from server
         """
         self.incoming_message += message
-        lines = message.split('\n')
-        newline_count = message.count('\n')
+        lines = message.split(END_OF_MESSAGE)
+        newline_count = message.count(END_OF_MESSAGE)
         if len(lines) > newline_count:
             self.incoming_message = lines[-1]
         else:
@@ -198,44 +182,44 @@ class MainWindow(QWidget):
             self.connection_lost()
         if self.user.user_state == user_state["Disconnect"]:
             logger.info("User state: Disconnect")
-            if split_message[0] == LOGIN:
+            if split_message[0] == MESSAGE_LOGIN:
                 self.login_result(split_message)
         if self.user.user_state == user_state["Logged"]:
             logger.info("User state: Logged")
         if self.user.user_state == user_state["Waiting"]:
             logger.info("User state: Waiting")
-            if split_message[0] == "WAITING":
+            if split_message[0] == MESSAGE_WAITING:
                 self.ticks_to_time_string(convert_string_to_integer(split_message[1]))
-            if split_message[0] == CANCEL:
+            if split_message[0] == MESSAGE_CANCEL:
                 self.change_state("Lobby", "Logged")
-            if split_message[0] == "GAME":
+            if split_message[0] == MESSAGE_GAME:
                 self.change_state("Game", "In_Game")
         if self.user.user_state == user_state["In_Game"]:
-            if split_message[0] == "GAME":
+            if split_message[0] == MESSAGE_GAME:
                 self.parse_game_message(split_message)
-            if split_message[0] == "RESULT":
+            if split_message[0] == MESSAGE_RESULT:
                 self.change_state("Result", "Result_screen")
                 self.parse_result_message(split_message)
             logger.info("User state: In game")
         if self.user.user_state == user_state["Result_screen"]:
-            if split_message[0] == "RESULT":
+            if split_message[0] == MESSAGE_RESULT:
                 self.parse_result_message(split_message)
-            if split_message[0] == "LOGGED":
+            if split_message[0] == MESSAGE_LOGGED:
                 self.result_scene.reset_fields()
                 self.change_state("Lobby", "Logged")
-            if split_message[0] == "GAME":
+            if split_message[0] == MESSAGE_GAME:
                 self.result_scene.reset_fields()
                 self.change_state("Game", "In_Game")
                 self.parse_game_message(split_message)
             logger.info("User state: Result screen")
         if self.user.user_state == user_state["Loading"]:
-            if split_message[0] == "LOGGED":
+            if split_message[0] == MESSAGE_LOGGED:
                 self.change_state("Lobby", "Logged")
-            if split_message[0] == "WAITING":
+            if split_message[0] == MESSAGE_WAITING:
                 self.change_state("Waiting", "Waiting")
-            if split_message[0] == "GAME":
+            if split_message[0] == MESSAGE_GAME:
                 self.change_state("Game", "In_Game")
-            if split_message[0] == "RESULT":
+            if split_message[0] == MESSAGE_RESULT:
                 self.change_state("Result", "Result_screen")
 
     def change_state(self, screen, state):
@@ -264,19 +248,18 @@ class MainWindow(QWidget):
         if len(split_message) != 2:
             logger.error("Wrong number of parameters")
         else:
-            if split_message[1] == "0":
+            if split_message[1] == '0':
                 self.login_scene.error_label.setVisible(False)
                 self.lobby_scene.label_user.setText(f"User: {self.user.user_name}")
                 self.stacked_widget.setCurrentIndex(scenes["Lobby"])
                 self.user.user_state = user_state["Logged"]
                 logger.info("Login success")
-            elif split_message[1] == "1":
+            elif split_message[1] == '1':
                 self.login_scene.error_label.setVisible(False)
                 self.user.user_state = user_state["Loading"]
                 self.lobby_scene.label_user.setText(f"User: {self.user.user_name}")
                 logger.info("Loading user data")
-                print("Loading")
-            elif split_message[1] == "2":
+            elif split_message[1] == '2':
                 self.show_login_error("Error: There is online user with same name.")
                 logger.warning("Exist online user with same username")
             elif split_message[1] == '3':
@@ -305,8 +288,8 @@ class MainWindow(QWidget):
         :param waiting_time: number of ping messages, what have been sent
         """
         # Calculate minutes and seconds
-        minutes = waiting_time // 4 // 60
-        seconds = (waiting_time // 4) % 60
+        minutes = waiting_time // HEARTBEAT_PER_TIMEOUT // SECONDS_IN_MINUTE
+        seconds = (waiting_time // HEARTBEAT_PER_TIMEOUT) % SECONDS_IN_MINUTE
 
         # Format the time string
         time_string = f"{minutes}:{seconds:02d}"  # Use :02d to ensure two digits for seconds

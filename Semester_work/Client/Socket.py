@@ -3,8 +3,7 @@ import threading
 from Logger import logger
 from Heartbeat import Heartbeat
 from PyQt5.QtCore import QObject, pyqtSignal
-
-CONNECTION_TIMEOUT = 1  # 1 second
+from Constants import *
 
 
 class SocketSignals(QObject):
@@ -46,7 +45,7 @@ class Socket:
             self.receive_thread = threading.Thread(target=self.receive)
             self.receive_thread.start()
 
-            self.heartbeat_thread = Heartbeat(self.client_socket, 0.25)
+            self.heartbeat_thread = Heartbeat(self.client_socket, HEARTBEAT_TIME)
             self.heartbeat_thread.start()
 
         except Exception as e:
@@ -68,7 +67,7 @@ class Socket:
             logger.error(f"Receiving message failed: {str(e)}")
         finally:
             logger.info("Connection lost")
-            self.signals.message_received.emit("CONNECTION_LOST")
+            self.signals.message_received.emit(f"{CONNECTION_LOST}{END_OF_MESSAGE}")
             self.disconnect()
 
     def send(self, message):
@@ -77,6 +76,7 @@ class Socket:
         :param message: message what will be sent
         """
         try:
+            message += END_OF_MESSAGE
             self.client_socket.send(message.encode())
             logger.info(f"Sending message: {message}")
         except Exception as e:

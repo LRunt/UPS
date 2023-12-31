@@ -10,8 +10,6 @@ from PyQt5.QtGui import QFont
 from PyQt5.QtWidgets import QWidget, QLabel, QLineEdit, QVBoxLayout, QPushButton, QGridLayout, QHBoxLayout, QFormLayout
 from Constants import *
 
-NUMBER_OF_FIELDS = 9
-
 
 class LoginScene(QWidget):
     def __init__(self):
@@ -84,7 +82,7 @@ class LoginScene(QWidget):
 class LobbyScene(QWidget):
     def __init__(self):
         super().__init__()
-        self.label_user = QLabel('User: Pepa', self)
+        self.label_user = QLabel('User: <username>', self)
         self.start_game_button = QPushButton('START', self)
         self.disconnect_button = QPushButton('DISCONNECT', self)
         self.lobby_widget = QWidget(self)
@@ -316,7 +314,7 @@ class GameScene(QWidget):
     def draw_O(self, index):
         self.fields[index].setText("O")
         self.fields[index].setStyleSheet(
-            "color: blue; font-size: 72px; background-color: white; border: 1px solid black;font-weight: bold;")
+            "color: blue; font-size: 81px; background-color: white; border: 1px solid black;font-weight: bold;")
 
 
 class ResultScene(QWidget):

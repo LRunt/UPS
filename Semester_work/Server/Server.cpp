@@ -160,15 +160,19 @@ int main(int argc, char *argv[]){
                         // Receive data into the buffer
                         int bytes_received = recv(fd, buffer, MAX_BUFFER_SIZE, 0);
                         if (bytes_received > 0) {
-                            buffer[bytes_received] = '\0';  // Null-terminate the received data (assuming it's a string)
+                           buffer[bytes_received] = '\0';  // Null-terminate the received data (assuming it's a string)
 
-                            std::string message(buffer);
+                            std::string message(buffer, bytes_received + 1);
+				std::cout << "received message: " << message << std::endl;
 			                std::cout << "File descriptor: " << fd << std::endl;
+				std::cout << "Message before: " << messages[fd] << std::endl;
                             messages[fd] += message;
+				std::cout << "Message after: " << messages[fd] << std::endl;
                             std::vector<std::string> messages_to_execute = splitStringByNewline(messages[fd]);
                             messages[fd] = messages_to_execute[messages_to_execute.size() - 1];
                             for(int i = 0; i < messages_to_execute.size() - 1; i++){
-                                std::string response = User::execute_message(buffer, fd);
+                                std::cout << "Message in for cycle: " << messages_to_execute[i] << std::endl;
+                                std::string response = User::execute_message(messages_to_execute[i], fd);
                                 if (response == "LOGIN|2" || response == "LOGIN|3" || response == "LOGIN|4" || response == "LOGIN|5"){
                                     send(fd, response.c_str(), static_cast<int>(response.size()), 0);
                                     close(fd);
@@ -177,6 +181,7 @@ int main(int argc, char *argv[]){
                                     close(fd);
                                     FD_CLR(fd, &client_socks);
                                 }else{
+				std::cout << "Sending response: " << response << std::endl;
                                     send(fd, response.c_str(), static_cast<int>(response.size()), 0);
                                 }
                             }

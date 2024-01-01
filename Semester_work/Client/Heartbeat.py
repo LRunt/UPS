@@ -9,7 +9,7 @@ Description: Heartbeat sends ping messages in interval when user is connected
 import threading
 import time
 from Logger import logger
-from Constants import MESSAGE_PING
+from Constants import MESSAGE_PING, END_OF_MESSAGE
 
 
 class Heartbeat(threading.Thread):
@@ -28,7 +28,7 @@ class Heartbeat(threading.Thread):
             try:
                 # send heartbeat message and wait
                 logger.info(f"Sending PING message")
-                self.socket_instance.send(MESSAGE_PING.encode())
+                self.socket_instance.send(f"{MESSAGE_PING}{END_OF_MESSAGE}".encode())
                 time.sleep(self.time_interval)
             except Exception as e:
                 logger.error(f"Heartbeat failed: {str(e)}")

@@ -17,12 +17,20 @@ void Logger::setLogFile(const std::string& filename) {
 void Logger::log(LogLevel level, const std::string& message) {
     std::lock_guard<std::mutex> lock(mutex_);
 
-    // Log to console
-    std::cout << "[" << logLevelToString(level) << "] " << message << std::endl;
+    // Get the current time
+    auto now = std::chrono::system_clock::now();
+    std::time_t currentTime = std::chrono::system_clock::to_time_t(now);
 
-    // Log to file
+    // Log to console with timestamp
+    std::cout << "[" << logLevelToString(level) << "] "
+              << std::put_time(std::localtime(&currentTime), "%Y-%m-%d %H:%M:%S") << " "
+              << message << std::endl;
+
+    // Log to file with timestamp
     if (logFile_.is_open()) {
-        logFile_ << "[" << logLevelToString(level) << "] " << message << std::endl;
+        logFile_ << "[" << logLevelToString(level) << "] "
+                 << std::put_time(std::localtime(&currentTime), "%Y-%m-%d %H:%M:%S") << " "
+                 << message << std::endl;
     }
 }
 

@@ -1,3 +1,11 @@
+/**
+ * Class Logger represents logger of the application
+ *
+ * @author Lukas Runt
+ * @date 02-01-2024
+ * @version 1.0.0
+ */
+
 #pragma once
 
 #include <iostream>

@@ -1,9 +1,10 @@
 /**
- * Class game represents one room of TIC-TAC-TOE
+ * Methods of game class
+ * One instance represents one room of TIC-TAC-TOE
  *
  * @author Lukas Runt
- * @date 08-11-2023
- * @version 0.0.1
+ * @date 02-01-2024
+ * @version 1.0.0
  */
 
 #include "Game.h"

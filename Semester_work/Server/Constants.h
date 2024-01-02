@@ -1,6 +1,10 @@
-//
-// Created by Lenovo on 31.12.2023.
-//
+/**
+ * Header contains all constants of the application
+ *
+ * @author Lukas Runt
+ * @date 02-01-2024
+ * @version 1.0.0
+ */
 
 #pragma once
 
@@ -43,3 +47,4 @@ const string MESSAGE_WAITING = "WAITING";
 const string MESSAGE_MAKE_TURN = "TURN";
 const string MESSAGE_REMATCH = "REMATCH";
 const string MESSAGE_LOGGED = "LOGGED";
+const string MESSAGE_MAX_USERS = "LOGIN|6\n";

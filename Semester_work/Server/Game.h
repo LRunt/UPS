@@ -20,24 +20,25 @@ class Game {
 public:
 
     using TimePoint = std::chrono::high_resolution_clock::time_point;
-
+    /** Array of play fields if hte game */
     int mPlayBoard[PLAY_BOARD_SIZE]{};
-
+    /** Fields where are 3 connected symbols */
     int mWinFields[WIN_COMBINATION_SIZE]{};
-
+    /** Actual turn */
     int mTurn;
-
+    /** State of the game, if the game is running, draw, win...*/
     int mState;
-
+    /** Username of player1 */
     string mPlayer1;
-
+    /** Username of player2 */
     string mPlayer2;
-
+    /** State of player1 answer for rematch */
     int mRematchP1;
-
+    /** State of player2 answer for rematch */
     int mRematchP2;
-
+    /** Time of last message from player1 */
     decltype(chrono::high_resolution_clock::now()) mLastMessageP1;
+    /** Time of last message from player2*/
     decltype(chrono::high_resolution_clock::now()) mLastMessageP2;
 
     Game(const string& player1, const string& player2){

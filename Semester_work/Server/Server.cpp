@@ -21,8 +21,6 @@
 #include "Constants.h"
 #include <array>
 
-#define MESSAGE_MAX_USERS ""
-
 /**
  * Method counts number of chars in string
  * @param input string where the characters will be counted
@@ -67,7 +65,7 @@ int main(int argc, char *argv[]){
     int a2read;
     struct sockaddr_in my_addr, peer_addr;
     fd_set client_socks, tests;
-    std::array<std::string, DEFAULT_MAX_USERS> messages;
+    std::array<std::string, DEFAULT_MAX_USERS + NUMBER_OF_STREAMS> messages;
 
     // Set the log file
     Logger& logger = Logger::instance();

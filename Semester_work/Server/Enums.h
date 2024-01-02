@@ -1,6 +1,11 @@
-//
-// Created by Lenovo on 31.12.2023.
-//
+/**
+ * Header contains all enumerations of the application
+ *
+ * @author Lukas Runt
+ * @date 02-01-2024
+ * @version 1.0.0
+ */
+
 
 #pragma once
 

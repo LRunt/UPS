@@ -2,8 +2,8 @@
  * Methods of user class
  *
  * @author Lukas Runt
- * @date 27-10-2023
- * @version 0.0.2
+ * @date 02-01-2024
+ * @version 1.0.0
  */
 
 #include "User.h"

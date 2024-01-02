@@ -18,9 +18,8 @@ using namespace std;
 class Game {
 
 public:
-    static const int PLAY_BOARD_SIZE = 9;
 
-    static const int WIN_COMBINATION_SIZE = 3;
+    using TimePoint = std::chrono::high_resolution_clock::time_point;
 
     int mPlayBoard[PLAY_BOARD_SIZE]{};
 
@@ -37,8 +36,6 @@ public:
     int mRematchP1;
 
     int mRematchP2;
-
-    using TimePoint = std::chrono::high_resolution_clock::time_point;
 
     decltype(chrono::high_resolution_clock::now()) mLastMessageP1;
     decltype(chrono::high_resolution_clock::now()) mLastMessageP2;

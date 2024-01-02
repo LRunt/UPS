@@ -25,6 +25,10 @@ const int WAITING_TIME_FOR_OPPONENT = 30;
 const int MIN_USERNAME_LENGTH = 3;
 const int MAX_USERNAME_LENGTH = 20;
 
+// Play board
+const int PLAY_BOARD_SIZE = 9;
+const int WIN_COMBINATION_SIZE = 3;
+
 // MESSAGES
 const string MESSAGE_PING = "PING";
 const string MESSAGE_ERROR = "ERROR";

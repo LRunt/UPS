@@ -319,7 +319,7 @@ class MainWindow(QWidget):
         turn = convert_string_to_integer(params[4])
         if user_connected > 0:
             logger.info(f"Opponent is not connected")
-            self.game_scene.turn.setText(f"Waiting for opponent: {30 - user_connected}")
+            self.game_scene.turn.setText(f"Waiting for opponent: {WAITING_TIMEOUT - user_connected}")
             self.game_scene.set_turn_color("Error")
         elif turn % 2 == 0:
             self.game_scene.turn.setText(f"O is on the turn {o}")
@@ -341,7 +341,7 @@ class MainWindow(QWidget):
     def parse_result_message(self, message):
         """
         Method for parsing message with result in format:
-        RESULT|<game_result>|<response_state>|<index1>|...|indexN>|<winIndex1>|...|<winIndex3>
+        RESULT|<game_result>|<response_state>|<response_time>|<index1>|...|indexN>|<winIndex1>|...|<winIndex3>
         :param message: message with result
         """
         game_result = convert_string_to_integer(message[1])

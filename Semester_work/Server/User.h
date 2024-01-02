@@ -27,15 +27,12 @@ public:
     int mState;
     int mFd;
     string mUsername;
-    /** Number of wrong messages in row, after 3 wrong messages -> kick out */
-    int mStrikes;
     /** number of pings*/
     int mWaiting;
     shared_ptr<Game> mGame;
 
     explicit User(const string& name, int fd) {
         mFd = fd;
-        mStrikes = 0;
         mUsername = name;
         mState = 0;
         mWaiting = 0;

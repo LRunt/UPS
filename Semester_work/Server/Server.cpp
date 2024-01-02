@@ -164,7 +164,7 @@ int main(int argc, char *argv[]){
                     client_socket = accept(server_socket, (struct sockaddr *) &peer_addr, &len_addr);
                     // Testing maximal number of connected users
                     if(client_socket > (max_number_of_connected_users - NUMBER_OF_STREAMS)){
-                        send(client_socket, MESSAGE_MAX_USERS, strlen(MESSAGE_MAX_USERS), 0);
+                        send(client_socket, MESSAGE_MAX_USERS.c_str(), MESSAGE_MAX_USERS.size(), 0);
                     }else{
                         FD_SET(client_socket, &client_socks);
                         logger.log(LogLevel::INFO, "File descriptor fd: " + std::to_string(client_socket));

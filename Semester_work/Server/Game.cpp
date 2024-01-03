@@ -270,7 +270,7 @@ int Game::check_opponent_connection(string player){
     }else{
         difference = std::chrono::duration_cast<std::chrono::seconds>(now - mLastMessageP1);
     }
-    if (difference.count() < 1) {
+    if (difference.count() < DISCONNECTION_TIME) {
         return 0;
     } else if(difference.count() < WAITING_TIME_FOR_OPPONENT){
         return difference.count();

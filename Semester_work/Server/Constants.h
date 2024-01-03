@@ -25,6 +25,7 @@ const char END_OF_MESSAGE = '\n';
 const char DELIMITER = '|';
 /** 30 seconds */
 const int WAITING_TIME_FOR_OPPONENT = 30;
+const int DISCONNECTION_TIME = 1;
 
 const int MIN_USERNAME_LENGTH = 3;
 const int MAX_USERNAME_LENGTH = 20;

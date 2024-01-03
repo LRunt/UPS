@@ -68,13 +68,13 @@ string User::execute_message(const string& message, int fd) {
             response = string(MESSAGE_ERROR);
         }
     }else{
+        user->mLastPlayerMessage = chrono::high_resolution_clock::now();
         if(parsedMessage[0] == MESSAGE_DISCONNECT){
             user->set_user_disconnected();
         }else{
             int* rematch;
             switch(user->mState){
                 case LOGGED:
-                    cout <<"Logged" << endl;
                     if(parsedMessage[0] == MESSAGE_PING){
                         response = MESSAGE_LOGGED;
                     }else if(parsedMessage[0] == MESSAGE_START_SEARCHING_GAME){
@@ -85,7 +85,6 @@ string User::execute_message(const string& message, int fd) {
                     }
                     break;
                 case WAITING:
-                    cout << "Waiting" << endl;
                     if(parsedMessage[0] == MESSAGE_PING || parsedMessage[0] == MESSAGE_WAITING){
                         response = string(MESSAGE_WAITING) + DELIMITER + to_string(user->mWaiting);
                         user->mWaiting++;
@@ -98,7 +97,6 @@ string User::execute_message(const string& message, int fd) {
                     }
                     break;
                 case IN_GAME:
-                    cout << "In game" << endl;
                     if(parsedMessage[0] == MESSAGE_WAITING || parsedMessage[0] == MESSAGE_GAME_STATE || parsedMessage[0] == MESSAGE_PING){
                         if(user->is_game_running()){
                             response = user->mGame->get_game_state(user->mUsername);
@@ -107,7 +105,6 @@ string User::execute_message(const string& message, int fd) {
                             response = user->mGame->get_result(user->mUsername, rematch);
                         }
                     }else if(parsedMessage[0] == MESSAGE_MAKE_TURN){
-                        cout << "making turn" << endl;
                         response = user->mGame->make_turn(user->mUsername, stoi(parsedMessage[1]));
                         //if game ended
                         if(!user->is_game_running()){
@@ -119,7 +116,6 @@ string User::execute_message(const string& message, int fd) {
                     }
                     break;
                 case RESULT_SCREEN:
-                    cout <<"Result screen" << endl;
                     if(parsedMessage[0] == MESSAGE_PING || parsedMessage[0] == MESSAGE_WAITING){
                         rematch = user->mGame->get_rematch_state(user->mUsername);
                         response = user->evaluate_rematch(rematch);
@@ -129,11 +125,10 @@ string User::execute_message(const string& message, int fd) {
                     }else{
                         response = string(MESSAGE_ERROR);
                     }
-
                     break;
                 default:
                     response = string(MESSAGE_ERROR);
-                    cout << "User have bad state" << endl;
+                    Logger::instance().log(LogLevel::ERROR, "User: " + user->mUsername + ", has bas state: " + to_string(user->mState));
             }
         }
     }
@@ -201,7 +196,7 @@ string User::find_user_for_game() {
         logger.log(LogLevel::INFO,"Cannot found a opponent for user: " + this->mUsername);
         return string(MESSAGE_WAITING) + DELIMITER + to_string(this->mWaiting);
     }else{
-        logger.log(LogLevel::INFO, "Opponent for user: " + this->mUsername + "found.");
+        logger.log(LogLevel::INFO, "Opponent for user: " + this->mUsername + " found.");
         shared_ptr<Game> new_game = make_shared<Game>(this->mUsername, opponent->mUsername);
         this->mGame = new_game;
         this->mState = IN_GAME;
@@ -226,7 +221,7 @@ bool User::user_exists(const std::string& username) {
             return true;
         }
     }
-    Logger::instance().log(LogLevel::INFO, "User with username: " + username + "do not exist.");
+    Logger::instance().log(LogLevel::INFO, "User with username: " + username + " do not exist.");
     return false;
 }
 
@@ -236,16 +231,35 @@ bool User::user_exists(const std::string& username) {
  * @return true - online, false - offline
  */
 bool User::user_connected(const string& username) {
+    Logger::instance().log(LogLevel::INFO, "Checking if user: " + username + " is online.");
     for(const auto& user : User::users){
         if(username == user->mUsername){
-            if(user -> mFd == -1){
+            if(!connected_by_time(user)){
+                Logger::instance().log(LogLevel::INFO, "User: " + username + " is offline.");
                 return false;
             }else{
+                Logger::instance().log(LogLevel::INFO, "User: " + username + " is online.");
                 return true;
             }
         }
     }
     return false;
+}
+
+/**
+ * Method evaluates whether the user is connected by time
+ * @param user user we are testing if he is online
+ * @return true - user is online, false - user is not online
+ */
+bool User::connected_by_time(shared_ptr<User> user){
+    chrono::high_resolution_clock::time_point now = std::chrono::high_resolution_clock::now();
+    std::chrono::duration<long long> difference = std::chrono::duration_cast<std::chrono::seconds>(now - user->mLastPlayerMessage);
+    Logger::instance().log(LogLevel::INFO, "User: " + user->mUsername + " last connection " + to_string(difference.count()) + "s ago.");
+    if (difference.count() < DISCONNECTION_TIME) {
+        return true;
+    }else{
+        return false;
+    }
 }
 
 /**

@@ -202,8 +202,8 @@ int main(int argc, char *argv[]){
                                     close(fd);
                                     FD_CLR(fd, &client_socks);
                                 }else{
-                                    response += END_OF_MESSAGE;
                                     logger.log(LogLevel::INFO, "Sending response: " + response + ", to the fd: " + std::to_string(fd));
+                                    response += END_OF_MESSAGE;
                                     send(fd, response.c_str(), static_cast<int>(response.size()), 0);
                                 }
                             }

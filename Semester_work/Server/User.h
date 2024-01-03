@@ -23,6 +23,8 @@ using namespace std;
 
 class User {
 public:
+    using TimePoint = std::chrono::high_resolution_clock::time_point;
+
     /** List of all users */
     static vector<shared_ptr<User>> users;
     /** State of the user (DISCONNECTED, LOGGED, WAITING, IN_GAME, RESULT_SCREEN)*/
@@ -33,6 +35,8 @@ public:
     string mUsername;
     /** Number of incoming  pings*/
     int mWaiting;
+    /** Time of last message form user */
+    decltype(chrono::high_resolution_clock::now()) mLastPlayerMessage;
     /** Game what is the user in */
     shared_ptr<Game> mGame;
     /** Reference to the logger */
@@ -81,5 +85,7 @@ private:
     string evaluate_rematch(int* rematch);
 
     bool is_game_running();
+
+    static bool connected_by_time(shared_ptr<User> user);
 };
 

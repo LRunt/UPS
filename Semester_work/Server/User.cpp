@@ -66,14 +66,15 @@ string User::execute_message(const string& message, int fd) {
     shared_ptr<User> user = find_user_by_fd(fd);
     if(user == nullptr){
         if(parsedMessage[0] == MESSAGE_LOGIN){
+            Logger::instance().log(LogLevel::INFO, "Client: " + to_string(fd) + " is trying to login.");
             response = string(MESSAGE_LOGIN) + DELIMITER + to_string(login(parsedMessage, fd));
-	    User::print_users();
         }else{
             response = string(MESSAGE_ERROR);
         }
     }else{
         user->mLastPlayerMessage = chrono::high_resolution_clock::now();
         if(parsedMessage[0] == MESSAGE_DISCONNECT){
+            Logger::instance().log(LogLevel::INFO, "User: " + user->mUsername + " is trying to logout.");
             user->set_user_disconnected();
         }else{
             int* rematch;

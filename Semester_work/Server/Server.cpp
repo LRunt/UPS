@@ -204,7 +204,12 @@ int main(int argc, char *argv[]){
                                 }else{
                                     logger.log(LogLevel::INFO, "Sending response: " + response + ", to the fd: " + std::to_string(fd));
                                     response += END_OF_MESSAGE;
-                                    send(fd, response.c_str(), static_cast<int>(response.size()), 0);
+                                    // Handling the case where the send operation failed (connection lost)
+                                    if (send(fd, response.c_str(), static_cast<int>(response.size()), 0) == -1) {
+                                        close(fd);
+                                        FD_CLR(fd, &client_socks);
+                                        logger.log(LogLevel::WARNING, "Connection lost for fd: " + std::to_string(fd));
+                                    }
                                 }
                             }
                         }

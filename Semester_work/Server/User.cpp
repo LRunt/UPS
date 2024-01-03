@@ -49,7 +49,7 @@ vector<string> splitString(const string& text){
  */
 string User::execute_message(const string& message, int fd) {
     string response;
-    cout << "Client" << fd << " send this message:" << message << endl;
+    Logger::instance().log(LogLevel::INFO, "Executing message: " + message + ", from client with fd: " + to_string(fd));
     vector<string> parsedMessage = splitString(message);
     shared_ptr<User> user = find_user_by_fd(fd);
     if(user == nullptr){
@@ -215,11 +215,14 @@ string User::find_user_for_game() {
  * @return true - exist, false - do not exist
  */
 bool User::user_exists(const std::string& username) {
+    Logger::instance().log(LogLevel::INFO, "Searching for user: " + username);
     for (const auto& user : User::users) {
         if (username == user->mUsername) {
+            Logger::instance().log(LogLevel::INFO, "User found: " + user->to_str());
             return true;
         }
     }
+    Logger::instance().log(LogLevel::INFO, "User with username: " + username + "do not exist.");
     return false;
 }
 
@@ -247,11 +250,14 @@ bool User::user_connected(const string& username) {
  * @return User_test
  */
 shared_ptr<User> User::find_user_by_fd(int fd) {
+    Logger::instance().log(LogLevel::INFO, "Searching user with fd: " + to_string(fd));
     for (const auto& user : User::users) {
         if (user->mFd == fd) {
+            Logger::instance().log(LogLevel::INFO, "User found: " + user->to_str());
             return user;
         }
     }
+    Logger::instance().log(LogLevel::INFO, "User with fd: " + to_string(fd) + ", not found.");
     return nullptr; // User_test not found
 }
 

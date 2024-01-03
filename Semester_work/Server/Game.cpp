@@ -59,6 +59,7 @@ string Game::get_game_state(const string& player) {
  * @return 0 - Turn is valid
  */
 string Game::make_turn(const string &player, int index) {
+    logger.log(LogLevel::INFO, "User: " + player + ", making turn on index: " + to_string(index));
     int validity = validate_turn(player, index);
     if(validity == VALID){
         //making the turn

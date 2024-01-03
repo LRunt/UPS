@@ -175,7 +175,7 @@ int main(int argc, char *argv[]){
                     if (a2read > 0) {
                         // Receive data into the buffer
                         int bytes_received = recv(fd, buffer, MAX_BUFFER_SIZE, 0);
-                        if (bytes_received > 0) {
+                        if (bytes_received > 0 && bytes_received < MAX_BUFFER_SIZE) {
                            buffer[bytes_received] = '\0';  // Null-terminate the received data (assuming it's a string)
 
                             std::string message(buffer, bytes_received);

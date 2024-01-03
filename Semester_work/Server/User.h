@@ -56,8 +56,6 @@ public:
         logger.log(LogLevel::INFO, "New User " + mUsername + " fd: " + to_string(mFd) + " .");
     }
 
-    static void print_users();
-
     static shared_ptr<User> get_user_by_fd(int fd);
 
     static string execute_message(const string& message, int fd);
@@ -89,5 +87,7 @@ private:
     static bool connected_by_time(shared_ptr<User> user);
 
     static void change_disconnected_users_fd();
+
+    static void print_users();
 };
 

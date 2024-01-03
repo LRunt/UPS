@@ -29,8 +29,9 @@ std::shared_ptr<User> User::get_user_by_fd(int fd){
  * Method printing all users
  */
 void User::print_users() {
+    Logger::instance().log(LogLevel::INFO, "Printing all users:");
     for (const auto& userPtr : User::users) {
-        cout << userPtr->to_str() << endl;
+        Logger::instance().log(LogLevel::INFO, userPtr->to_str());
     }
 }
 
@@ -59,6 +60,9 @@ string User::execute_message(const string& message, int fd) {
     string response;
     Logger::instance().log(LogLevel::INFO, "Executing message: " + message + ", from client with fd: " + to_string(fd));
     vector<string> parsedMessage = splitString(message);
+    if(parsedMessage[0] == MESSAGE_PRINT_USERS && parsedMessage.size() == 1){
+        print_users();
+    }
     shared_ptr<User> user = find_user_by_fd(fd);
     if(user == nullptr){
         if(parsedMessage[0] == MESSAGE_LOGIN){
@@ -338,20 +342,25 @@ bool User::is_game_running() {
  * @return rematch string
  */
 string User::evaluate_rematch(int* rematch) {
+    logger.log(LogLevel::INFO, "Evaluating rematch of user: " + mUsername + ", fd(" + to_string(mFd) + ")");
     if(rematch[0] == USER_LOBBY || rematch[0] == BOTH_LOBBY){
         //No rematch
+        logger.log(LogLevel::INFO, "User: " + mUsername + " do not want rematch and goes to the lobby.");
         this->mGame = nullptr;
         this->mState = LOGGED;
         return string(MESSAGE_LOGGED);
     }else if(rematch[0] == BOTH_WANT){
+        logger.log(LogLevel::INFO, "Both users want rematch.");
         this->mState = IN_GAME;
         this->mGame->reset_game();
         return this->mGame->get_game_state(mUsername);
     }else if(rematch[0] == USER_WANT && rematch[1] == -2 || rematch[0] == OPPONENT_WANT && rematch[1] == -2){
+        logger.log(LogLevel::INFO, "Timeout of user response.");
         this->mGame = nullptr;
         this->mState = LOGGED;
         return string(MESSAGE_LOGGED);
     }else{
+        logger.log(LogLevel::INFO, "Waiting for users response.");
         return this->mGame->get_result(mUsername, rematch);
     }
 }

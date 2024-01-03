@@ -271,6 +271,8 @@ class MainWindow(QWidget):
             elif split_message[1] == '5':
                 self.show_login_error("Error: Username is too long.")
                 logger.warning("Long username")
+            elif split_message[1] == '6':
+                self.show_login_error("Error: Server is full (Maximum numbers of players).")
             else:
                 logger.info("Wrong code")
 

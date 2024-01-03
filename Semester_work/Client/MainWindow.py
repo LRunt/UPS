@@ -83,6 +83,10 @@ class MainWindow(QWidget):
         self.setWindowTitle(WINDOW_TITLE)
 
     def closeEvent(self, event):
+        """
+        Method of cations while closing the window
+        :param event: closing the window
+        """
         QApplication.instance().quit()
         if self.socket.connection:
             self.socket.disconnect()

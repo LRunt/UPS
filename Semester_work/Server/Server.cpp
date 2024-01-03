@@ -214,7 +214,7 @@ int main(int argc, char *argv[]){
                         user->set_user_disconnected();
                         close(fd);
                         FD_CLR(fd, &client_socks);
-                        logger.log(LogLevel::INFO, "User disconnected and removed from the socket set");
+                        logger.log(LogLevel::INFO, "User" + user->mUsername + " fd(" + std::to_string(user->mFd) + ") disconnected and removed from the socket set");
                     }
                 }
             }

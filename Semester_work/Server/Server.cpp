@@ -100,12 +100,20 @@ int main(int argc, char *argv[]){
 
             switch (flag){
                 case 'c':
-                    max_number_of_connected_users = number;
-                    logger.log(LogLevel::INFO, "Setting maximal number of clients: " + std::to_string(number));
+                    if(number < MINIMAL_NUMBER_OF_USERS){
+                        logger.log(LogLevel::ERROR, "Minimal number of players are: " + std::to_string(MINIMAL_NUMBER_OF_USERS));
+                    }else{
+                        max_number_of_connected_users = number;
+                        logger.log(LogLevel::INFO, "Setting maximal number of clients: " + std::to_string(number));
+                    }
                     break;
                 case 'p':
-                    port = number;
-                    logger.log(LogLevel::INFO, "Setting port number: " + std::to_string(number));
+                    if(number < MINIMAL_PORT_NUMBER || MAXIMAL_PORT_NUMBER < number){
+                        logger.log(LogLevel::ERROR, "Port out of bounds. Minimal port number: " + std::to_string(MINIMAL_PORT_NUMBER) + ", Maximal port number: " + std::to_string(MAXIMAL_PORT_NUMBER));
+                    }else{
+                        port = number;
+                        logger.log(LogLevel::INFO, "Setting port number: " + std::to_string(number));
+                    }
                     break;
                 default:
                     logger.log(LogLevel::ERROR, &"Wrong flag!" [ flag]);

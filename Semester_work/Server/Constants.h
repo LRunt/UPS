@@ -15,8 +15,11 @@ using namespace std;
 // DEFAULT INITIALIZATION
 const int MAX_BUFFER_SIZE = 1024;
 const int DEFAULT_PORT = 10000;
+const int MINIMAL_PORT_NUMBER = 1024;
+const int MAXIMAL_PORT_NUMBER = 49151;
+const int MINIMAL_NUMBER_OF_USERS = 2;
 const int DEFAULT_MAX_USERS = 10;
-const int NUMBER_OF_STREAMS = 3; //(stdin,stdout, stderr)
+const int NUMBER_OF_STREAMS = 4; //(stdin,stdout, stderr, server)
 const string NAME_OF_LOGFILE = "logfile.log";
 
 /** end of message */

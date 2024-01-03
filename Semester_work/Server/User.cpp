@@ -80,9 +80,10 @@ string User::execute_message(const string& message, int fd) {
             int* rematch;
             switch(user->mState){
                 case LOGGED:
-                    if(parsedMessage[0] == MESSAGE_PING){
+                    if(parsedMessage[0] == MESSAGE_PING && parsedMessage.size() == 1){
                         response = MESSAGE_LOGGED;
                     }else if(parsedMessage[0] == MESSAGE_START_SEARCHING_GAME){
+                        Logger::instance().log(LogLevel::INFO, "User: " + user->mUsername + " starting searching for a game.");
                         user->mState++;
                         response = user->find_user_for_game();
                     }else{

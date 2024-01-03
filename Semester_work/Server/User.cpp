@@ -11,6 +11,11 @@
 /** Initializing vector of users */
 vector<shared_ptr<User>> User::users;
 
+/**
+ * Method returns user by file descriptor of null pointer if user is not found
+ * @param fd file descriptor
+ * @return user by file descriptor of null pointer if user is not found
+ */
 std::shared_ptr<User> User::get_user_by_fd(int fd){
     for (const auto& userPtr : User::users){
         if (userPtr->mFd == fd){
@@ -20,6 +25,9 @@ std::shared_ptr<User> User::get_user_by_fd(int fd){
     return nullptr;
 }
 
+/**
+ * Method printing all users
+ */
 void User::print_users() {
     for (const auto& userPtr : User::users) {
         cout << userPtr->to_str() << endl;
@@ -54,16 +62,13 @@ string User::execute_message(const string& message, int fd) {
     shared_ptr<User> user = find_user_by_fd(fd);
     if(user == nullptr){
         if(parsedMessage[0] == MESSAGE_LOGIN){
-            cout << "User wants to login." << endl;
             response = string(MESSAGE_LOGIN) + DELIMITER + to_string(login(parsedMessage, fd));
 	    User::print_users();
         }else{
             response = string(MESSAGE_ERROR);
-            cout << "Error in message: " << message << endl;
         }
     }else{
         if(parsedMessage[0] == MESSAGE_DISCONNECT){
-            cout << "User wants to disconnect." << endl;
             user->set_user_disconnected();
         }else{
             int* rematch;
@@ -158,30 +163,29 @@ void User::set_user_disconnected() {
  */
 int User::login(vector<string> parsedMessage, int fd) {
     if(parsedMessage.size() != 2){
-        cerr << "Invalid message!" << endl;
+        Logger::instance().log(LogLevel::WARNING, "There are illegal chars in username.");
         return ILLEGAL_CHARACTERS;
     } else{
         std::string username = parsedMessage[1];
         if(username.size() < MIN_USERNAME_LENGTH){
-            cerr << "Username is too short" << endl;
+            Logger::instance().log(LogLevel::WARNING, "Username: "  + username + ", is too short.");
             return SHORT_USERNAME;
         }else if(username.size() > MAX_USERNAME_LENGTH){
-            cerr << "Username is too long" << endl;
+            Logger::instance().log(LogLevel::WARNING, "Username: "  + username + ", is too long.");
             return LONG_USERNAME;
         }else if(user_exists(username)){
             if(user_connected(username)){
-                cout << "Error: exist online user with same username!" << endl;
+                Logger::instance().log(LogLevel::WARNING, "There is online user with same username: " + username);
                 return EXIST_ONLINE_USER;
             }else{
-                cout << "welcome back!" << endl;
+                Logger::instance().log(LogLevel::INFO, "There offline account with username: " + username);
                 change_user_fd(username, fd);
                 return EXIST_OFFLINE_USER;
             }
         }else{
             //adding to the list of users
             users.push_back(std::make_shared<User>(username, fd));
-            cout << "User_test logged with username: " << username << endl;
-            cout << "List of all Users: " << endl;
+            Logger::instance().log(LogLevel::INFO, "User logged:" + username + ", fd: " + to_string(fd));
             return NEW_USER;
         }
     }
@@ -194,9 +198,10 @@ int User::login(vector<string> parsedMessage, int fd) {
 string User::find_user_for_game() {
     shared_ptr<User> opponent = find_user_by_state(WAITING, this->mUsername);
     if(opponent == nullptr){
-        cout << "Opponent not found" << endl;
+        logger.log(LogLevel::INFO,"Cannot found a opponent for user: " + this->mUsername);
         return string(MESSAGE_WAITING) + DELIMITER + to_string(this->mWaiting);
     }else{
+        logger.log(LogLevel::INFO, "Opponent for user: " + this->mUsername + "found.");
         shared_ptr<Game> new_game = make_shared<Game>(this->mUsername, opponent->mUsername);
         this->mGame = new_game;
         this->mState = IN_GAME;
@@ -204,7 +209,6 @@ string User::find_user_for_game() {
         opponent->mGame = new_game;
         opponent->mState = IN_GAME;
         opponent->mWaiting = 0;
-        cout << "Game_test created! Player1: " << this->mUsername << ", Player2: " << opponent->mUsername << endl;
         return this->mGame->get_game_state(mUsername);
     }
 }

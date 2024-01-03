@@ -22,12 +22,12 @@ void Logger::log(LogLevel level, const std::string& message) {
     std::time_t currentTime = std::chrono::system_clock::to_time_t(now);
 
     // Log to console with timestamp
-    std::cout << "[" << std::put_time(std::localtime(&currentTime), "%Y-%m-%d %H:%M:%S") << "] "
+    std::cout << "[" << std::put_time(std::localtime(&currentTime), "%d-%m-%Y %H:%M:%S") << "] "
               << "[" << logLevelToString(level) << "] " << message << std::endl;
 
     // Log to file with timestamp
     if (logFile_.is_open()) {
-        logFile_ << "[" << std::put_time(std::localtime(&currentTime), "%Y-%m-%d %H:%M:%S") << "] "
+        logFile_ << "[" << std::put_time(std::localtime(&currentTime), "%d-%m-%Y %H:%M:%S") << "] "
                  << "[" << logLevelToString(level) << "] " << message << std::endl;
     }
 }

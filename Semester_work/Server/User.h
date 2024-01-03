@@ -87,5 +87,7 @@ private:
     bool is_game_running();
 
     static bool connected_by_time(shared_ptr<User> user);
+
+    static void change_disconnected_users_fd();
 };
 

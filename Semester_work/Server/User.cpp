@@ -169,6 +169,7 @@ int User::login(vector<string> parsedMessage, int fd) {
             Logger::instance().log(LogLevel::WARNING, "Username: "  + username + ", is too long.");
             return LONG_USERNAME;
         }else if(user_exists(username)){
+            change_disconnected_users_fd();
             if(user_connected(username)){
                 Logger::instance().log(LogLevel::WARNING, "There is online user with same username: " + username);
                 return EXIST_ONLINE_USER;
@@ -263,6 +264,17 @@ bool User::connected_by_time(shared_ptr<User> user){
 }
 
 /**
+ * Method checks if users with fd is really connected
+ */
+void User::change_disconnected_users_fd(){
+    for(const auto& user : User::users){
+        if(user->mFd != DISCONNECTED && !connected_by_time(user)){
+            user->mFd = DISCONNECTED;
+        }
+    }
+}
+
+/**
  * Method find a user by file descriptor
  * @param fd file descriptor
  * @return User_test
@@ -275,7 +287,7 @@ shared_ptr<User> User::find_user_by_fd(int fd) {
             return user;
         }
     }
-    Logger::instance().log(LogLevel::INFO, "User with fd: " + to_string(fd) + ", not found.");
+    Logger::instance().log(LogLevel::INFO, "User with fd: " + to_string(fd) + ", was not found.");
     return nullptr; // User_test not found
 }
 
@@ -287,7 +299,7 @@ shared_ptr<User> User::find_user_by_fd(int fd) {
  */
 shared_ptr<User> User::find_user_by_state(int state, const string& username) {
     for (const auto& user : User::users) {
-        if (user->mState == state && user->mUsername != username && user->mFd != DISCONNECTED) {
+        if (user->mState == state && user->mUsername != username) {
             return user;
         }
     }

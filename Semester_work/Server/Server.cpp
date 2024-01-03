@@ -162,9 +162,13 @@ int main(int argc, char *argv[]){
             if (FD_ISSET(fd, &tests)) {
                 if (fd == server_socket) {
                     client_socket = accept(server_socket, (struct sockaddr *) &peer_addr, &len_addr);
+                    logger.log(LogLevel::INFO, "New client: " + std::to_string(client_socket));
                     // Testing maximal number of connected users
-                    if(client_socket > (max_number_of_connected_users - NUMBER_OF_STREAMS)){
+                    if(client_socket > (max_number_of_connected_users + NUMBER_OF_STREAMS)){
+                        logger.log(LogLevel::WARNING, "Server is full, new client: " + std::to_string(client_socket) + "is not accepted.");
                         send(client_socket, MESSAGE_MAX_USERS.c_str(), MESSAGE_MAX_USERS.size(), 0);
+                        close(client_socket);
+                        FD_CLR(client_socket, &client_socks);
                     }else{
                         FD_SET(client_socket, &client_socks);
                         logger.log(LogLevel::INFO, "New client connected, fd: " + std::to_string(client_socket));

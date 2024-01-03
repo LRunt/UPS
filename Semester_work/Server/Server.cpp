@@ -102,6 +102,7 @@ int main(int argc, char *argv[]){
                 case 'c':
                     if(number < MINIMAL_NUMBER_OF_USERS){
                         logger.log(LogLevel::ERROR, "Minimal number of players are: " + std::to_string(MINIMAL_NUMBER_OF_USERS));
+                        return EXIT_FAILURE;
                     }else{
                         max_number_of_connected_users = number;
                         logger.log(LogLevel::INFO, "Setting maximal number of clients: " + std::to_string(number));
@@ -110,6 +111,7 @@ int main(int argc, char *argv[]){
                 case 'p':
                     if(number < MINIMAL_PORT_NUMBER || MAXIMAL_PORT_NUMBER < number){
                         logger.log(LogLevel::ERROR, "Port out of bounds. Minimal port number: " + std::to_string(MINIMAL_PORT_NUMBER) + ", Maximal port number: " + std::to_string(MAXIMAL_PORT_NUMBER));
+                        return EXIT_FAILURE;
                     }else{
                         port = number;
                         logger.log(LogLevel::INFO, "Setting port number: " + std::to_string(number));

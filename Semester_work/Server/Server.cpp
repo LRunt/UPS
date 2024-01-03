@@ -101,14 +101,14 @@ int main(int argc, char *argv[]){
             switch (flag){
                 case 'c':
                     max_number_of_connected_users = number;
-                    logger.log(LogLevel::INFO, "Maximal number of clients: " + std::to_string(number));
+                    logger.log(LogLevel::INFO, "Setting maximal number of clients: " + std::to_string(number));
                     break;
                 case 'p':
                     port = number;
-                    logger.log(LogLevel::INFO, "Port number: " + std::to_string(number));
+                    logger.log(LogLevel::INFO, "Setting port number: " + std::to_string(number));
                     break;
                 default:
-                    logger.log(LogLevel::ERROR, "Wrong flag!");
+                    logger.log(LogLevel::ERROR, &"Wrong flag!" [ flag]);
                     return EXIT_FAILURE;
             }
 
@@ -167,7 +167,7 @@ int main(int argc, char *argv[]){
                         send(client_socket, MESSAGE_MAX_USERS.c_str(), MESSAGE_MAX_USERS.size(), 0);
                     }else{
                         FD_SET(client_socket, &client_socks);
-                        logger.log(LogLevel::INFO, "File descriptor fd: " + std::to_string(client_socket));
+                        logger.log(LogLevel::INFO, "New client connected, fd: " + std::to_string(client_socket));
                         messages[client_socket] = "";
                     }
                 } else {
@@ -179,11 +179,8 @@ int main(int argc, char *argv[]){
                            buffer[bytes_received] = '\0';  // Null-terminate the received data (assuming it's a string)
 
                             std::string message(buffer, bytes_received);
-				            logger.log(LogLevel::INFO, "Received message: " + message);
-			                logger.log(LogLevel::INFO, "File descriptor: " + std::to_string(fd));
-				            logger.log(LogLevel::INFO, "Message before: " + messages[fd]);
+				            logger.log(LogLevel::INFO, "Received message: " + message + ", from fd: " + std::to_string(fd));
                             messages[fd] += message;
-				            logger.log(LogLevel::INFO, "Message after: " + messages[fd]);
                             int number_of_messages = count_characters(messages[fd], END_OF_MESSAGE);
                             std::vector<std::string> messages_to_execute = split_string_by_newline(messages[fd]);
                             if(messages_to_execute.size() == number_of_messages){
@@ -192,20 +189,21 @@ int main(int argc, char *argv[]){
                                 messages[fd] = messages_to_execute.back();
                             }
                             for(int i = 0; i < number_of_messages; i++){
-                                logger.log(LogLevel::INFO, "Message in for cycle: " + messages_to_execute[i]);
                                 std::string response = User::execute_message(messages_to_execute[i], fd);
                                 if (response == "LOGIN|2" || response == "LOGIN|3" || response == "LOGIN|4" || response == "LOGIN|5"){
-                                    logger.log(LogLevel::ERROR, "Login failed - disconnecting user");
+                                    response += END_OF_MESSAGE;
+                                    logger.log(LogLevel::INFO, "Sending response: " + response + ", to the fd: " + std::to_string(fd));
                                     send(fd, response.c_str(), static_cast<int>(response.size()), 0);
+                                    logger.log(LogLevel::WARNING, "Login failed - disconnecting user");
                                     close(fd);
                                     FD_CLR(fd, &client_socks);
                                 }else if (response == MESSAGE_ERROR){
-                                    logger.log(LogLevel::ERROR, "Response ERROR");
+                                    logger.log(LogLevel::WARNING, "Invalid message - disconnecting user");
                                     close(fd);
                                     FD_CLR(fd, &client_socks);
                                 }else{
                                     response += END_OF_MESSAGE;
-                                    logger.log(LogLevel::INFO, "Sending response: " + response);
+                                    logger.log(LogLevel::INFO, "Sending response: " + response + ", to the fd: " + std::to_string(fd));
                                     send(fd, response.c_str(), static_cast<int>(response.size()), 0);
                                 }
                             }

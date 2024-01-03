@@ -48,3 +48,7 @@ const string MESSAGE_MAKE_TURN = "TURN";
 const string MESSAGE_REMATCH = "REMATCH";
 const string MESSAGE_LOGGED = "LOGGED";
 const string MESSAGE_MAX_USERS = "LOGIN|6\n";
+const string MESSAGE_EXIST_ONLINE_USER = "LOGIN|2";
+const string MESSAGE_ILLEGAL_CHARS_IN_USERNAME = "LOGIN|3";
+const string MESSAGE_SHORT_USERNAME = "LOGIN|4";
+const string MESSAGE_LONG_USERNAME = "LOGIN|5";

@@ -139,7 +139,7 @@ string User::execute_message(const string& message, int fd) {
  * Sets user as disconnected
  */
 void User::set_user_disconnected() {
-    cout << "disconnecting user" << endl;
+    logger.log(LogLevel::INFO, "disconnecting user: " + mUsername);
     mFd = DISCONNECTED;
 }
 
@@ -153,6 +153,7 @@ void User::set_user_disconnected() {
  *          3 - Username contains illegal characters
  *          4 - Username is short
  *          5 - Username is too long
+ *          6 - Maximal number of users
  *          -1 - Invalid message
  */
 int User::login(vector<string> parsedMessage, int fd) {

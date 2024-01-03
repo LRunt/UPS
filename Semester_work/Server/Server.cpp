@@ -190,7 +190,7 @@ int main(int argc, char *argv[]){
                             }
                             for(int i = 0; i < number_of_messages; i++){
                                 std::string response = User::execute_message(messages_to_execute[i], fd);
-                                if (response == "LOGIN|2" || response == "LOGIN|3" || response == "LOGIN|4" || response == "LOGIN|5"){
+                                if (response == MESSAGE_EXIST_ONLINE_USER || response == MESSAGE_ILLEGAL_CHARS_IN_USERNAME || response == MESSAGE_SHORT_USERNAME || response == MESSAGE_LONG_USERNAME){
                                     response += END_OF_MESSAGE;
                                     logger.log(LogLevel::INFO, "Sending response: " + response + ", to the fd: " + std::to_string(fd));
                                     send(fd, response.c_str(), static_cast<int>(response.size()), 0);
@@ -222,5 +222,5 @@ int main(int argc, char *argv[]){
     }
 
     close(server_socket);
-    return 0;
+    return EXIT_SUCCESS;
 }

@@ -2,8 +2,8 @@
  * Class game represents one room of TIC-TAC-TOE
  *
  * @author Lukas Runt
- * @date 08-11-2023
- * @version 0.0.1
+ * @date 03-01-2023
+ * @version 1.0.0
  */
 
 #pragma once
@@ -12,6 +12,7 @@
 #include <chrono>
 #include "Constants.h"
 #include "Enums.h"
+#include "Logger.h"
 
 using namespace std;
 
@@ -40,9 +41,15 @@ public:
     decltype(chrono::high_resolution_clock::now()) mLastMessageP1;
     /** Time of last message from player2*/
     decltype(chrono::high_resolution_clock::now()) mLastMessageP2;
+    /** Reference to the logger */
+    Logger& logger = Logger::instance();
 
+    /**
+     * Constructor of class Game
+     * @param player1 name of player1
+     * @param player2 name of player2
+     */
     Game(const string& player1, const string& player2){
-        cout << "New game created!" << endl;
         mTurn = 1;
         mState = 0;
         mPlayer1 = player1;
@@ -51,7 +58,7 @@ public:
         mLastMessageP2 = chrono::high_resolution_clock::now();
         mRematchP1 = -1;
         mRematchP2 = -1;
-        cout << this->to_str() << endl;
+        logger.log(LogLevel::INFO, "New game created: " + this->to_str());
     }
 
     string make_turn(const string& player, int index);

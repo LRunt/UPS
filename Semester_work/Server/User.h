@@ -17,27 +17,39 @@
 #include "Game.h"
 #include "Constants.h"
 #include "Enums.h"
+#include "Logger.h"
 
 using namespace std;
 
 class User {
 public:
+    /** List of all users */
     static vector<shared_ptr<User>> users;
-
+    /** State of the user (DISCONNECTED, LOGGED, WAITING, IN_GAME, RESULT_SCREEN)*/
     int mState;
+    /** File descriptor of the user (-1 if user is disconnected)*/
     int mFd;
+    /** Name of the user */
     string mUsername;
-    /** number of pings*/
+    /** Number of incoming  pings*/
     int mWaiting;
+    /** Game what is the user in */
     shared_ptr<Game> mGame;
+    /** Reference to the logger */
+    Logger& logger = Logger::instance();
 
+    /**
+     * Constructor of class User
+     * @param name name of the user
+     * @param fd file descriptor of the user
+     */
     explicit User(const string& name, int fd) {
         mFd = fd;
         mUsername = name;
         mState = 0;
         mWaiting = 0;
         mGame = nullptr;
-        cout << "New user created! State = " << mState << endl;
+        logger.log(LogLevel::INFO, "New User " + mUsername + " fd: " + to_string(mFd) + " .");
     }
 
     static void print_users();

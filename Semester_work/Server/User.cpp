@@ -158,7 +158,7 @@ void User::set_user_disconnected() {
 int User::login(vector<string> parsedMessage, int fd) {
     if(parsedMessage.size() != 2){
         cerr << "Invalid message!" << endl;
-        return INVALID_MESSAGE;
+        return ILLEGAL_CHARACTERS;
     } else{
         std::string username = parsedMessage[1];
         if(username.size() < MIN_USERNAME_LENGTH){

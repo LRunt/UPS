@@ -45,6 +45,8 @@ int count_characters(const std::string& input, char character) {
 std::vector<std::string> split_string_by_newline(const std::string& input) {
     std::vector<std::string> result;
     if(input == "\n"){
+        Logger::instance().log(LogLevel::INFO, "Only \\n in input.");
+        result.push_back(MESSAGE_NEW_LINE);
         return result;
     }
     std::istringstream iss(input);

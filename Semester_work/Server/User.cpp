@@ -63,6 +63,9 @@ string User::execute_message(const string& message, int fd) {
     if(parsedMessage[0] == MESSAGE_PRINT_USERS && parsedMessage.size() == 1){
         print_users();
     }
+    if(parsedMessage[0] == MESSAGE_NEW_LINE){
+        return MESSAGE_ERROR;
+    }
     shared_ptr<User> user = find_user_by_fd(fd);
     if(user == nullptr){
         if(parsedMessage[0] == MESSAGE_LOGIN){

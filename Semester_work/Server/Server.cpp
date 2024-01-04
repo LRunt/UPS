@@ -48,7 +48,9 @@ std::vector<std::string> split_string_by_newline(const std::string& input) {
 
     // Split the string by newline character
     for (std::string line; std::getline(iss, line, END_OF_MESSAGE); ) {
-        result.push_back(line);
+        if(line.size() > 0){
+            result.push_back(line);
+        }
     }
 
     return result;
@@ -226,6 +228,12 @@ int main(int argc, char *argv[]){
                                     }
                                 }
                             }
+                        } else{
+                            std::shared_ptr<User> user = User::get_user_by_fd(fd);
+                            user->set_user_disconnected();
+                            close(fd);
+                            FD_CLR(fd, &client_socks);
+                            logger.log(LogLevel::INFO, "User" + user->mUsername + " fd(" + std::to_string(user->mFd) + ") disconnected and removed from the socket set");
                         }
                     } else {
                         // Setting user disconnected

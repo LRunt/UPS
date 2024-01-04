@@ -44,6 +44,9 @@ int count_characters(const std::string& input, char character) {
  */
 std::vector<std::string> split_string_by_newline(const std::string& input) {
     std::vector<std::string> result;
+    if(input == "\n"){
+        return result;
+    }
     std::istringstream iss(input);
 
     // Split the string by newline character
@@ -198,12 +201,14 @@ int main(int argc, char *argv[]){
 				            logger.log(LogLevel::INFO, "Received message: " + message + ", from fd: " + std::to_string(fd));
                             messages[fd] += message;
                             int number_of_messages = count_characters(messages[fd], END_OF_MESSAGE);
+                            logger.log(LogLevel::INFO, "Starting parsing messages.");
                             std::vector<std::string> messages_to_execute = split_string_by_newline(messages[fd]);
                             if(messages_to_execute.size() == number_of_messages){
                                 messages[fd] = "";
                             }else{
                                 messages[fd] = messages_to_execute.back();
                             }
+                            logger.log(LogLevel::INFO, "Starting executing messages.");
                             for(int i = 0; i < number_of_messages; i++){
                                 std::string response = User::execute_message(messages_to_execute[i], fd);
                                 if (response == MESSAGE_EXIST_ONLINE_USER || response == MESSAGE_ILLEGAL_CHARS_IN_USERNAME || response == MESSAGE_SHORT_USERNAME || response == MESSAGE_LONG_USERNAME){
